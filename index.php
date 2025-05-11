@@ -328,10 +328,10 @@ $totalPages = ceil(count($filteredJobs) / $limit);
             </div>
             <div class="footer-column">
                 <h4>Explore</h4>
-                <a href="admin/login.php">👤 Admin Login</a>
+                <a href="admin/dashboard.php">👤 Admin Login</a>
                 <a href="?search=remote&filter=all">💻 Remote Jobs</a>
-                <a href="?search=uae&filter=all">📍 UAE Jobs</a>
-                <a href="mailto:support@uaejobs.com">📩 Contact Support</a>
+                <a href="index.php">📍 UAE Jobs</a>
+                <a href="mailto:support@jobhunt.top">📩 Contact Support</a>
             </div>
             <div class="footer-column">
                 <h4>Follow Channels</h4>

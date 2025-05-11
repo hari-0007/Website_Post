@@ -344,6 +344,54 @@
              margin-top: 20px;
          }
 
+/* Add these styles within the <style> block in header.php */
+.status-area {
+        padding: 10px 20px; /* Padding matches container/main-content horizontal padding */
+        margin: 10px auto; /* Center and add space above/below */
+        width: 100%; /* Full width */
+        max-width: 960px; /* Max width to align with container */
+        box-sizing: border-box; /* Include padding in width */
+        border-radius: 4px;
+        font-weight: bold;
+        text-align: center;
+        opacity: 1;
+        transition: opacity 0.5s ease-in-out;
+    }
+
+    .status-area.hidden {
+        opacity: 0;
+        height: 0;
+        overflow: hidden;
+        margin-top: 0;
+        margin-bottom: 0;
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+
+    .status-area.success {
+        background-color: #d4edda; /* Light green */
+        color: #155724; /* Dark green */
+        border: 1px solid #c3e6cb;
+    }
+
+    .status-area.error {
+        background-color: #f8d7da; /* Light red */
+        color: #721c24; /* Dark red */
+        border: 1px solid #f5c6cb;
+    }
+
+    .status-area.warning {
+        background-color: #fff3cd; /* Light yellow */
+        color: #856404; /* Dark yellow */
+        border: 1px solid #ffeeba;
+    }
+
+     .status-area.info {
+         background-color: #d1ecf1; /* Light blue */
+         color: #0c5460; /* Dark blue */
+         border: 1px solid #bee5eb;
+     }
+
 
          /* Profile View Specific Styles (used in views/profile_view.php) */
          .profile-forms {

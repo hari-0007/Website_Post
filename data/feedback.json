@@ -5,7 +5,7 @@
         "email": "s.ariharasuthan@gmail.com",
         "message": "suthan",
         "timestamp": 1746753122,
-        "read": false
+        "read": true
     },
     {
         "id": "1746749486_9708",
@@ -21,6 +21,6 @@
         "email": "jjxnm@gmail.com",
         "message": "cvb",
         "timestamp": 1746747248,
-        "read": false
+        "read": true
     }
 ]

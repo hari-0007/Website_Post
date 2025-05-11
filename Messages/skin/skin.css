@@ -1,0 +1,145 @@
+html
+{
+overflow-x: hidden;
+}
+
+body, td 
+{ 
+margin: 0; 
+font-size: 11px; 
+font-family: 'arial', helvetica, sans-serif;
+}
+
+#bktl,#bkt,#bktr,#bkl,#bkr,#bkbl,#bkb,#bkbr,#msgrw_1,#msgrw_2,#msgrw_3,#detail_msgrw1,#detail_msgrw2,#detail_msgrw3,#detail_msgrw4
+{
+width: 0;
+height: 0;
+display: none;
+}
+
+img
+{
+border: 0;
+margin: 0;
+padding: 0;
+}
+
+.snippetlink
+{ 
+margin-top: 0.833em;
+font-size: 1.091em;
+font-weight: bold;
+color: #0000CC;  
+text-decoration: underline;
+}
+
+#detail_body
+{
+text-align: center;
+}
+
+#detail
+{
+text-align: left;
+vertical-align: top;
+}
+
+.detail_title
+{
+font-size: 1.182em;
+font-weight: bold;
+margin-bottom: 0.308em;
+}
+
+ /* for Aftershot2 update msgs */
+.asp2updatebg {
+width: 500px;
+height: 340px;
+background-image: url('../../workflow/shared/images/as_bg_installer.png');
+}
+.asp2updatebanner {
+padding: 15px;
+}
+.asp2updatecontainer {
+padding: 15px 30px 30px 30px;
+}
+div.asp2updatecontainer p,a {
+color: white;
+font-size: 14px;
+}
+/* end of Aftershot2 update msgs */
+
+.msgiframesmall {
+width: 500px;
+height: 340px;
+}
+
+/* CDGS 2017/2018 update message */
+.v1cont {
+	height: 290px;
+	padding: 10px 30px 30px 30px;
+}
+.v1cont p,.v1cont li,.v1cont h1,.v1cont div {
+	font-family: 'Segoe UI', 'Avenir Next', sans-serif;
+	font-size: 15px;
+}
+.v1cont li {
+	margin-top: 6px;
+}
+.v1cont h1 {
+    font-weight: 600;
+    margin-bottom: 0.5em;
+	font-size: 20px;
+}
+.v1cont sup {
+	font-size: 15px;
+}
+.buttoncont {
+	margin-top: 25px;
+	width: 100%;
+	text-align: left;
+}
+.v1cont button {
+	border: 0;
+	background-color: #009CFF;
+	color: white;
+	font-size: 17px;
+    font-weight: 100;
+    text-transform: uppercase;
+	padding: 7px 14px;
+	cursor: pointer;
+	cursor: hand;
+}
+
+/* generic update message (now in use) */
+.updt_container {
+	padding: 10px 30px 30px 30px;
+	height: 185px;
+	background-color: white;
+}
+.updt_container p,.updt_container li,.updt_container div {
+	font-family: 'Segoe UI', 'Avenir Next', sans-serif;
+	font-size: 15px;
+}
+.updt_container h1 {
+	font-family: 'Segoe UI', 'Avenir Next', sans-serif;
+    font-weight: 600;
+    margin-bottom: 0.5em;
+	font-size: 19px;
+}
+.buttoncont {
+	margin-top: 25px;
+	width: 100%;
+	text-align: left;
+}
+.buttoncont button {
+	border: 0;
+	background-color: #009CFF;
+	color: white;
+	font-size: 17px;
+	font-weight: 100;
+	text-transform: uppercase;
+	padding: 7px 14px;
+	cursor: pointer;
+	cursor: hand;
+}

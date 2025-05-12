@@ -49,66 +49,188 @@ if (!$loggedIn && in_array($requestedAction, ['register_form', 'forgot_password_
     }
 }
 
-// Load data for authenticated users
+
+// Load Data for Views - Only if logged in
+$allJobs = [];
+$feedbackMessages = [];
+$users = [];
+$jobToEdit = null;
+$jobId = null; // Initialize jobId for edit_job view
+$whatsappMessage = null; // Initialize for generate_message view
+
 if ($loggedIn) {
-    $allJobs = loadJobs($jobsFilename);
-    $feedbackMessages = loadFeedbackMessages($feedbackFilename);
-    $users = loadUsers($usersFilename);
+    // Load data needed for multiple views
+    $allJobs = loadJobs($jobsFilename); // Needed for manage_jobs, dashboard stats, generate_message
+    $feedbackMessages = loadFeedbackMessages($feedbackFilename); // Needed for messages view
+    $users = loadUsers($usersFilename); // Needed for manage_users view
+
+    // Load data specific to the current view
+    switch ($requestedView) {
+        case 'dashboard':
+            // Calculate dashboard stats (total views, jobs today/month, graph data)
+            $totalViews = (int)file_get_contents($viewCounterFile);
+            $today = date('Y-m-d');
+            $thisMonth = date('Y-m');
+
+            $jobsTodayCount = 0;
+            $jobsMonthlyCount = 0;
+            $dailyJobCounts = array_fill(0, 30, 0); // Initialize counts for last 30 days
+            $graphLabels = []; // Dates for the graph
+
+            $now = time();
+            $oneDay = 24 * 60 * 60; // Seconds in a day
+
+            // Populate labels for the last 30 days
+            for ($i = 29; $i >= 0; $i--) {
+                $graphLabels[] = date('Y-m-d', $now - $i * $oneDay);
+            }
+
+            foreach ($allJobs as $job) {
+                $postedDate = date('Y-m-d', $job['posted_on_unix_ts'] ?? strtotime($job['posted_on'] ?? ''));
+
+                if ($postedDate === $today) {
+                    $jobsTodayCount++;
+                }
+                if (strpos($postedDate, $thisMonth) === 0) {
+                    $jobsMonthlyCount++;
+                }
+
+                // Increment daily counts for the graph
+                $dateIndex = array_search($postedDate, $graphLabels);
+                if ($dateIndex !== false) {
+                    $dailyJobCounts[$dateIndex]++;
+                }
+            }
+            $graphData = $dailyJobCounts; // Data points for the graph
+
+            break;
+        case 'edit_job':
+            $jobId = $_GET['id'] ?? null;
+            if ($jobId) {
+                $jobToEdit = null;
+                 // Find the job to edit in the $allJobs array
+                 foreach ($allJobs as $job) {
+                      if (isset($job['id']) && (string)$job['id'] === (string)$jobId) {
+                           $jobToEdit = $job;
+                           break;
+                      }
+                 }
+                 // If job not found, redirect to manage jobs with an error
+                 if (!$jobToEdit) {
+                      $_SESSION['admin_status'] = ['message' => 'Error: Job not found.', 'type' => 'error'];
+                      header('Location: dashboard.php?view=manage_jobs');
+                      exit;
+                 }
+            } else {
+                // If no job ID provided, redirect to manage jobs with a warning
+                 $_SESSION['admin_status'] = ['message' => 'Warning: No job ID specified for editing.', 'type' => 'warning'];
+                 header('Location: dashboard.php?view=manage_jobs');
+                 exit;
+            }
+            break;
+        case 'generate_message':
+            // This section attempts to include the message generation logic.
+            // *** THE FATAL ERROR OCCURS ON THE NEXT LINE (around 160) IF generate_whatsapp_message.php IS NOT FOUND ***
+            ob_start(); // Start output buffering
+            // Include the script that generates the WhatsApp message content
+            require __DIR__ . '/views/generate_message_view.php'; // <-- This line causes the error if the file is missing
+            $whatsappMessage = ob_get_clean(); // Capture the output
+
+             // Check if the included script outputted an error indicating data file not found
+             if (empty($whatsappMessage) || trim($whatsappMessage) === "Error: Job data file not found.\n" || trim($whatsappMessage) === "Could not generate message. Job data is empty or missing.") {
+                  $whatsappMessage = "Could not generate message. Check job data file or logs."; // More informative default message on failure
+             }
+
+            break;
+        // No extra data loading needed for 'post_job', 'manage_jobs', 'profile', 'messages', 'manage_users' views
+    }
 }
 
+
+// Include header (contains opening HTML, head, and navigation)
+require_once __DIR__ . '/partials/header.php';
+
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
-    <link rel="stylesheet" href="styles/main.css"> <!-- Adjust the path if needed -->
-</head>
-<body>
-    <?php require_once __DIR__ . '/partials/header.php'; ?>
 
     <div class="container">
-        <?php if ($statusMessage): ?>
-            <div class="status-message <?= htmlspecialchars($statusClass) ?>">
+        <h2>Admin Dashboard</h2>
+        <div class="admin-nav">
+            <?php $displayName = $_SESSION['admin_display_name'] ?? $_SESSION['admin_username'] ?? 'Admin'; ?>
+            <a href="dashboard.php?view=dashboard" class="<?= $loggedIn && $requestedView === 'dashboard' ? 'active' : '' ?>">Dashboard</a>
+            <?php /* Removed Post New Job Tab: <a href="dashboard.php?view=post_job" class="<?= $loggedIn && $requestedView === 'post_job' ? 'active' : '' ?>">Post New Job</a> */ ?>
+            <a href="dashboard.php?view=manage_jobs" class="<?= $loggedIn && ($requestedView === 'manage_jobs' || $requestedView === 'edit_job') ? 'active' : '' ?>">Manage Jobs</a>
+            <a href="dashboard.php?view=messages" class="<?= $loggedIn && $requestedView === 'messages' ? 'active' : '' ?>">Messages</a>
+             <a href="dashboard.php?view=generate_message" class="<?= $loggedIn && $requestedView === 'generate_message' ? 'active' : '' ?>">Generate Post</a>
+            <div class="profile-dropdown">
+                <a href="javascript:void(0);"><?= htmlspecialchars($displayName) ?> ▼</a>
+                <div class="profile-dropdown-content">
+                    <a href="dashboard.php?view=profile" class="<?= $loggedIn && $requestedView === 'profile' ? 'active' : '' ?>">Manage Profile</a>
+                    <?php if ($loggedInUserRole === 'super_admin' || $loggedInUserRole === 'admin'): ?>
+                         <a href="dashboard.php?view=manage_users" class="<?= $loggedIn && $requestedView === 'manage_users' ? 'active' : '' ?>">User Manager</a>
+                    <?php endif; ?>
+                    <a href="auth.php?action=logout">Logout</a>
+                </div>
+            </div>
+        </div>
+
+        <?php
+        // --- Status Message Area ---
+        // Display session status message if set after a redirect
+        if (!empty($statusMessage)):
+        ?>
+            <div class="status-area status-message <?= htmlspecialchars($statusClass) ?>">
                 <?= htmlspecialchars($statusMessage) ?>
             </div>
-        <?php endif; ?>
+        <?php
+        endif;
+        // --- End Status Message Area ---
+        ?>
 
         <div class="main-content" id="main-content">
             <?php
-            if (!$loggedIn) {
-                // Include the login view for unauthenticated users
-                require_once __DIR__ . '/views/login.php';
+            // This area will be populated by AJAX or on initial load by fetch_content.php
+            // On initial load, fetch_content.php is included directly here.
+            // Check if it's an AJAX request by looking for the X-Requested-With header
+            if (!isset($_SERVER['HTTP_X_REQUESTED_WITH']) || strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) !== 'xmlhttprequest') {
+                 // Not an AJAX request, load content directly
+                 // fetch_content.php will output the HTML for the requested view
+                 // Pass necessary variables to fetch_content.php via include scope
+                 // Note: Variables like $allJobs, $feedbackMessages, $users, $jobToEdit, $whatsappMessage
+                 // loaded above are available in the scope of fetch_content.php when included here.
+                 require_once __DIR__ . '/fetch_content.php';
+                 // The output from fetch_content.php (which includes the view file)
+                 // will go directly into this div on the initial page load.
             } else {
-                // Include the appropriate view for authenticated users
-                switch ($requestedView) {
-                    case 'dashboard':
-                        require_once __DIR__ . '/views/dashboard_view.php';
-                        break;
-                    case 'manage_jobs':
-                        require_once __DIR__ . '/views/manage_jobs_view.php';
-                        break;
-                    case 'messages':
-                        require_once __DIR__ . '/views/messages_view.php';
-                        break;
-                    case 'profile':
-                        require_once __DIR__ . '/views/profile_view.php';
-                        break;
-                    case 'generate_message':
-                        require_once __DIR__ . '/views/generate_message_view.php';
-                        break;
-                    case 'manage_users':
-                        require_once __DIR__ . '/views/manage_users_view.php';
-                        break;
-                    default:
-                        echo '<p>Invalid view requested.</p>';
-                        break;
-                }
+                 // For AJAX requests, the fetch_content.php script is called separately
+                 // by the JavaScript loadContent function in footer.php,
+                 // and its output is handled by that function.
+                 // So, nothing to do here for AJAX requests on the initial page load within this block.
+                 // The AJAX request is a separate HTTP request handled by fetch_content.php itself.
             }
+
+            // If the user is NOT logged in, display the login/registration/forgot password view directly
+            // This happens on initial page load before AJAX takes over, OR if fetch_content redirects here.
+            if (!$loggedIn) {
+                 // The login view uses $loginError, $registerMessage, $forgotPasswordMessage
+                 require_once __DIR__ . '/views/login.php';
+            }
+
             ?>
         </div>
     </div>
+
+<?php
+// Pass variables to footer.php for JavaScript
+$currentViewForJS = $loggedIn ? $requestedView : ($requestedAction === 'register_form' ? 'register_form' : ($requestedAction === 'forgot_password_form' ? 'forgot_password_form' : 'login'));
+$isLoggedInForJS = $loggedIn;
+$userRoleForJS = $_SESSION['admin_role'] ?? 'user'; // Pass user role to JS
+?>
+
+
+<?php
+// Include footer (contains closing HTML and scripts)
+require_once __DIR__ . '/partials/footer.php';
+?>
 
     <?php require_once __DIR__ . '/partials/footer.php'; ?>
 </body>

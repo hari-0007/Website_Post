@@ -19,6 +19,7 @@ $action = $_REQUEST['action'] ?? null; // Use $_REQUEST to get from GET or POST
 if ($action === 'logout') {
     // Destroy the session
     $_SESSION = array(); // Unset all session variables
+    session_unset();
     session_destroy(); // Destroy the session
     // Redirect to the login page (which is now dashboard.php)
     header('Location: dashboard.php');

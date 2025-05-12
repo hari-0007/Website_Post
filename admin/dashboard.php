@@ -33,11 +33,18 @@ if (isset($_SESSION['admin_status']['message'], $_SESSION['admin_status']['type'
 //     header("Location: dashboard.php?view=dashboard");
 //     exit();
 // }
+
+// Redirect to login if the user is not logged in
 if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
     if ($_GET['view'] !== 'login') { // Prevent redirect loop by checking the current view
         header("Location: dashboard.php?view=login");
         exit();
     }
+}
+// Redirect logged-in users away from the login page
+if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true && $_GET['view'] === 'login') {
+    header("Location: dashboard.php?view=dashboard");
+    exit();
 }
 
 $loginError = ''; // Specific variable for login errors on the login view

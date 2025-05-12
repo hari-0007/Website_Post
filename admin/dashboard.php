@@ -12,18 +12,6 @@ require_once __DIR__ . '/includes/job_helpers.php';
 require_once __DIR__ . '/includes/feedback_helpers.php';
 require_once __DIR__ . '/includes/user_manager_helpers.php'; // Include new helper for user management
 
-// Check if the user is logged in
-$loggedIn = isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true;
-
-// Redirect to login page if the user is not logged in
-if (!$loggedIn) {
-    // Redirect to the login page if not already on it
-    if (!isset($_GET['view']) || $_GET['view'] !== 'login') {
-        header('Location: dashboard.php?view=login');
-        exit();
-    }
-}
-
 // if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
 //     // If the user is not logged in and not already on the login page, redirect to login
 //     if ($_GET['view'] !== 'login') {

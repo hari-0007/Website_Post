@@ -12,19 +12,6 @@
 // Get the user's role from the session, default to a low privilege if not set
 // $loggedIn and $requestedView are expected to be set by the including file (dashboard.php)
 // $userRole = $_SESSION['admin_role'] ?? 'user'; // This was in the original, ensure $loggedIn is primary for conditional logic if this is used for display
-session_start(); // Start the session to access session variables
-
-// Check if the user is logged in
-$loggedIn = isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true;
-
-// Redirect to login page if the user is not logged in
-if (!$loggedIn) {
-    // Redirect to the login page if not already on it
-    if (!isset($_GET['view']) || $_GET['view'] !== 'login') {
-        header('Location: dashboard.php?view=login');
-        exit();
-    }
-}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -438,10 +425,16 @@ if (!$loggedIn) {
 <?php
 // REMOVED the problematic if/else block that tried to require_once 'views/login.php'
 // The dashboard.php file is responsible for including the login view when appropriate.
-   if (!$loggedIn && $requestedView !== 'login') {
-    // If not logged in and requesting a view other than 'login', redirect to login
-     header('Location: dashboard.php?view=login');
-     exit;
+// Check if the user is logged in
+$loggedIn = isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true;
+
+// Redirect to login page if the user is not logged in
+if (!$loggedIn) {
+    // Redirect to the login page if not already on it
+    if (!isset($_GET['view']) || $_GET['view'] !== 'login') {
+        header('Location: dashboard.php?view=login');
+        exit();
+    }
 }
 ?>
 

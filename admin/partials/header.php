@@ -419,17 +419,17 @@
     </style>
     <?php if (isset($loggedIn) && $loggedIn && isset($requestedView) && $requestedView === 'dashboard'): ?>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <?php else if (!$loggedIn && $requestedView !== 'login') {
-    // If not logged in and requesting a view other than 'login', redirect to login
-     header('Location: dashboard.php?view=login');
-     exit;
-}
-?>
+    <?php elseif;?>
 </head>
 <body>
 
 <?php
 // REMOVED the problematic if/else block that tried to require_once 'views/login.php'
 // The dashboard.php file is responsible for including the login view when appropriate.
+   if (!$loggedIn && $requestedView !== 'login') {
+    // If not logged in and requesting a view other than 'login', redirect to login
+     header('Location: dashboard.php?view=login');
+     exit;
+}
 ?>
 

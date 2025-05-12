@@ -47,20 +47,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
     exit();
 }
 
-// Load other views based on the `view` parameter
-$view = $_GET['view'] ?? 'dashboard';
-switch ($view) {
-    case 'dashboard':
-        require_once __DIR__ . '/partials/dashboard.php';
-        break;
-    case 'manage_jobs':
-        require_once __DIR__ . '/partials/manage_jobs.php';
-        break;
-    // Add other views as needed
-    default:
-        header("Location: dashboard.php?view=dashboard");
-        exit();
-}
+
 // Redirect to login if the user is not logged in
 // if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
 //     if ($_GET['view'] !== 'login') { // Prevent redirect loop by checking the current view

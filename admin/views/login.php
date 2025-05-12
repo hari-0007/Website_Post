@@ -7,7 +7,6 @@
 ?>
 
 <?php if ($requestedAction === 'register_form'): // Display Register Form
-    require_once __DIR__ . '/../partials/footer.php';
     ?>
     
     <div class="register-form">

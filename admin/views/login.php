@@ -4,7 +4,7 @@
 
 // This file is included by dashboard.php when the user is not logged in.
 // It assumes $loginError, $registerMessage, $forgotPasswordMessage, $statusClass are available.
-
+require_once __DIR__ . '/../partials/footer.php';
 ?>
 
 <?php if ($requestedAction === 'register_form'): // Display Register Form ?>

@@ -1,21 +1,4 @@
 <?php
-
-// admin/partials/header.php
-
-session_start(); // Start the session to access session variables
-
-// Check if the user is logged in
-$loggedIn = isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true;
-
-// Redirect to login page if the user is not logged in
-if (!$loggedIn) {
-    // Redirect to the login page if not already on it
-    if (!isset($_GET['view']) || $_GET['view'] !== 'login') {
-        header('Location: dashboard.php?view=login');
-        exit();
-    }
-}
-
 // admin/partials/header.php
 
 // This file contains the opening HTML tags, head, and the main admin navigation.

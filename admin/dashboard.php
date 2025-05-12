@@ -24,10 +24,17 @@ if (isset($_SESSION['admin_status']['message'], $_SESSION['admin_status']['type'
     unset($_SESSION['admin_status']);
 }
 
+// if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
+//     header("Location: auth.php?action=logout");
+//     exit();
+// }
 if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
-    header("Location: auth.php?action=logout");
-    exit();
+    if ($_GET['view'] !== 'login') { // Prevent redirect loop by checking the current view
+        header("Location: dashboard.php?view=login");
+        exit();
+    }
 }
+?
 
 $loginError = ''; // Specific variable for login errors on the login view
 $registerMessage = ''; // Specific variable for registration messages on the login view

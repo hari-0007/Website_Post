@@ -20,16 +20,16 @@ require_once __DIR__ . '/includes/user_manager_helpers.php'; // Include new help
 //     }
 // }
 
-// Redirect logged-in users away from the login page
-if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true && $_GET['view'] === 'login') {
-    header('Location: dashboard.php?view=dashboard');
-    exit();
-}
-// Handle the login view
-if ($_GET['view'] === 'login') {
-    require_once __DIR__ . '/views/login.php'; // Include the login page
-    exit(); // Stop further execution to prevent loading other views
-}
+// // Redirect logged-in users away from the login page
+// if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true && $_GET['view'] === 'login') {
+//     header('Location: dashboard.php?view=dashboard');
+//     exit();
+// }
+// // Handle the login view
+// if ($_GET['view'] === 'login') {
+//     require_once __DIR__ . '/views/login.php'; // Include the login page
+//     exit(); // Stop further execution to prevent loading other views
+// }
 // --- Initialize Variables ---
 // Read status message from session and clear it
 $statusMessage = '';

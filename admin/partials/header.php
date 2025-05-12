@@ -426,37 +426,5 @@
 <?php
 // REMOVED the problematic if/else block that tried to require_once 'views/login.php'
 // The dashboard.php file is responsible for including the login view when appropriate.
-<div class="main-content" id="main-content">
-    <?php
-    if (!$loggedIn) {
-        // Include the login view for unauthenticated users
-        require_once __DIR__ . '/views/login.php';
-    } else {
-        // Include the appropriate view for authenticated users
-        switch ($requestedView) {
-            case 'dashboard':
-                require_once __DIR__ . '/views/dashboard_view.php';
-                break;
-            case 'manage_jobs':
-                require_once __DIR__ . '/views/manage_jobs_view.php';
-                break;
-            case 'messages':
-                require_once __DIR__ . '/views/messages_view.php';
-                break;
-            case 'profile':
-                require_once __DIR__ . '/views/profile_view.php';
-                break;
-            case 'generate_message':
-                require_once __DIR__ . '/views/generate_message_view.php';
-                break;
-            case 'manage_users':
-                require_once __DIR__ . '/views/manage_users_view.php';
-                break;
-            default:
-                echo '<p>Invalid view requested.</p>';
-                break;
-        }
-    }
 ?>
-</div>
 

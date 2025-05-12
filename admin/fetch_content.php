@@ -2,10 +2,12 @@
 
 // admin/fetch_content.php - Fetches content for a specific view via AJAX
 
+// Start output buffering to prevent premature output
+ob_start();
+
 // Ensure no whitespace or output before session_start()
-// Check if session is already active before starting
 if (session_status() === PHP_SESSION_NONE) {
-    session_start();
+    session_start(); // Start session only if not already started
 }
 
 // Include configuration and helper functions
@@ -15,15 +17,14 @@ require_once __DIR__ . '/includes/job_helpers.php';
 require_once __DIR__ . '/includes/feedback_helpers.php';
 require_once __DIR__ . '/includes/user_manager_helpers.php'; // Include new helper for user management
 
-
-// Check if the user is logged in. If not, return an error message.
+// Check if the user is logged in
 if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
-    // Return a simple message indicating login is required
-    // The JavaScript on the main dashboard page will handle redirecting if needed.
-    echo '<p class="status-message error">Unauthorized: Please log in.</p>';
-    // It's better to return a 401 status for AJAX as well
-    http_response_code(401); // Set 401 Unauthorized status code
-    exit; // Stop execution
+    // Set HTTP response code and redirect to login
+    if (!headers_sent()) {
+        http_response_code(401); // Unauthorized
+        header('Location: dashboard.php?view=login');
+    }
+    exit;
 }
 
 // Get the requested view from the GET parameters
@@ -43,7 +44,6 @@ $graphData = [];
 $users = [];
 $jobToEdit = null; // For edit_job view
 $whatsappMessage = null; // Initialize for generate_message view
-
 
 // Load necessary data or perform actions based on the requested view
 switch ($requestedView) {
@@ -85,7 +85,6 @@ switch ($requestedView) {
                       }
                  }
 
-
                 if ($postedTimestamp > 0 && $postedTimestamp >= $startOfToday) {
                     $jobsTodayCount++;
                 }
@@ -118,7 +117,6 @@ switch ($requestedView) {
                            // Log error if date parsing fails - already logged above, but can add here too if needed
                        }
                   }
-
 
                   if ($postedTimestamp > 0) { // Ensure timestamp is valid and positive
                       // Calculate the number of days ago the job was posted
@@ -206,7 +204,6 @@ switch ($requestedView) {
                       }
                  }
 
-
                 // Check if the job was posted within the last 24 hours and has a valid timestamp
                 if ($postedTimestamp > 0 && $postedTimestamp >= $cutoffTime) {
                     $jobsToday[] = $job;
@@ -292,7 +289,6 @@ switch ($requestedView) {
         // For simplicity in the AJAX fetch, we just include the view. Any pre-filling on error would be handled by the full page load redirect flow.
         break;
 
-
     default:
         // If requested view is not recognized or not allowed via AJAX
         echo '<p class="status-message error">Error: Invalid view specified.</p>';
@@ -325,12 +321,14 @@ if (!in_array($requestedView, $allowedFetchViews)) {
     error_log("Admin Error: Requested view file not found: " . $viewFilePath);
 }
 
-
 // Get the buffered output and clean the buffer
 $viewContent = ob_get_clean();
 
 // Output the captured content - this is all that should be sent back
 echo $viewContent;
+
+// Flush the output buffer
+ob_end_flush();
 
 // Ensure nothing else is outputted after this
 exit;

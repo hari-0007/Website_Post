@@ -6,7 +6,7 @@
 // It assumes $formData is available (for pre-filling on validation errors).
 
 ?>
-<h3>Post New Job</h3>
+<!-- <h3>Post New Job</h3> -->
  <form method="POST" action="job_actions.php"> <input type="hidden" name="action" value="post_job"> <label for="title">Job Title:</label>
     <input type="text" id="title" name="title" value="<?= htmlspecialchars($_POST['title'] ?? '') ?>" required>
 

@@ -2,7 +2,10 @@
 
 // admin/auth.php - Handles Authentication Actions
 
-session_start(); // Start the session
+// Start the session
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 // Include configuration and helper functions
 require_once __DIR__ . '/includes/config.php';
@@ -12,20 +15,19 @@ require_once __DIR__ . '/includes/user_helpers.php';
 // Initialize regardless of action, as we always redirect back to dashboard.php
 $_SESSION['admin_status'] = ['message' => '', 'type' => ''];
 
-// Determine the action from the request (can be POST for login/register/forgot, GET for logout link)
-$action = $_REQUEST['action'] ?? null; // Use $_REQUEST to get from GET or POST
-
-// Handle Logout Action (Moved here from dashboard.php)
-if ($action === 'logout') {
+// Handle logout action
+if (isset($_GET['action']) && $_GET['action'] === 'logout') {
     // Destroy the session
-    $_SESSION = array(); // Unset all session variables
     session_unset();
-    session_destroy(); // Destroy the session
-    // Redirect to the login page (which is now dashboard.php)
+    session_destroy();
+
+    // Redirect to the login page
     header('Location: dashboard.php?view=login');
-    exit; // Stop script execution after redirect
+    exit;
 }
 
+// Determine the action from the request (can be POST for login/register/forgot, GET for logout link)
+$action = $_REQUEST['action'] ?? null; // Use $_REQUEST to get from GET or POST
 
 // Handle Login Attempt
 if ($action === 'login' && $_SERVER['REQUEST_METHOD'] === 'POST') {

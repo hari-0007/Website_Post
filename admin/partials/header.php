@@ -1,17 +1,5 @@
 <?php
-// admin/partials/header.php
-
-// This file contains the opening HTML tags, head, and the main admin navigation.
-// It assumes $loggedIn, $requestedView, $_SESSION['admin_display_name'] are available from dashboard.php
-// It now also assumes $_SESSION['admin_role'] might be available for privilege checks.
-
-// Include config for siteUrl in title, although not strictly necessary here
-// require_once __DIR__ . '/../includes/config.php'; // Uncomment if you need config vars here
-
-// Get the user's role from the session, default to a low privilege if not set
-// $loggedIn and $requestedView are expected to be set by the including file (dashboard.php)
-// $userRole = $_SESSION['admin_role'] ?? 'user'; // This was in the original, ensure $loggedIn is primary for conditional logic if this is used for display
-
+// Ensure no whitespace or output before this tag
 ?>
 <!DOCTYPE html>
 <html lang="en">

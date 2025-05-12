@@ -7,7 +7,6 @@ header('Content-Type: application/json');
 require_once __DIR__ . '/admin/includes/config.php';
 
 // Path to the feedback data file
-// Assuming feedback.php is in the root and data is in /data
 $feedbackFilename = __DIR__ . '/data/feedback.json';
 
 // Get and sanitize input
@@ -21,7 +20,7 @@ if (empty($name) || empty($email) || empty($message)) {
         'success' => false,
         'message' => 'Please fill in all fields.'
     ]);
-    exit; // Stop execution
+    exit;
 }
 
 // Validate email format (basic check)
@@ -30,9 +29,8 @@ if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         'success' => false,
         'message' => 'Please enter a valid email address.'
     ]);
-    exit; // Stop execution
+    exit;
 }
-
 
 // Load existing feedback
 $feedback = [];
@@ -44,27 +42,26 @@ if (file_exists($feedbackFilename)) {
         error_log("Feedback Error: Could not decode feedback.json or file is empty/invalid.");
     }
 } else {
-     // Ensure the data directory exists if feedback.json didn't exist
-     $dir = dirname($feedbackFilename);
-     if (!is_dir($dir)) {
-         if (!mkdir($dir, 0755, true)) {
-              error_log("Feedback Error: Could not create data directory: " . $dir);
-               echo json_encode([
-                   'success' => false,
-                   'message' => 'Error saving feedback. Please try again later.'
-               ]);
-               exit;
-         }
-     }
+    // Ensure the data directory exists if feedback.json didn't exist
+    $dir = dirname($feedbackFilename);
+    if (!is_dir($dir)) {
+        if (!mkdir($dir, 0755, true)) {
+            error_log("Feedback Error: Could not create data directory: " . $dir);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Error saving feedback. Please try again later.'
+            ]);
+            exit;
+        }
+    }
 }
-
 
 // Create new feedback entry
 $newFeedback = [
     'id' => time() . '_' . mt_rand(1000, 9999), // Simple unique ID
     'name' => htmlspecialchars($name, ENT_QUOTES, 'UTF-8'), // Sanitize output
     'email' => htmlspecialchars($email, ENT_QUOTES, 'UTF-8'), // Sanitize output
-    'message' => htmlspecialchars($message, ENT_QUOTES, 'UTF-8'), // Sanitize output
+    'message' => $message, // Allow special characters without sanitizing here
     'timestamp' => time(), // Unix timestamp
     'read' => false // New messages are unread
 ];

@@ -420,15 +420,7 @@
     <?php if (isset($loggedIn) && $loggedIn && isset($requestedView) && $requestedView === 'dashboard'): ?>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <?php endif; 
-$loggedIn = isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true;
-
-// Redirect to login page if the user is not logged in
-if (!$loggedIn) {
-    // Redirect to the login page if not already on it
-    if (!isset($_GET['view']) || $_GET['view'] !== 'login') {
-        header('Location: dashboard.php?view=login');
-        exit();
-    }
+  }
 }
 ?>
 </head>

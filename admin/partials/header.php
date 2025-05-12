@@ -425,16 +425,5 @@
 <?php
 // REMOVED the problematic if/else block that tried to require_once 'views/login.php'
 // The dashboard.php file is responsible for including the login view when appropriate.
-// Check if the user is logged in
-$loggedIn = isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true;
-
-// Redirect to login page if the user is not logged in
-if (!$loggedIn) {
-    // Redirect to the login page if not already on it
-    if (!isset($_GET['view']) || $_GET['view'] !== 'login') {
-        header('Location: dashboard.php?view=login');
-        exit();
-    }
-}
 ?>
 

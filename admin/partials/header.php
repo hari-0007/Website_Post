@@ -1,5 +1,4 @@
 <?php
-<?php
 
 // admin/partials/header.php
 

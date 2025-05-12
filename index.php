@@ -208,10 +208,23 @@ $totalPages = ceil(count($filteredJobs) / $limit);
         }
         /* --- End Responsive Styles --- */
 
-
-        .job-card { background:#fff; padding:15px; border-radius:8px; margin-bottom:20px; box-shadow:0 2px 6px rgba(0,0,0,0.05); }
-        .job-card h3 { margin-top:0; }
-        .job-card p { margin:10px 0; }
+        .job-card {
+            background: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .job-card:hover {
+            background-color: #f9f9f9;
+        }
+        .job-details {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #ddd;
+        }
 
         .button { padding:10px 16px; background:#3498db; color:#fff; text-decoration:none; border-radius:5px; transition:0.3s; border: none; cursor:pointer;}
         .button:hover { background:#2980b9; }
@@ -237,6 +250,19 @@ $totalPages = ceil(count($filteredJobs) / $limit);
         .footer-column input::placeholder, .footer-column textarea::placeholder { color:#ddd; }
         .footer-bottom { text-align:center; padding-top:20px; border-top:1px solid rgba(255,255,255,0.3); margin-top:20px; font-size:13px; }
 
+        .share-button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 5px;
+            display: inline-block;
+        }
+        .share-button:hover {
+            background-color: #0056b3;
+        }
     </style>
 </head>
 <body>
@@ -281,27 +307,30 @@ $totalPages = ceil(count($filteredJobs) / $limit);
                 <?php if(empty($pagedJobs)): ?>
                     <p style="text-align:center; padding: 20px;">No matching jobs found for the current criteria.</p>
                 <?php else: ?>
-                    <?php foreach($pagedJobs as $job): ?>
-                    <div class="job-card">
+                    <?php foreach ($pagedJobs as $job): ?>
+                    <div class="job-card" onclick="toggleJobDetails(this)">
                         <h3><?= htmlspecialchars($job['title'] ?? 'N/A') ?></h3>
                         <strong><?= htmlspecialchars($job['company'] ?? 'N/A') ?></strong> – <?= htmlspecialchars($job['location'] ?? 'N/A') ?><br>
-                        <p><?= nl2br(htmlspecialchars(substr($job['description'] ?? '',0,200))) ?>…</p>
-                        <?php if(!empty($job['phones'])): ?>
-                            <p><strong>📞 Phone:</strong>
-                                <?php foreach(explode(',',$job['phones']) as $phone): ?>
-                                    <a href="tel:<?=trim($phone)?>"><?=trim($phone)?></a>&nbsp;
-                                <?php endforeach; ?>
-                            </p>
-                        <?php endif; ?>
-                        <?php if(!empty($job['emails'])): ?>
-                            <p><strong>📧 Email:</strong>
-                                <?php foreach(explode(',',$job['emails']) as $email): ?>
-                                    <a href="mailto:<?=trim($email)?>"><?=trim($email)?></a>&nbsp;
-                                <?php endforeach; ?>
-                            </p>
-                        <?php endif; ?>
-                        <small>Posted on <?= htmlspecialchars($job['posted_on'] ?? 'N/A') ?></small><br><br>
-                        <button onclick="shareJob('<?=htmlspecialchars(addslashes($job['title'] ?? 'N/A'))?>','<?=htmlspecialchars(addslashes($job['company'] ?? 'N/A'))?>')" class="button">🔗 Share</button>
+                        <p class="job-summary"><?= nl2br(htmlspecialchars(substr($job['description'] ?? '', 0, 200))) ?>…</p>
+                        <div class="job-details" style="display: none;">
+                            <p><strong>Full Description:</strong> <?= nl2br(htmlspecialchars($job['description'] ?? 'N/A')) ?></p>
+                            <?php if (!empty($job['phones'])): ?>
+                                <p><strong>📞 Phone:</strong>
+                                    <?php foreach (explode(',', $job['phones']) as $phone): ?>
+                                        <a href="tel:<?= trim($phone) ?>"><?= trim($phone) ?></a>&nbsp;
+                                    <?php endforeach; ?>
+                                </p>
+                            <?php endif; ?>
+                            <?php if (!empty($job['emails'])): ?>
+                                <p><strong>📧 Email:</strong>
+                                    <?php foreach (explode(',', $job['emails']) as $email): ?>
+                                        <a href="mailto:<?= trim($email) ?>"><?= trim($email) ?></a>&nbsp;
+                                    <?php endforeach; ?>
+                                </p>
+                            <?php endif; ?>
+                        </div>
+                        <small>Posted on <?= htmlspecialchars($job['posted_on'] ?? 'N/A') ?></small><br>
+                        <button class="share-button" onclick="shareJob('<?= htmlspecialchars($job['title'] ?? '') ?>', '<?= htmlspecialchars($job['company'] ?? '') ?>'); event.stopPropagation();">Share</button>
                     </div>
                     <?php endforeach; ?>
                 <?php endif; ?>
@@ -330,8 +359,8 @@ $totalPages = ceil(count($filteredJobs) / $limit);
                 <h4>Explore</h4>
                 <a href="admin/dashboard.php">👤 Admin Login</a>
                 <a href="?search=remote&filter=all">💻 Remote Jobs</a>
-                <a href="index.php">📍 UAE Jobs</a>
-                <a href="mailto:support@jobhunt.top">📩 Contact Support</a>
+                <a href="?search=uae&filter=all">📍 UAE Jobs</a>
+                <a href="mailto:support@uaejobs.com">📩 Contact Support</a>
             </div>
             <div class="footer-column">
                 <h4>Follow Channels</h4>
@@ -385,7 +414,7 @@ $totalPages = ceil(count($filteredJobs) / $limit);
 
         function shareJob(title, company) {
             const shareText = `Check out this job at ${company}: ${title}`;
-            let jobUrl = window.location.href;
+            const jobUrl = window.location.href;
 
             if (navigator.share) {
                 navigator.share({
@@ -484,6 +513,18 @@ $totalPages = ceil(count($filteredJobs) / $limit);
             document.getElementById('count30').innerText = allJobPostsForCounts.filter(p => p.timestamp > 0 && (now_ms - p.timestamp <= 30 * oneDay_ms)).length;
             document.getElementById('count7').innerText = allJobPostsForCounts.filter(p => p.timestamp > 0 && (now_ms - p.timestamp <= 7 * oneDay_ms)).length;
             document.getElementById('count1').innerText = allJobPostsForCounts.filter(p => p.timestamp > 0 && (now_ms - p.timestamp <= oneDay_ms)).length;
+        }
+
+        function toggleJobDetails(jobCard) {
+            const details = jobCard.querySelector('.job-details');
+            const summary = jobCard.querySelector('.job-summary');
+            if (details.style.display === 'none' || details.style.display === '') {
+                details.style.display = 'block'; // Show full description
+                summary.style.display = 'none'; // Hide summary
+            } else {
+                details.style.display = 'none'; // Hide full description
+                summary.style.display = 'block'; // Show summary
+            }
         }
 
         window.onload = function() {

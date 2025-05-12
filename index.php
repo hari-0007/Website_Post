@@ -220,6 +220,16 @@ $totalPages = ceil(count($filteredJobs) / $limit);
         .job-card:hover {
             background-color: #f9f9f9;
         }
+        .job-card p {
+            margin: 5px 0;
+        }
+        .job-card a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .job-card a:hover {
+            text-decoration: underline;
+        }
         .job-details {
             margin-top: 10px;
             padding-top: 10px;
@@ -272,8 +282,8 @@ $totalPages = ceil(count($filteredJobs) / $limit);
             <h1>🎯 Discover the Latest Jobs in UAE</h1>
             <p>Find fresh opportunities daily from top companies across UAE. Remote, onsite, and hybrid roles available.</p>
             <div class="join-buttons">
-            <a href="https://whatsapp.com/channel/0029Vb64y42FXUuXmPWKp12k" target="_blank" class="whatsapp">Join WhatsApp</a>
-                <a href="https://t.me/YOUR_TELEGRAM_CHANNEL" target="_blank" class="telegram">Join Telegram</a>
+            <a href="https://whatsapp.com/channel/0029VbBMdgCI7BeBLRm1Au1I" target="_blank" class="whatsapp">Join WhatsApp</a>
+                <a href="https://t.me/uaejobprofessionals" target="_blank" class="telegram">Join Telegram</a>
             </div>
         </div>
 
@@ -312,24 +322,30 @@ $totalPages = ceil(count($filteredJobs) / $limit);
                         <h3><?= htmlspecialchars($job['title'] ?? 'N/A') ?></h3>
                         <strong><?= htmlspecialchars($job['company'] ?? 'N/A') ?></strong> – <?= htmlspecialchars($job['location'] ?? 'N/A') ?><br>
                         <p class="job-summary"><?= nl2br(htmlspecialchars(substr($job['description'] ?? '', 0, 200))) ?>…</p>
+                        
+                        <!-- Expandable job details -->
                         <div class="job-details" style="display: none;">
                             <p><strong>Full Description:</strong> <?= nl2br(htmlspecialchars($job['description'] ?? 'N/A')) ?></p>
-                            <?php if (!empty($job['phones'])): ?>
-                                <p><strong>📞 Phone:</strong>
-                                    <?php foreach (explode(',', $job['phones']) as $phone): ?>
-                                        <a href="tel:<?= trim($phone) ?>"><?= trim($phone) ?></a>&nbsp;
-                                    <?php endforeach; ?>
-                                </p>
-                            <?php endif; ?>
-                            <?php if (!empty($job['emails'])): ?>
-                                <p><strong>📧 Email:</strong>
-                                    <?php foreach (explode(',', $job['emails']) as $email): ?>
-                                        <a href="mailto:<?= trim($email) ?>"><?= trim($email) ?></a>&nbsp;
-                                    <?php endforeach; ?>
-                                </p>
-                            <?php endif; ?>
                         </div>
+                        
+                        
+                        <!-- Contact details below the date -->
+                        <?php if (!empty($job['phones'])): ?>
+                            <p><strong>📞 Phone:</strong>
+                                <?php foreach (explode(',', $job['phones']) as $phone): ?>
+                                    <a href="tel:<?= trim($phone) ?>"><?= trim($phone) ?></a>&nbsp;
+                                <?php endforeach; ?>
+                            </p>
+                        <?php endif; ?>
+                        <?php if (!empty($job['emails'])): ?>
+                            <p><strong>📧 Email:</strong>
+                                <?php foreach (explode(',', $job['emails']) as $email): ?>
+                                    <a href="mailto:<?= trim($email) ?>"><?= trim($email) ?></a>&nbsp;
+                                <?php endforeach; ?>
+                            </p>
+                        <?php endif; ?>
                         <small>Posted on <?= htmlspecialchars($job['posted_on'] ?? 'N/A') ?></small><br>
+
                         <button class="share-button" onclick="shareJob('<?= htmlspecialchars($job['title'] ?? '') ?>', '<?= htmlspecialchars($job['company'] ?? '') ?>'); event.stopPropagation();">Share</button>
                     </div>
                     <?php endforeach; ?>
@@ -357,15 +373,15 @@ $totalPages = ceil(count($filteredJobs) / $limit);
             </div>
             <div class="footer-column">
                 <h4>Explore</h4>
-                <a href="admin/dashboard.php">👤 Admin Login</a>
+                <a href="admin/dashboard.php" target="_blank">👤 Admin Login</a>
                 <a href="?search=remote&filter=all">💻 Remote Jobs</a>
                 <a href="?search=uae&filter=all">📍 UAE Jobs</a>
                 <a href="mailto:support@uaejobs.com">📩 Contact Support</a>
             </div>
             <div class="footer-column">
                 <h4>Follow Channels</h4>
-                <a href="https://t.me/YOUR_TELEGRAM_CHANNEL" target="_blank">📢 Telegram</a>
-                <a href="https://whatsapp.com/channel/0029Vb64y42FXUuXmPWKp12k" target="_blank">📱 WhatsApp</a>
+                <a href="https://t.me/uaejobprofessionals" target="_blank">📢 Telegram</a>
+                <a href="https://whatsapp.com/channel/0029VbBMdgCI7BeBLRm1Au1I" target="_blank">📱 WhatsApp</a>
             </div>
             <div class="footer-column">
                 <h4>Drop Your Message</h4>
@@ -388,7 +404,7 @@ $totalPages = ceil(count($filteredJobs) / $limit);
             <span class="close" onclick="closeTelegramModal()">&times;</span>
             <h4>Join our Telegram Channel</h4>
             <p>Stay updated with the latest job postings!</p>
-            <a href="https://t.me/YOUR_TELEGRAM_CHANNEL" target="_blank" class="join-telegram button">Join Telegram</a>
+            <a href="https://t.me/uaejobprofessionals" target="_blank" class="join-telegram button">Join Telegram</a>
         </div>
     </div>
 
@@ -397,7 +413,7 @@ $totalPages = ceil(count($filteredJobs) / $limit);
             <span class="close" onclick="closeWModal()">&times;</span>
             <h4>Join our WhatsApp Channel</h4>
             <p>Get job alerts directly on WhatsApp!</p>
-            <a href="https://whatsapp.com/channel/0029Vb64y42FXUuXmPWKp12k" target="_blank" class="join-now button">Join WhatsApp</a>
+            <a href="https://whatsapp.com/channel/0029VbBMdgCI7BeBLRm1Au1I" target="_blank" class="join-now button">Join WhatsApp</a>
         </div>
     </div>
 

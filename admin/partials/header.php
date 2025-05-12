@@ -419,7 +419,10 @@
     </style>
     <?php if (isset($loggedIn) && $loggedIn && isset($requestedView) && $requestedView === 'dashboard'): ?>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <?php endif; 
+    <?php endif(!$loggedIn && $requestedView !== 'login') {
+    // If not logged in and requesting a view other than 'login', redirect to login
+     header('Location: dashboard.php?view=login');
+     exit;
   }
 }
 ?>

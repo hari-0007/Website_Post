@@ -38,10 +38,10 @@ if (!$loggedIn) {
 //     exit();
 // }
 // // Handle the login view
-// if ($_GET['view'] === 'login') {
-//     require_once __DIR__ . '/views/login.php'; // Include the login page
-//     exit(); // Stop further execution to prevent loading other views
-// }
+if ($_GET['view'] === 'login') {
+    require_once __DIR__ . '/views/login.php'; // Include the login page
+    exit(); // Stop further execution to prevent loading other views
+}
 
 // --- Initialize Variables ---
 // Read status message from session and clear it

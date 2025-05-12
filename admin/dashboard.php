@@ -12,7 +12,24 @@ require_once __DIR__ . '/includes/job_helpers.php';
 require_once __DIR__ . '/includes/feedback_helpers.php';
 require_once __DIR__ . '/includes/user_manager_helpers.php'; // Include new helper for user management
 
+if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
+    // If the user is not logged in and not already on the login page, redirect to login
+    if ($_GET['view'] !== 'login') {
+        header('Location: dashboard.php?view=login');
+        exit();
+    }
+}
 
+// Redirect logged-in users away from the login page
+if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true && $_GET['view'] === 'login') {
+    header('Location: dashboard.php?view=dashboard');
+    exit();
+}
+// Handle the login view
+if ($_GET['view'] === 'login') {
+    require_once __DIR__ . '/views/login.php'; // Include the login page
+    exit(); // Stop further execution to prevent loading other views
+}
 // --- Initialize Variables ---
 // Read status message from session and clear it
 $statusMessage = '';
@@ -28,11 +45,6 @@ if (isset($_SESSION['admin_status']['message'], $_SESSION['admin_status']['type'
 //     header("Location: auth.php?action=logout");
 //     exit();
 // }
-// Redirect logged-in users away from the login page
-if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true && $_GET['view'] === 'login') {
-    header("Location: dashboard.php?view=dashboard");
-    exit();
-}
 
 $loginError = ''; // Specific variable for login errors on the login view
 $registerMessage = ''; // Specific variable for registration messages on the login view

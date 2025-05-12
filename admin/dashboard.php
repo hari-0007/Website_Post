@@ -34,7 +34,6 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
         exit();
     }
 }
-?
 
 $loginError = ''; // Specific variable for login errors on the login view
 $registerMessage = ''; // Specific variable for registration messages on the login view

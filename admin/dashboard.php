@@ -27,39 +27,12 @@ if (isset($_SESSION['admin_status']['message'], $_SESSION['admin_status']['type'
 if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
     header("Location: auth.php?action=logout");
     exit();
-// }
+}
 // Redirect logged-in users away from the login page
 if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true && $_GET['view'] === 'login') {
     header("Location: dashboard.php?view=dashboard");
     exit();
 }
-
-
-    // Handle the login view
-if ($_GET['view'] === 'login') {
-    require_once __DIR__ . '/partials/login.php'; // Include the login page
-    exit(); // Stop further execution to prevent loading other views
-}
-
-// Redirect to login if the user is not logged in and no valid view is provided
-if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
-    header("Location: dashboard.php?view=login");
-    exit();
-}
-
-
-// Redirect to login if the user is not logged in
-// if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
-//     if ($_GET['view'] !== 'login') { // Prevent redirect loop by checking the current view
-//         header("Location: dashboard.php?view=login");
-//         exit();
-//     }
-// }
-// Redirect logged-in users away from the login page
-// if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true && $_GET['view'] === 'login') {
-//     header("Location: dashboard.php?view=dashboard");
-//     exit();
-// }
 
 $loginError = ''; // Specific variable for login errors on the login view
 $registerMessage = ''; // Specific variable for registration messages on the login view
@@ -273,7 +246,7 @@ require_once __DIR__ . '/partials/header.php';
             // This happens on initial page load before AJAX takes over, OR if fetch_content redirects here.
             if (!$loggedIn) {
                  // The login view uses $loginError, $registerMessage, $forgotPasswordMessage
-                 require_once __DIR__ . '/partials/login.php';
+                 require_once __DIR__ . '/views/login.php';
             }
 
             ?>

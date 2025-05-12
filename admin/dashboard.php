@@ -24,15 +24,15 @@ if (isset($_SESSION['admin_status']['message'], $_SESSION['admin_status']['type'
     unset($_SESSION['admin_status']);
 }
 
-if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
-    header("Location: auth.php?action=logout");
-    exit();
-}
+// if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
+//     header("Location: auth.php?action=logout");
+//     exit();
+// }
 // Redirect logged-in users away from the login page
-if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true && $_GET['view'] === 'login') {
-    header("Location: dashboard.php?view=dashboard");
-    exit();
-}
+// if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true && $_GET['view'] === 'login') {
+//     header("Location: dashboard.php?view=dashboard");
+//     exit();
+// }
 if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
     if ($_GET['view'] !== 'login') { // Prevent redirect loop by checking the current view
         header("Location: dashboard.php?view=login");

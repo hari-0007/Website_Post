@@ -419,7 +419,7 @@
     </style>
     <?php if (isset($loggedIn) && $loggedIn && isset($requestedView) && $requestedView === 'dashboard'): ?>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <?php elseif;?>
+    <?php endif; ?>
 </head>
 <body>
 

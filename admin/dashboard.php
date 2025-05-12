@@ -1,5 +1,4 @@
 <?php
-<?php
 
 // admin/dashboard.php - Main Admin Panel Entry Point and Router
 

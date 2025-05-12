@@ -12,13 +12,13 @@ require_once __DIR__ . '/includes/job_helpers.php';
 require_once __DIR__ . '/includes/feedback_helpers.php';
 require_once __DIR__ . '/includes/user_manager_helpers.php'; // Include new helper for user management
 
-if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
-    // If the user is not logged in and not already on the login page, redirect to login
-    if ($_GET['view'] !== 'login') {
-        header('Location: dashboard.php?view=login');
-        exit();
-    }
-}
+// if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
+//     // If the user is not logged in and not already on the login page, redirect to login
+//     if ($_GET['view'] !== 'login') {
+//         header('Location: dashboard.php?view=login');
+//         exit();
+//     }
+// }
 
 // Redirect logged-in users away from the login page
 if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true && $_GET['view'] === 'login') {
@@ -89,12 +89,19 @@ if (!$loggedIn && in_array($requestedAction, ['register_form', 'forgot_password_
     // Set the requestedView to the action name so login.php knows which form to show
      $requestedView = $requestedAction;
 
-} else if (!$loggedIn && $requestedView !== 'login') {
-    // If not logged in and requesting a view other than 'login', redirect to login
-     header('Location: dashboard.php?view=login');
-     exit;
+} 
+// else if (!$loggedIn && $requestedView !== 'login') {
+//     // If not logged in and requesting a view other than 'login', redirect to login
+//      header('Location: dashboard.php?view=login');
+//      exit;
+// }
+else if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
+    // If the user is not logged in and not already on the login page, redirect to login
+    if ($_GET['view'] !== 'login') {
+        header('Location: dashboard.php?view=login');
+        exit();
+    }
 }
-
 
 // Load Data for Views - Only if logged in
 $allJobs = [];

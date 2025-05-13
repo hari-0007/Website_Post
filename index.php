@@ -318,27 +318,27 @@ $totalPages = ceil(count($filteredJobs) / $limit);
                     <p style="text-align:center; padding: 20px;">No matching jobs found for the current criteria.</p>
                 <?php else: ?>
                     <?php foreach ($pagedJobs as $job): ?>
-                    <div class="job-card" onclick="toggleJobDetails(this)">
+                    <div class="job-card" style="margin-top: 10px;" onclick="toggleJobDetails(this)">
                         <h3><?= htmlspecialchars($job['title'] ?? 'N/A') ?></h3>
                         <strong><?= htmlspecialchars($job['company'] ?? 'N/A') ?></strong> – <?= htmlspecialchars($job['location'] ?? 'N/A') ?><br>
-                        <p class="job-summary"><?= nl2br(htmlspecialchars(substr($job['description'] ?? '', 0, 200))) ?>…</p>
+                        <p style="margin-top: 15px;" class="job-summary"><?= nl2br(htmlspecialchars(substr($job['description'] ?? '', 0, 200))) ?>…</p>
                         
                         <!-- Expandable job details -->
                         <div class="job-details" style="display: none;">
-                            <p><strong>Full Description:</strong> <?= nl2br(htmlspecialchars($job['description'] ?? 'N/A')) ?></p>
+                            <p><strong>Description:</strong> <?= nl2br(htmlspecialchars($job['description'] ?? 'N/A')) ?></p>
                         </div>
                         
                         
                         <!-- Contact details below the date -->
                         <?php if (!empty($job['phones'])): ?>
-                            <p><strong>📞 Phone:</strong>
+                            <p style="margin: 10px 0;"><strong>📞 Phone:</strong>
                                 <?php foreach (explode(',', $job['phones']) as $phone): ?>
                                     <a href="tel:<?= trim($phone) ?>"><?= trim($phone) ?></a>&nbsp;
                                 <?php endforeach; ?>
                             </p>
                         <?php endif; ?>
                         <?php if (!empty($job['emails'])): ?>
-                            <p><strong>📧 Email:</strong>
+                            <p style="margin-bottom: 15px;"><strong>📧 Email:</strong>
                                 <?php foreach (explode(',', $job['emails']) as $email): ?>
                                     <a href="mailto:<?= trim($email) ?>"><?= trim($email) ?></a>&nbsp;
                                 <?php endforeach; ?>
@@ -346,7 +346,7 @@ $totalPages = ceil(count($filteredJobs) / $limit);
                         <?php endif; ?>
                         <small>Posted on <?= htmlspecialchars($job['posted_on'] ?? 'N/A') ?></small><br>
 
-                        <button class="share-button" onclick="shareJob('<?= htmlspecialchars($job['title'] ?? '') ?>', '<?= htmlspecialchars($job['company'] ?? '') ?>'); event.stopPropagation();">Share</button>
+                        <button style="margin-top: 10px;" class="share-button" onclick="shareJob('<?= htmlspecialchars($job['title'] ?? '') ?>', '<?= htmlspecialchars($job['company'] ?? '') ?>'); event.stopPropagation();">Share</button>
                     </div>
                     <?php endforeach; ?>
                 <?php endif; ?>

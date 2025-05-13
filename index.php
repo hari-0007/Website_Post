@@ -236,6 +236,14 @@ $totalPages = ceil(count($filteredJobs) / $limit);
             border-top: 1px solid #ddd;
         }
 
+        .job-summary {
+            display: -webkit-box;
+            -webkit-line-clamp: 5; /* Limit to 5 lines */
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
         .button { padding:10px 16px; background:#3498db; color:#fff; text-decoration:none; border-radius:5px; transition:0.3s; border: none; cursor:pointer;}
         .button:hover { background:#2980b9; }
 
@@ -319,17 +327,40 @@ $totalPages = ceil(count($filteredJobs) / $limit);
                 <?php else: ?>
                     <?php foreach ($pagedJobs as $job): ?>
                     <div class="job-card" style="margin-top: 10px;" onclick="toggleJobDetails(this)">
-                        <h3><?= htmlspecialchars($job['title'] ?? 'N/A') ?></h3>
+                        <h3>
+                            <?= htmlspecialchars($job['title'] ?? 'N/A') ?>
+                            <?php if (!empty($job['vacant_positions']) && $job['vacant_positions'] > 1): ?>
+                                <span style="font-size: 0.8rem; margin-left: 10px;">
+                                    (<?= htmlspecialchars($job['vacant_positions']) ?> vacancies)
+                                </span>
+                            <?php endif; ?>
+                        </h3>
                         <strong><?= htmlspecialchars($job['company'] ?? 'N/A') ?></strong> – <?= htmlspecialchars($job['location'] ?? 'N/A') ?><br>
-                        <p style="margin-top: 15px;" class="job-summary"><?= nl2br(htmlspecialchars(substr($job['description'] ?? '', 0, 200))) ?>…</p>
-                        
+                        <p class="job-summary"><?= nl2br(htmlspecialchars(substr($job['description'] ?? '', 0, 200))) ?>...</p>
+
                         <!-- Expandable job details -->
                         <div class="job-details" style="display: none;">
                             <p><strong>Description:</strong> <?= nl2br(htmlspecialchars($job['description'] ?? 'N/A')) ?></p>
                         </div>
                         
-                        
-                        <!-- Contact details below the date -->
+                        <!-- Display experience if mentioned -->
+                        <?php if (!empty($job['experience'])): ?>
+                            <p style="margin: 10px 0;">
+                                <strong>🛠 Experience:</strong> 
+                                <?php if (strtolower($job['experience']) === 'fresher' || strtolower($job['experience']) === 'internship'): ?>
+                                    <?= htmlspecialchars($job['experience']) ?>
+                                <?php else: ?>
+                                    <?= htmlspecialchars($job['experience']) ?> years
+                                <?php endif; ?>
+                            </p>
+                        <?php endif; ?>
+
+                        <!-- Display salary if mentioned -->
+                        <?php if (!empty($job['salary'])): ?>
+                            <p style="margin: 10px 0;"><strong>💰 Salary:</strong> <?= htmlspecialchars($job['salary']) ?></p>
+                        <?php endif; ?>
+
+                        <!-- Contact details -->
                         <?php if (!empty($job['phones'])): ?>
                             <p style="margin: 10px 0;"><strong>📞 Phone:</strong>
                                 <?php foreach (explode(',', $job['phones']) as $phone): ?>
@@ -344,6 +375,7 @@ $totalPages = ceil(count($filteredJobs) / $limit);
                                 <?php endforeach; ?>
                             </p>
                         <?php endif; ?>
+
                         <small>Posted on <?= htmlspecialchars($job['posted_on'] ?? 'N/A') ?></small><br>
 
                         <button style="margin-top: 10px;" class="share-button" onclick="shareJob('<?= htmlspecialchars($job['title'] ?? '') ?>', '<?= htmlspecialchars($job['company'] ?? '') ?>'); event.stopPropagation();">Share</button>
@@ -532,14 +564,23 @@ $totalPages = ceil(count($filteredJobs) / $limit);
         }
 
         function toggleJobDetails(jobCard) {
+            // Close any currently expanded job card
+            const allJobCards = document.querySelectorAll('.job-card');
+            allJobCards.forEach(card => {
+                const details = card.querySelector('.job-details');
+                const summary = card.querySelector('.job-summary');
+                if (details && summary) {
+                    details.style.display = 'none'; // Hide full description
+                    summary.style.display = 'block'; // Show summary
+                }
+            });
+
+            // Expand the clicked job card
             const details = jobCard.querySelector('.job-details');
             const summary = jobCard.querySelector('.job-summary');
-            if (details.style.display === 'none' || details.style.display === '') {
+            if (details && summary) {
                 details.style.display = 'block'; // Show full description
                 summary.style.display = 'none'; // Hide summary
-            } else {
-                details.style.display = 'none'; // Hide full description
-                summary.style.display = 'block'; // Show summary
             }
         }
 

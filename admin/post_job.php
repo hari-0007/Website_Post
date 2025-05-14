@@ -1,0 +1,71 @@
+<?php
+
+// admin/post_job.php - Handles the job posting form submission
+
+session_start(); // Start the session to access session variables
+
+// Include configuration and helper functions
+require_once __DIR__ . '/includes/config.php';
+require_once __DIR__ . '/includes/job_helpers.php';
+
+// Check if the form was submitted via POST
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Retrieve and sanitize form inputs
+    $title = trim($_POST['title'] ?? '');
+    $company = trim($_POST['company'] ?? '');
+    $location = trim($_POST['location'] ?? '');
+    $description = trim($_POST['description'] ?? '');
+    $experience = trim($_POST['experience'] ?? '');
+    $salary = trim($_POST['salary'] ?? '');
+    $phones = trim($_POST['phones'] ?? '');
+    $emails = trim($_POST['emails'] ?? '');
+    $vacant_positions = intval($_POST['vacant_positions'] ?? 0);
+
+    // Validate required fields
+    if (empty($title) || empty($company) || empty($location) || empty($description) || empty($experience) || empty($salary) || empty($phones) || empty($emails) || $vacant_positions <= 0) {
+        $_SESSION['admin_status'] = [
+            'message' => 'All fields are required. Please fill out the form completely.',
+            'type' => 'error'
+        ];
+        header('Location: dashboard.php?view=post_job');
+        exit();
+    }
+
+    // Save the job data (e.g., to a database or JSON file)
+    $jobData = [
+        'title' => $title,
+        'company' => $company,
+        'location' => $location,
+        'description' => $description,
+        'experience' => $experience,
+        'salary' => $salary,
+        'phones' => $phones,
+        'emails' => $emails,
+        'vacant_positions' => $vacant_positions,
+        'posted_at' => date('Y-m-d H:i:s')
+    ];
+
+    // Example: Save to a JSON file
+    $jobsFile = __DIR__ . '/data/jobs.json';
+    $jobs = file_exists($jobsFile) ? json_decode(file_get_contents($jobsFile), true) : [];
+    $jobs[] = $jobData;
+    file_put_contents($jobsFile, json_encode($jobs, JSON_PRETTY_PRINT));
+
+    // Set success message and redirect to the dashboard
+    $_SESSION['admin_status'] = [
+        'message' => 'Job posted successfully!',
+        'type' => 'success'
+    ];
+    header('Location: dashboard.php?view=manage_jobs');
+    exit();
+} else {
+    // Invalid request method
+    $_SESSION['admin_status'] = [
+        'message' => 'Invalid job action.',
+        'type' => 'error'
+    ];
+    header('Location: dashboard.php?view=post_job');
+    exit();
+}
+
+?>

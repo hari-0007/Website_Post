@@ -108,7 +108,16 @@
 </style>
 
 <div id="postJobPage" class="post-job-container">
-    <form method="POST" action="post_job.php">
+    <h1>Post a Job</h1>
+
+    <?php if (isset($_SESSION['admin_status'])): ?>
+        <div class="status-message <?= htmlspecialchars($_SESSION['admin_status']['type']) ?>">
+            <?= htmlspecialchars($_SESSION['admin_status']['message']) ?>
+        </div>
+        <?php unset($_SESSION['admin_status']); // Clear the status message ?>
+    <?php endif; ?>
+
+    <form method="POST" action="job_actions.php">
         <label for="title">Job Title:</label>
         <input type="text" id="title" name="title" required>
 

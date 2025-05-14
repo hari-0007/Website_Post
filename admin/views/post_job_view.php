@@ -108,7 +108,7 @@
 </style>
 
 <div id="postJobPage" class="post-job-container">
-    <form method="POST" action="post_job.php">
+    <form method="POST" action="includes/job_helpers.php">
         <label for="title">Job Title:</label>
         <input type="text" id="title" name="title" required>
 

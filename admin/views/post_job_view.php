@@ -139,7 +139,7 @@
         </select>
 
         <label for="salary">Salary:</label>
-        <input type="text" id="salary" name="salary" value="0" placeholder="e.g., $50,000 - $60,000 per year" required>
+        <input type="text" id="salary" name="salary" placeholder="e.g., $50,000 - $60,000 per year" required>
 
         <label for="phones">Phone:</label>
         <input type="text" id="phones" name="phones" required>
@@ -148,7 +148,7 @@
         <input type="email" id="emails" name="emails" required>
 
         <label for="vacant_positions">Vacant Positions:</label>
-        <input type="number" id="vacant_positions" name="vacant_positions" value="1" min="1" required>
+        <input type="number" id="vacant_positions" name="vacant_positions" min="1" required>
 
         <button type="submit">Post Job</button>
     </form>

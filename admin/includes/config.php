@@ -13,6 +13,6 @@ $feedbackFilename = __DIR__ . '/../../data/feedback.json'; // Path to data/feedb
 
 
 // Your website URL (used in generated message)
-$siteUrl = 'http://localhost:8000/index.php'; // <--- REPLACE with your website URL
+$siteUrl = 'http://jobhunt.top/index.php'; // <--- REPLACE with your website URL
 
 ?>

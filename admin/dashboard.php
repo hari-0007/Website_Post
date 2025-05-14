@@ -160,7 +160,37 @@ if ($loggedIn) {
              }
 
             break;
-        // No extra data loading needed for 'post_job', 'manage_jobs', 'profile', 'messages', 'manage_users' views
+        case 'manage_jobs':
+            // Pagination logic
+            $jobsPerPage = 20; // Number of jobs per page
+            $currentPage = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+
+            // Apply search filter
+            $search = $_GET['search'] ?? '';
+            $startDate = $_GET['start_date'] ?? '';
+            $endDate = $_GET['end_date'] ?? '';
+
+            $filteredJobs = array_filter($allJobs, function ($job) use ($search, $startDate, $endDate) {
+                $matchesSearch = empty($search) || stripos($job['title'] ?? '', $search) !== false || stripos($job['company'] ?? '', $search) !== false || stripos($job['location'] ?? '', $search) !== false;
+
+                $matchesDate = true;
+                if (!empty($startDate)) {
+                    $matchesDate = $matchesDate && (strtotime($job['posted_on'] ?? '') >= strtotime($startDate));
+                }
+                if (!empty($endDate)) {
+                    $matchesDate = $matchesDate && (strtotime($job['posted_on'] ?? '') <= strtotime($endDate));
+                }
+
+                return $matchesSearch && $matchesDate;
+            });
+
+            // Pagination logic
+            $totalJobs = count($filteredJobs);
+            $totalPages = ceil($totalJobs / $jobsPerPage);
+            $startIndex = ($currentPage - 1) * $jobsPerPage;
+            $pagedJobs = array_slice($filteredJobs, $startIndex, $jobsPerPage);
+            break;
+        // No extra data loading needed for 'post_job', 'profile', 'messages', 'manage_users' views
     }
 }
 

@@ -59,8 +59,8 @@ if ($action === 'post_job' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $formData = $_POST;
 
      // Basic validation
-    if (empty($formData['title']) || empty($formData['company']) || empty($formData['location']) || empty($formData['description'])) {
-        $_SESSION['admin_status'] = ['message' => 'Error: Title, Company, Location, and Description are required.', 'type' => 'error'];
+    if (empty($formData['title']) || empty($formData['company']) || empty($formData['location']) || empty($formData['description']) || empty($formData['phones']) || empty($formData['emails'])) {
+        $_SESSION['admin_status'] = ['message' => 'Error: Title, Company, Location, Description, Phones, and Emails are required.', 'type' => 'error'];
         // Redirect back to post_job view with form data (handled by dashboard.php reading POST)
         header('Location: dashboard.php?view=post_job'); // Redirect to allow dashboard.php to display errors and old data
         exit;
@@ -80,9 +80,11 @@ if ($action === 'post_job' && $_SERVER['REQUEST_METHOD'] === 'POST') {
             'description' => trim($formData['description']),
             'posted_on' => $postedOn,
             'posted_on_unix_ts' => $postedOnUnixTs,
-            'phones' => trim($formData['phones'] ?? ''),
-            'emails' => trim($formData['emails'] ?? ''),
+            'phones' => trim($formData['phones']),
+            'emails' => trim($formData['emails']),
             'vacant_positions' => $vacantPositions,
+            'experience' => trim($formData['experience'] ?? '0'), // Default to "0" (Select Experience)
+            'salary' => trim($formData['salary'] ?? ''),
         ];
 
         // Add the new job to the beginning of the array (most recent first)
@@ -132,6 +134,8 @@ if ($action === 'save_job' && $_SERVER['REQUEST_METHOD'] === 'POST' && $jobId) {
                 $job['phones'] = trim($formData['phones'] ?? '');
                 $job['emails'] = trim($formData['emails'] ?? '');
                 $job['vacant_positions'] = $vacantPositions;
+                $job['experience'] = trim($formData['experience'] ?? '0'); // Default to "0" (Select Experience)
+                $job['salary'] = trim($formData['salary'] ?? '');
                 // Do NOT update posted_on/timestamp unless you add fields for them
 
                 $jobFoundAndUpdated = true;

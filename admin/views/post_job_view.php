@@ -6,27 +6,151 @@
 // It assumes $formData is available (for pre-filling on validation errors).
 
 ?>
-<!-- <h3>Post New Job</h3> -->
- <form method="POST" action="job_actions.php"> <input type="hidden" name="action" value="post_job"> <label for="title">Job Title:</label>
-    <input type="text" id="title" name="title" value="<?= htmlspecialchars($_POST['title'] ?? '') ?>" required>
+<style>
+    /* General Page Styles */
+    #postJobPage {
+        max-width: 500px;
+        margin: 30px auto;
+        background: #fff;
+        padding: 15px 20px;
+        border-radius: 5px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
 
-    <label for="company">Company:</label>
-    <input type="text" id="company" name="company" value="<?= htmlspecialchars($_POST['company'] ?? '') ?>" required>
+    #postJobPage h1 {
+        text-align: center;
+        font-size: 1.5rem;
+        color: #333;
+        margin-bottom: 15px;
+    }
 
-    <label for="location">Location:</label>
-    <input type="text" id="location" name="location" value="<?= htmlspecialchars($_POST['location'] ?? '') ?>" required>
+    #postJobPage form {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
 
-    <label for="description">Description:</label>
-    <textarea id="description" name="description" rows="6" required><?= htmlspecialchars($_POST['description'] ?? '') ?></textarea>
+    #postJobPage label {
+        font-weight: 600;
+        color: #444;
+        font-size: 0.9rem;
+        margin-bottom: 3px;
+    }
 
-     <label for="vacant_positions">Vacant Positions (Optional, default 1):</label>
-     <input type="number" id="vacant_positions" name="vacant_positions" value="<?= htmlspecialchars($_POST['vacant_positions'] ?? 1) ?>" min="1">
+    #postJobPage input[type="text"],
+    #postJobPage input[type="email"],
+    #postJobPage input[type="number"],
+    #postJobPage textarea,
+    #postJobPage select {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 0.85rem;
+        color: #333;
+        background-color: #f9f9f9;
+        transition: border-color 0.3s ease;
+    }
 
-    <label for="phones">Contact Phones (comma-separated, Optional):</label>
-    <input type="text" id="phones" name="phones" value="<?= htmlspecialchars($_POST['phones'] ?? '') ?>">
+    #postJobPage input[type="text"]:focus,
+    #postJobPage input[type="email"]:focus,
+    #postJobPage input[type="number"]:focus,
+    #postJobPage textarea:focus,
+    #postJobPage select:focus {
+        border-color: #007bff;
+        outline: none;
+        background-color: #fff;
+    }
 
-    <label for="emails">Contact Emails (comma-separated, Optional):</label>
-    <input type="email" id="emails" name="emails" value="<?= htmlspecialchars($_POST['emails'] ?? '') ?>">
+    #postJobPage textarea {
+        resize: vertical;
+        min-height: 80px;
+    }
 
-    <button type="submit" name="post_job_btn" class="button">Post Job</button>
-</form>
+    #postJobPage button {
+        padding: 8px 12px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    #postJobPage button:hover {
+        background-color: #0056b3;
+        transform: translateY(-1px);
+    }
+
+    #postJobPage button:active {
+        background-color: #004085;
+        transform: translateY(0);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        #postJobPage {
+            margin: 15px;
+            padding: 10px;
+        }
+
+        #postJobPage form {
+            gap: 8px;
+        }
+
+        #postJobPage button {
+            font-size: 0.85rem;
+            padding: 6px 10px;
+        }
+    }
+</style>
+
+<div id="postJobPage" class="post-job-container">
+    <h1>Post a Job</h1>
+    <form method="POST" action="post_job.php">
+        <label for="title">Job Title:</label>
+        <input type="text" id="title" name="title" required>
+
+        <label for="company">Company:</label>
+        <input type="text" id="company" name="company" required>
+
+        <label for="location">Location:</label>
+        <input type="text" id="location" name="location" required>
+
+        <label for="description">Description:</label>
+        <textarea id="description" name="description" required></textarea>
+
+        <label for="experience">Experience:</label>
+        <select id="experience" name="experience" required>
+            <option value="0">Select Experience</option>
+            <option value="Fresher">Fresher</option>
+            <option value="Internship">Internship</option>
+            <option value="1">1 Year</option>
+            <option value="2">2 Years</option>
+            <option value="3">3 Years</option>
+            <option value="4">4 Years</option>
+            <option value="5">5 Years</option>
+            <option value="7">7 Years</option>
+            <option value="8">8 Years</option>
+            <option value="9">9 Years</option>
+            <option value="10">10 Years</option>
+            <option value="15+">15+ Years</option>
+        </select>
+
+        <label for="salary">Salary:</label>
+        <input type="text" id="salary" name="salary" placeholder="e.g., $50,000 - $60,000 per year" required>
+
+        <label for="phones">Phone:</label>
+        <input type="text" id="phones" name="phones" required>
+
+        <label for="emails">Email:</label>
+        <input type="email" id="emails" name="emails" required>
+
+        <label for="vacant_positions">Vacant Positions:</label>
+        <input type="number" id="vacant_positions" name="vacant_positions" min="1" required>
+
+        <button type="submit">Post Job</button>
+    </form>
+</div>

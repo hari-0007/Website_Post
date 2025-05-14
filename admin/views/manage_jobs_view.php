@@ -9,55 +9,68 @@
 $allJobs = $allJobs ?? [];
 
 ?>
-<h3>Manage All Jobs</h3>
-
-<div style="margin-bottom: 15px;">
-    <button type="button" class="button" id="postNewJobBtn">Post New Job</button>
+<div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+    <h3 style="margin: 0;">Manage Jobs</h3>
+    <div style="display: flex; gap: 10px; align-items: center;">
+        <form method="GET" action="dashboard.php" class="search-filter-form">
+            <input type="hidden" name="view" value="manage_jobs">
+            <input type="text" name="search" placeholder="Search jobs" value="<?= htmlspecialchars($_GET['search'] ?? '') ?>" class="search-input">
+            <input type="date" name="start_date" value="<?= htmlspecialchars($_GET['start_date'] ?? '') ?>" class="filter-input">
+            <input type="date" name="end_date" value="<?= htmlspecialchars($_GET['end_date'] ?? '') ?>" class="filter-input">
+            <button type="submit" class="button filter-button">Filter</button>
+        </form>
+        <button id="postNewJobBtn" class="button post-job-btn">
+            + Post New Job
+        </button>
+    </div>
 </div>
 
-
-<?php if (empty($allJobs)): ?>
-    <p class="no-jobs">No jobs found in the data file.</p>
-<?php else: ?>
-    <form method="POST" action="job_actions.php" id="manageJobsForm">
-        <input type="hidden" name="action" value="">
-        <?php /*
-        <div style="margin-bottom: 15px;">
-            <button type="button" class="button" onclick="setJobFormAction('delete_selected_jobs'); return confirm('Are you sure you want to delete selected jobs?');">Delete Selected</button>
-        </div>
-        */ ?>
-        <table class="job-table">
-            <thead>
+<table>
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Company</th>
+            <th>Location</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php if (!empty($pagedJobs)): ?>
+            <?php foreach ($pagedJobs as $job): ?>
                 <tr>
-                    <?php /* <th><input type="checkbox" id="selectAllJobs"></th> */ // Add if implementing bulk actions ?>
-                    <th>Title</th>
-                    <th>Company</th>
-                    <th>Location</th>
-                    <th>Posted On</th>
-                    <th>Actions</th>
+                    <td><?= htmlspecialchars($job['title'] ?? 'N/A') ?></td>
+                    <td><?= htmlspecialchars($job['company'] ?? 'N/A') ?></td>
+                    <td><?= htmlspecialchars($job['location'] ?? 'N/A') ?></td>
+                    <td>
+                        <a href="dashboard.php?view=edit_job&id=<?= urlencode($job['id']) ?>">Edit</a>
+                        <a href="job_actions.php?action=delete_job&id=<?= urlencode($job['id']) ?>" onclick="return confirm('Are you sure?')">Delete</a>
+                    </td>
                 </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($allJobs as $job): ?>
-                    <tr>
-                        <?php /* <td><input type="checkbox" name="job_ids[]" value="<?= htmlspecialchars($job['id'] ?? '') ?>"></td> */ // Add if implementing bulk actions ?>
-                        <td><?= htmlspecialchars($job['title'] ?? 'N/A') ?></td>
-                        <td><?= htmlspecialchars($job['company'] ?? 'N/A') ?></td>
-                        <td><?= htmlspecialchars($job['location'] ?? 'N/A') ?></td>
-                        <td><?= htmlspecialchars($job['posted_on'] ?? 'N/A') ?></td>
-                        <td class="actions">
-                            <a href="dashboard.php?view=edit_job&id=<?= urlencode($job['id'] ?? '') ?>" class="button edit">Edit</a>
-                            <?php if (!empty($job['id'])): // Ensure ID exists before creating delete link ?>
-                            <a href="job_actions.php?action=delete_job&id=<?= urlencode($job['id']) ?>" onclick="return confirm('Are you sure you want to delete this job: <?= addslashes(htmlspecialchars($job['title'] ?? '')) ?>?');"
-                               class="button delete">Delete</a>
-                            <?php endif; ?>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
-    </form>
-<?php endif; ?>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <tr>
+                <td colspan="4" style="text-align: center;">No jobs found.</td>
+            </tr>
+        <?php endif; ?>
+    </tbody>
+</table>
+
+<!-- Pagination Controls -->
+<div class="pagination">
+    <?php if ($currentPage > 1): ?>
+        <a href="dashboard.php?view=manage_jobs&page=<?= $currentPage - 1 ?>">&laquo; Previous</a>
+    <?php endif; ?>
+
+    <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+        <a href="dashboard.php?view=manage_jobs&page=<?= $i ?>" class="<?= $i === $currentPage ? 'active' : '' ?>">
+            <?= $i ?>
+        </a>
+    <?php endfor; ?>
+
+    <?php if ($currentPage < $totalPages): ?>
+        <a href="dashboard.php?view=manage_jobs&page=<?= $currentPage + 1 ?>">Next &raquo;</a>
+    <?php endif; ?>
+</div>
 
 <div id="postJobModal" class="modal" style="display: none;">
     <div class="modal-content">
@@ -70,6 +83,80 @@ $allJobs = $allJobs ?? [];
 </div>
 
 <style>
+    /* Enhance the table appearance */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+        font-size: 0.9rem;
+        color: #333;
+    }
+
+    table thead {
+        background-color: #f8f9fa;
+        text-align: left;
+    }
+
+    table thead th {
+        padding: 12px 15px;
+        border-bottom: 2px solid #dee2e6;
+        font-weight: bold;
+    }
+
+    table tbody tr {
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    table tbody tr:nth-child(even) {
+        background-color: #f9f9f9; /* Alternating row colors */
+    }
+
+    table tbody tr:hover {
+        background-color: #f1f1f1; /* Highlight row on hover */
+    }
+
+    table tbody td {
+        padding: 10px 15px;
+    }
+
+    /* Style the action links */
+    table tbody td a {
+        color: #007bff;
+        text-decoration: none;
+        margin-right: 10px;
+    }
+
+    table tbody td a:hover {
+        text-decoration: underline;
+    }
+
+    /* Pagination styles */
+    .pagination {
+        margin-top: 20px;
+        text-align: center;
+    }
+
+    .pagination a {
+        display: inline-block;
+        margin: 0 5px;
+        padding: 8px 12px;
+        text-decoration: none;
+        color: #007bff;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+
+    .pagination a.active {
+        background-color: #007bff;
+        color: #fff;
+        border-color: #007bff;
+    }
+
+    .pagination a:hover {
+        background-color: #0056b3;
+        color: #fff;
+    }
+
     /* Basic Modal Styles (copy these to header.php or your main CSS if not already there) */
     .modal {
         position: fixed;
@@ -185,151 +272,123 @@ $allJobs = $allJobs ?? [];
          background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb;
      }
 
+    .button {
+        background-color: #007bff;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 1rem;
+    }
 
+    .button:hover {
+        background-color: #0056b3;
+    }
+
+    /* Search and Filter Form */
+    .search-filter-form {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+
+    .search-input, .filter-input {
+        padding: 6px 8px; /* Smaller padding */
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 0.85rem; /* Smaller font size */
+        width: 120px; /* Small width */
+    }
+
+    .filter-button {
+        background-color: #007bff;
+        color: white;
+        padding: 6px 12px; /* Smaller padding */
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.85rem; /* Smaller font size */
+        transition: background-color 0.3s ease;
+    }
+
+    .filter-button:hover {
+        background-color: #0056b3;
+    }
+
+    /* Post New Job Button */
+    .post-job-btn {
+        background-color: #28a745; /* Professional green color */
+        color: white;
+        padding: 8px 15px; /* Smaller padding */
+        border: none;
+        border-radius: 5px; /* Rounded corners */
+        cursor: pointer;
+        font-size: 0.85rem; /* Smaller font size */
+        font-weight: bold;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+        transition: all 0.3s ease; /* Smooth transition for hover effects */
+    }
+
+    .post-job-btn:hover {
+        background-color: #218838; /* Darker green on hover */
+        box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15); /* Slightly larger shadow */
+        transform: translateY(-2px); /* Lift the button slightly */
+    }
+
+    .post-job-btn:active {
+        background-color: #1e7e34; /* Even darker green when clicked */
+        box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2); /* Smaller shadow */
+        transform: translateY(1px); /* Push the button down slightly */
+    }
+
+    /* Responsive Design for Search and Filter Section */
+    @media (max-width: 768px) {
+        .search-filter-form {
+            flex-wrap: wrap; /* Allow wrapping on smaller screens */
+            gap: 10px;
+        }
+
+        .search-input, .filter-input, .filter-button, .post-job-btn {
+            width: 100%; /* Full width for smaller screens */
+        }
+    }
 </style>
 
 <script>
-    // Get references to the button and modal elements
-    const postNewJobBtn = document.getElementById('postNewJobBtn');
-    const postJobModal = document.getElementById('postJobModal');
-    const closePostJobModalBtn = document.getElementById('closePostJobModal');
-    const postJobFormContainer = document.getElementById('postJobFormContainer');
-
-    // Function to open the Post New Job modal and load the form
+    // Function to open the Post New Job modal
     function openPostJobModal() {
+        const postJobModal = document.getElementById('postJobModal');
+        const postJobFormContainer = document.getElementById('postJobFormContainer');
+
         if (postJobModal && postJobFormContainer) {
-            // Clear previous content and show loading message
             postJobFormContainer.innerHTML = '<p>Loading form...</p>';
-            postJobModal.style.display = 'flex'; // Show the modal using flex for centering
+            postJobModal.style.display = 'flex';
 
             // Fetch the job post form content via AJAX
             fetch('fetch_content.php?view=post_job', {
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest' // Indicate it's an AJAX request
-                }
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
             })
-            .then(response => {
-                if (!response.ok) {
-                     // Check for unauthorized response (401/403) and redirect
-                     if (response.status === 401 || response.status === 403) {
-                          console.error('Unauthorized: Redirecting to login.');
-                          window.location.href = 'dashboard.php'; // Redirect to handle login
-                          return Promise.reject('Unauthorized'); // Stop processing
-                     }
-                     // Otherwise, throw an error with response text
-                     return response.text().then(text => {
-                          throw new Error(`HTTP error ${response.status}: ${text}`);
-                      });
-                }
-                return response.text(); // Get the HTML content as text
-            })
+            .then(response => response.text())
             .then(html => {
-                // Insert the fetched HTML (the form) into the container
-                if (postJobFormContainer) {
-                    postJobFormContainer.innerHTML = html;
-
-                    // Note: Scripts *within* the loaded HTML won't execute automatically by default.
-                    // If post_job_view.php had inline scripts needed for the form (e.g., validation),
-                    // they would need to be handled here by extracting and executing them.
-                    // Based on your post_job_view.php, it seems to be just the form HTML.
-
-                    // If the form itself needs event listeners attached *after* loading,
-                    // they would need to be attached here. E.g.,
-                    // const jobPostForm = postJobFormContainer.querySelector('form');
-                    // if (jobPostForm) {
-                    //     jobPostForm.addEventListener('submit', handleJobPostSubmit); // Assuming handleJobPostSubmit is defined
-                    // }
-                }
+                postJobFormContainer.innerHTML = html;
             })
             .catch(error => {
                 console.error('Error loading job post form:', error);
-                if (postJobFormContainer) {
-                    // Display error message inside the form container
-                    // Use escapeHTML for safety when inserting user/error messages into innerHTML
-                    postJobFormContainer.innerHTML = '<p class="status-message error">Error loading form: ' + escapeHTML(error.message || 'Unknown error') + '</p>';
-                }
-                 // No need for alert here, error is shown in modal
+                postJobFormContainer.innerHTML = '<p class="status-message error">Error loading form.</p>';
             });
-        } else {
-            console.error('Post Job Modal or Form Container element not found.');
         }
     }
 
     // Function to close the Post New Job modal
     function closePostJobModal() {
+        const postJobModal = document.getElementById('postJobModal');
         if (postJobModal) {
             postJobModal.style.display = 'none';
-            // Optional: Clear the form content when closing
-             if (postJobFormContainer) {
-                  postJobFormContainer.innerHTML = ''; // Clear content
-             }
         }
     }
 
-    // Add click listener to the Post New Job button
-    // Use dataset to track if listener was already added to prevent duplicates with reExecuteScripts
-    if (postNewJobBtn) {
-        if (!postNewJobBtn.dataset.listenerAdded) {
-            postNewJobBtn.addEventListener('click', openPostJobModal);
-            postNewJobBtn.dataset.listenerAdded = 'true'; // Mark as added
-            console.log('PostNewJobBtn listener added.'); // For debugging
-        } else {
-             console.log('PostNewJobBtn listener already added.'); // For debugging
-        }
-    }
-
-    // Add click listener to the modal close button
-     if (closePostJobModalBtn) {
-          // Use dataset to track if listener was already added
-          if (!closePostJobModalBtn.dataset.listenerAdded) {
-              closePostJobModalBtn.addEventListener('click', closePostJobModal);
-               closePostJobModalBtn.dataset.listenerAdded = 'true'; // Mark as added
-               console.log('PostJobModal close listener added.'); // For debugging
-           } else {
-               console.log('PostJobModal close listener already added.'); // For debugging
-           }
-     }
-
-     // Add click listener to close modal if clicking outside modal content
-     if (postJobModal) {
-          // Use dataset to track if listener is already added
-          if (!postJobModal.dataset.listenerAdded) {
-               postJobModal.addEventListener('click', function(event) {
-                   // If the click target is the modal backdrop itself (not the modal-content or its children)
-                   if (event.target === postJobModal) {
-                       closePostJobModal();
-                       console.log('Modal backdrop clicked, closed.'); // For debugging
-                   }
-               });
-               postJobModal.dataset.listenerAdded = 'true'; // Mark as added
-                console.log('PostJobModal backdrop listener added.'); // For debugging
-          } else {
-               console.log('PostJobModal backdrop listener already added.'); // For debugging
-          }
-     }
-
-
-    // Helper function to escape HTML for safe display in innerHTML (copy from footer.php if needed)
-    // Define this function only if it doesn't already exist globally (e.g., in footer.php)
-    // This helps prevent re-declaration errors with reExecuteScripts.
-    if (typeof escapeHTML === 'undefined') {
-        window.escapeHTML = function(str) {
-             if (typeof str !== 'string') return str;
-             const div = document.createElement('div');
-             div.appendChild(document.createTextNode(str));
-             return div.innerHTML;
-        }
-         console.log('escapeHTML function defined in manage_jobs_view.php script.'); // For debugging
-    } else {
-         console.log('escapeHTML function already exists globally.'); // For debugging
-    }
-
-
-    // Note: The job post form inside the modal will submit to job_actions.php.
-    // job_actions.php will process the form and redirect back to dashboard.php.
-    // The loadContent function in footer.php should handle this redirect and reload the manage_jobs view.
-    // The status message from the session will be displayed at the top of the main page (using the status-area div).
-    // If you need client-side validation or AJAX submission for the form in the modal,
-    // additional JavaScript would be required here to intercept the form submit event.
-
+    // Add event listeners for the button and modal close
+    document.getElementById('postNewJobBtn').addEventListener('click', openPostJobModal);
+    document.getElementById('closePostJobModal').addEventListener('click', closePostJobModal);
 </script>

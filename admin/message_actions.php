@@ -63,6 +63,23 @@ if (!is_array($feedbackMessages)) {
     }
 }
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+    $action = $_POST['action'];
+    $messageId = $_POST['message_id'] ?? null;
+
+    if ($action === 'mark_read' && $messageId) {
+        foreach ($feedbackMessages as &$message) {
+            if ($message['id'] === $messageId) {
+                $message['read'] = true;
+                saveFeedbackMessages($feedbackMessages, $feedbackFilename);
+                echo json_encode(['success' => true, 'message' => 'Message marked as read.']);
+                exit;
+            }
+        }
+        echo json_encode(['success' => false, 'message' => 'Message not found.']);
+        exit;
+    }
+}
 
 // --- Handle Actions ---
 switch ($action) {
@@ -151,34 +168,20 @@ switch ($action) {
         break;
 
     case 'get_message_detail':
-        // This action is triggered by AJAX from footer.php
-        // It expects to return JSON response
-
         // Ensure it's an AJAX request
         if (empty($_SERVER['HTTP_X_REQUESTED_WITH']) || strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) !== 'xmlhttprequest') {
-            header('HTTP/1.1 403 Forbidden'); // Send a 403 status
-            header('Content-Type: application/json'); // Still return JSON format
+            header('HTTP/1.1 403 Forbidden');
+            header('Content-Type: application/json');
             echo json_encode(['success' => false, 'message' => 'Direct access denied.']);
             exit;
         }
 
-        // Ensure Content-Type is application/json for the response
         header('Content-Type: application/json');
 
-        error_log("Admin Message Action Debug: Received get_message_detail request for ID: " . ($messageId ?? 'null')); // Log the requested ID
-
         if (!$messageId) {
-            error_log("Admin Message Action Error: No message ID provided for get_message_detail.");
             echo json_encode(['success' => false, 'message' => 'No message ID provided.']);
             exit;
         }
-
-        // Re-load messages here just in case the array reference from the start of the script is stale
-        // Although $feedbackMessages is loaded above, re-loading ensures we have the latest data,
-        // especially if a previous action modified the file in the same script execution cycle
-        // (unlikely in a single AJAX call, but safer if architecture changes).
-        // More importantly, the initial load check ensures it's an array.
-        // $feedbackMessages = loadFeedbackMessages($feedbackFilename); // Keep the initial load check above as the primary safeguard
 
         $foundMessage = null;
         foreach ($feedbackMessages as $message) {
@@ -189,53 +192,19 @@ switch ($action) {
         }
 
         if ($foundMessage) {
-            // Optionally mark the message as read when viewing details via this AJAX call
-            // Only mark as read if it's currently unread
-            if (!($foundMessage['read'] ?? false)) {
-                 // Find the message in the original array by reference to update it
-                 $messageUpdatedInArray = false; // Flag to check if we found and updated it
-                 foreach ($feedbackMessages as &$message) {
-                     if (isset($message['id']) && $message['id'] === $messageId) {
-                         $message['read'] = true;
-                         $messageUpdatedInArray = true;
-                         break; // Stop once updated
-                     }
-                 }
-                 unset($message); // Break the reference
-
-                 // Save the updated messages array if a message was found and updated
-                 if ($messageUpdatedInArray) {
-                     if (!saveFeedbackMessages($feedbackMessages, $feedbackFilename)) {
-                          error_log("Admin Message Action Error: Could not auto-mark message as read (ID: " . $messageId . ") after viewing.");
-                          // Continue execution even if save failed, user can still see details
-                     } else {
-                         // Log auto-read success
-                         error_log("Admin Message Action Debug: Message ID " . $messageId . " auto-marked as read after viewing details.");
-                         // Update the $foundMessage array to reflect the read status immediately for the JSON response
-                         $foundMessage['read'] = true;
-                     }
-                 }
-            }
-
-
-            // Format the timestamp for display
+            // Ensure the name field is not overwritten
             $foundMessage['received_on'] = date('Y-m-d H:i', $foundMessage['timestamp'] ?? 0);
-            // Determine status text
-            $foundMessage['status'] = ($foundMessage['read'] ?? false) ? 'Read' : 'Unread';
-            // Include message text separately for clarity
             $foundMessage['message_text'] = $foundMessage['message'] ?? '';
 
-            // Remove raw timestamp and original message content if you only want formatted data
+            // Remove unnecessary fields
             unset($foundMessage['timestamp']);
-            unset($foundMessage['message']); // Remove original message key
+            unset($foundMessage['message']);
 
-
-            echo json_encode(['success' => true, 'message' => 'Message details fetched.', 'message' => $foundMessage]); // Return the message data
+            echo json_encode(['success' => true, 'message' => 'Message details fetched.', 'message' => $foundMessage]);
         } else {
-            error_log("Admin Message Action Error: Message with ID " . ($messageId ?? 'null') . " not found for get_message_detail.");
             echo json_encode(['success' => false, 'message' => 'Message not found.']);
         }
-        exit; // Stop execution after JSON response
+        exit;
         break;
 
     case 'toggle_read_status':

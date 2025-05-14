@@ -1,8 +1,8 @@
 <?php
 
-// admin/job_actions.php - Handles job-related actions (e.g., posting a job)
+// admin/job_actions.php - Handles Job Management Actions
 
-session_start(); // Start the session to access session variables
+session_start(); // Start the session
 
 // Include configuration and helper functions
 require_once __DIR__ . '/includes/config.php';
@@ -33,8 +33,8 @@ if ($action === 'delete_job' && $jobId && $_SERVER['REQUEST_METHOD'] === 'GET') 
     });
 
     if (count($updatedJobs) < $initialCount) {
-         // Re-index the array after filtering
-         $updatedJobs = array_values($updatedJobs);
+        // Re-index the array after filtering
+        $updatedJobs = array_values($updatedJobs);
 
         if (saveJobs($updatedJobs, $jobsFilename)) {
             $_SESSION['admin_status'] = ['message' => 'Success: Job deleted successfully!', 'type' => 'success'];
@@ -43,8 +43,8 @@ if ($action === 'delete_job' && $jobId && $_SERVER['REQUEST_METHOD'] === 'GET') 
             error_log("Admin Delete Job Error: Could not write to jobs.json after deletion: " . $jobsFilename);
         }
     } else {
-         $_SESSION['admin_status'] = ['message' => 'Error: Job with specified ID not found for deletion.', 'type' => 'error'];
-         error_log("Admin Delete Job Error: Job ID not found: " . $jobId);
+        $_SESSION['admin_status'] = ['message' => 'Error: Job with specified ID not found for deletion.', 'type' => 'error'];
+        error_log("Admin Delete Job Error: Job ID not found: " . $jobId);
     }
 
     // Redirect back to manage jobs view
@@ -53,59 +53,60 @@ if ($action === 'delete_job' && $jobId && $_SERVER['REQUEST_METHOD'] === 'GET') 
 }
 
 // Handle POST Job Submission (Triggered by POST request from post_job_view.php)
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'post_job') {
-    // Retrieve and sanitize form inputs
-    $title = trim($_POST['title'] ?? '');
-    $company = trim($_POST['company'] ?? '');
-    $location = trim($_POST['location'] ?? '');
-    $description = trim($_POST['description'] ?? '');
-    $experience = trim($_POST['experience'] ?? '');
-    $salary = trim($_POST['salary'] ?? '');
-    $phones = trim($_POST['phones'] ?? '');
-    $emails = trim($_POST['emails'] ?? '');
-    $vacant_positions = intval($_POST['vacant_positions'] ?? 0);
+if ($action === 'post_job' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Get form data
+    $formData = $_POST;
 
-    // Validate required fields
-    if (empty($title) || empty($company) || empty($location) || empty($description) || empty($experience) || empty($salary) || empty($phones) || empty($emails) || $vacant_positions <= 0) {
-        $_SESSION['admin_status'] = [
-            'message' => 'All fields are required. Please fill out the form completely.',
-            'type' => 'error'
+    // Basic validation
+    if (empty($formData['title']) || empty($formData['company']) || empty($formData['location']) || empty($formData['description']) || empty($formData['phones']) || empty($formData['emails'])) {
+        $_SESSION['admin_status'] = ['message' => 'Error: Title, Company, Location, Description, Phones, and Emails are required.', 'type' => 'error'];
+        // Redirect back to post_job view with form data (handled by dashboard.php reading POST)
+        header('Location: dashboard.php?view=post_job'); // Redirect to allow dashboard.php to display errors and old data
+        exit;
+    } else {
+        // Data seems valid, create new job
+        $newJobId = time() . '_' . mt_rand(1000, 9999); // Simple unique ID
+        $postedOn = date('Y-m-d H:i:s');
+        $postedOnUnixTs = time();
+        $vacantPositions = filter_var($formData['vacant_positions'] ?? 1, FILTER_VALIDATE_INT);
+        $vacantPositions = ($vacantPositions === false || $vacantPositions < 1) ? 1 : $vacantPositions;
+
+        $newJob = [
+            'id' => $newJobId,
+            'title' => trim($formData['title']),
+            'company' => trim($formData['company']),
+            'location' => trim($formData['location']),
+            'description' => trim($formData['description']),
+            'posted_on' => $postedOn,
+            'posted_on_unix_ts' => $postedOnUnixTs,
+            'phones' => trim($formData['phones']),
+            'emails' => trim($formData['emails']),
+            'vacant_positions' => $vacantPositions,
+            'experience' => trim($formData['experience'] ?? '0'), // Default to "0" (Select Experience)
+            'salary' => trim($formData['salary'] ?? ''),
         ];
-        header('Location: dashboard.php?view=post_job');
-        exit();
+
+        // Add the new job to the beginning of the array (most recent first)
+        array_unshift($allJobs, $newJob);
+
+        // Save the updated array
+        if (saveJobs($allJobs, $jobsFilename)) {
+            $_SESSION['admin_status'] = ['message' => 'Success: Job "' . htmlspecialchars($newJob['title']) . '" posted successfully!', 'type' => 'success'];
+            // Redirect to manage jobs view after successful post
+            header('Location: dashboard.php?view=manage_jobs');
+            exit;
+        } else {
+            $_SESSION['admin_status'] = ['message' => 'Error: Could not save job data to file.', 'type' => 'error'];
+            error_log("Admin Post Job Error: Could not write to jobs.json: " . $jobsFilename);
+            // Redirect back to post_job view to show error (dashboard.php will handle displaying it)
+            header('Location: dashboard.php?view=post_job');
+            exit;
+        }
     }
-
-    // Save the job data (e.g., to a database or JSON file)
-    $jobData = [
-        'title' => $title,
-        'company' => $company,
-        'location' => $location,
-        'description' => $description,
-        'experience' => $experience,
-        'salary' => $salary,
-        'phones' => $phones,
-        'emails' => $emails,
-        'vacant_positions' => $vacant_positions,
-        'posted_at' => date('Y-m-d H:i:s')
-    ];
-
-    // Example: Save to a JSON file
-    $jobsFile = __DIR__ . '/data/jobs.json';
-    $jobs = file_exists($jobsFile) ? json_decode(file_get_contents($jobsFile), true) : [];
-    $jobs[] = $jobData;
-    file_put_contents($jobsFile, json_encode($jobs, JSON_PRETTY_PRINT));
-
-    // Set success message and redirect to the dashboard
-    $_SESSION['admin_status'] = [
-        'message' => 'Job posted successfully!',
-        'type' => 'success'
-    ];
-    header('Location: dashboard.php?view=manage_jobs');
-    exit();
 }
 
 // Handle Edit Job Submission (Triggered by POST request from edit_job_view.php)
-if ($action === 'save_job' && $_SERVER['REQUEST_METHOD'] === 'POST' && $jobId) {
+if ($action === 'save_job' && $_SERVER['REQUEST_METHOD'] === 'POST' && $jobId) { // Changed action to save_job
     // Get form data
     $formData = $_POST;
 

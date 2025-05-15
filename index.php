@@ -337,7 +337,7 @@ function formatAiSummary($summary) {
                             <?php endif; ?>
                         </h3>
                         <strong><?= htmlspecialchars($job['company'] ?? 'N/A') ?></strong> – <?= htmlspecialchars($job['location'] ?? 'N/A') ?><br>
-                        <p class="job-summary"><?= formatAiSummary(substr($job['ai_summary'] ?? '', 0, 1200)) ?>...</p>
+                        <p class="job-summary"><?= formatAiSummary(substr($job['ai_summary'] ?? '', 0, 300)) ?>...</p>
 
                         <!-- Expandable job details -->
                         <div class="job-details" style="display: none;">

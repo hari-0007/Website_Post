@@ -110,6 +110,16 @@ $totalPages = ceil($totalJobs / $limit);
 $offset = ($page - 1) * $limit;
 $pagedJobs = array_slice($filteredJobs, $offset, $limit);
 
+function formatAiSummary($summary) {
+    // Replace **text** with <strong>text</strong>
+    $formatted = preg_replace('/\*\*(.*?)\*\*/', '<strong>$1</strong>', $summary);
+
+    // Convert newlines to HTML line breaks
+    $formatted = nl2br($formatted);
+
+    return $formatted;
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -327,11 +337,13 @@ $pagedJobs = array_slice($filteredJobs, $offset, $limit);
                             <?php endif; ?>
                         </h3>
                         <strong><?= htmlspecialchars($job['company'] ?? 'N/A') ?></strong> – <?= htmlspecialchars($job['location'] ?? 'N/A') ?><br>
-                        <p class="job-summary"><?= nl2br(htmlspecialchars(substr($job['description'] ?? '', 0, 1200))) ?>...</p>
+                        <p class="job-summary"><?= formatAiSummary(substr($job['ai_summary'] ?? '', 0, 1200)) ?>...</p>
 
                         <!-- Expandable job details -->
                         <div class="job-details" style="display: none;">
-                            <p><strong>Description:</strong> <?= nl2br(htmlspecialchars($job['description'] ?? 'N/A')) ?></p>
+                            <div class="formatted-summary">
+                                <?= formatAiSummary($job['ai_summary'] ?? 'N/A') ?>
+                            </div>
                         </div>
                         
                         <!-- Display experience if mentioned -->

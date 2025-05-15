@@ -63,6 +63,10 @@ if(empty($displayData['id']) && isset($jobId)) {
     <label for="emails">Contact Emails (comma-separated):</label>
     <input type="email" id="emails" name="emails" value="<?= htmlspecialchars($displayData['emails'] ?? '') ?>" placeholder="Optional">
 
+    <label for="ai_summary">AI Summary:</label>
+    <textarea id="ai_summary" name="ai_summary" rows="10" placeholder="AI-generated job description summary"><?= htmlspecialchars($displayData['ai_summary'] ?? '') ?></textarea>
+    <button type="button" id="regenerateSummary" style="margin-top: 10px;">Regenerate AI Summary</button>
+
     <div style="margin-top: 20px;">
         <button type="submit" name="save_job_btn" class="button">Save Changes</button>
         <a href="dashboard.php?view=manage_jobs" class="button" style="background-color: #6c757d; margin-left: 10px;">Cancel</a>
@@ -122,6 +126,52 @@ if(empty($displayData['id']) && isset($jobId)) {
             alert('At least one contact method (phone or email) is required.');
             event.preventDefault();
             return;
+        }
+    });
+
+    document.getElementById('regenerateSummary').addEventListener('click', async function () {
+        const title = document.getElementById('title').value.trim();
+        const company = document.getElementById('company').value.trim();
+        const location = document.getElementById('location').value.trim();
+        const description = document.getElementById('description').value.trim();
+        const experience = document.getElementById('experience').value.trim();
+        const type = document.getElementById('type').value.trim();
+        const salary = document.getElementById('salary').value.trim();
+
+        if (!title) {
+            alert('Please enter the job title before regenerating the AI summary.');
+            return;
+        }
+
+        try {
+            const response = await fetch('job_actions.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'regenerate_summary',
+                    title,
+                    company,
+                    location,
+                    description,
+                    experience,
+                    type,
+                    salary
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            if (data.success) {
+                document.getElementById('ai_summary').value = data.ai_summary;
+            } else {
+                alert('Failed to regenerate AI summary: ' + data.error);
+            }
+        } catch (error) {
+            console.error('Error regenerating AI summary:', error);
+            alert('An error occurred while regenerating the AI summary.');
         }
     });
 </script>

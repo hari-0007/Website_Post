@@ -108,69 +108,154 @@ if ($action === 'post_job' && $_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 // Handle Edit Job Submission (Triggered by POST request from edit_job_view.php)
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_POST['action'] === 'save_job') {
-    $jobId = trim($_POST['job_id'] ?? '');
-    $title = trim($_POST['title'] ?? '');
-    $phones = trim($_POST['phones'] ?? '');
-    $emails = trim($_POST['emails'] ?? '');
-    $experience = trim($_POST['experience'] ?? '');
-    $salary = trim($_POST['salary'] ?? '');
-    $posted_on = trim($_POST['posted_on'] ?? date('Y-m-d H:i:s'));
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $action = $_POST['action'] ?? '';
 
-    // Validate mandatory fields
-    if (empty($title)) {
-        $_SESSION['admin_status'] = [
-            'message' => 'Job title is required.',
-            'type' => 'error'
-        ];
-        header('Location: dashboard.php?view=edit_job&id=' . urlencode($jobId));
-        exit();
-    }
+    // Handle regenerating AI summary
+    if ($action === 'regenerate_summary') {
+        header('Content-Type: application/json');
 
-    if (empty($phones) && empty($emails)) {
-        $_SESSION['admin_status'] = [
-            'message' => 'At least one contact method (phone or email) is required.',
-            'type' => 'error'
-        ];
-        header('Location: dashboard.php?view=edit_job&id=' . urlencode($jobId));
-        exit();
-    }
+        try {
+            $input = json_decode(file_get_contents('php://input'), true);
 
-    // Save the job data
-    $jobData = [
-        'id' => $jobId,
-        'title' => $title,
-        'company' => trim($_POST['company'] ?? ''),
-        'location' => trim($_POST['location'] ?? ''),
-        'description' => trim($_POST['description'] ?? ''),
-        'type' => trim($_POST['type'] ?? 'Full Time'),
-        'experience' => $experience,
-        'salary' => $salary,
-        'vacant_positions' => intval($_POST['vacant_positions'] ?? 1),
-        'phones' => $phones,
-        'emails' => $emails,
-        'posted_on' => $posted_on,
-        'posted_on_unix_ts' => $_POST['posted_on_unix_ts'] ?? time()
-    ];
+            $title = $input['title'] ?? '';
+            $company = $input['company'] ?? '';
+            $location = $input['location'] ?? '';
+            $description = $input['description'] ?? '';
+            $experience = $input['experience'] ?? '';
+            $type = $input['type'] ?? '';
+            $salary = $input['salary'] ?? '';
 
-    // Save the updated job data (e.g., to a JSON file)
-    $jobsFile = __DIR__ . '/../data/jobs.json';
-    $jobs = file_exists($jobsFile) ? json_decode(file_get_contents($jobsFile), true) : [];
-    foreach ($jobs as &$job) {
-        if ($job['id'] === $jobId) {
-            $job = $jobData; // Update the job
-            break;
+            if (empty($title)) {
+                echo json_encode(['success' => false, 'error' => 'Job title is required.']);
+                exit;
+            }
+
+            $apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyCWoj7th8DArYw7PGf83JAVcYsXBJHFjAk';
+
+            $prompt = "Generate a professional job description based on the following details:\n";
+            $prompt .= "- Job Title: $title\n";
+            $prompt .= "- Company: $company\n";
+            $prompt .= "- Location: $location\n";
+            $prompt .= "- Experience Required: $experience\n";
+            $prompt .= "- Job Type: $type\n";
+            $prompt .= "- Salary: $salary\n";
+            $prompt .= "- Description: $description";
+
+            $data = [
+                'contents' => [
+                    [
+                        'parts' => [
+                            ['text' => $prompt]
+                        ]
+                    ]
+                ]
+            ];
+
+            // Log the API request
+            error_log('API Request: ' . json_encode($data));
+
+            $ch = curl_init($apiUrl);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                'Content-Type: application/json'
+            ]);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+
+            $response = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $curlError = curl_error($ch);
+            curl_close($ch);
+
+            // Log the API response and HTTP code
+            error_log('HTTP Code: ' . $httpCode);
+            error_log('API Response: ' . $response);
+
+            if ($httpCode === 200) {
+                $responseData = json_decode($response, true);
+                $aiSummary = $responseData['candidates'][0]['content']['parts'][0]['text'] ?? '';
+                echo json_encode(['success' => true, 'ai_summary' => $aiSummary]);
+            } else {
+                error_log("API Error: HTTP Code $httpCode. cURL Error: $curlError");
+                echo json_encode(['success' => false, 'error' => 'Failed to generate AI summary.']);
+            }
+        } catch (Exception $e) {
+            error_log('Error: ' . $e->getMessage());
+            echo json_encode(['success' => false, 'error' => $e->getMessage()]);
         }
+        exit();
     }
-    file_put_contents($jobsFile, json_encode($jobs, JSON_PRETTY_PRINT));
 
-    // Redirect with success message
-    $_SESSION['admin_status'] = [
-        'message' => 'Job updated successfully!',
-        'type' => 'success'
-    ];
-    header('Location: dashboard.php?view=manage_jobs');
-    exit();
+    // Other actions (e.g., save_job)
+    if ($action === 'save_job') {
+        $jobId = $_POST['job_id'] ?? '';
+        $title = trim($_POST['title'] ?? '');
+        $company = trim($_POST['company'] ?? '');
+        $location = trim($_POST['location'] ?? '');
+        $description = trim($_POST['description'] ?? '');
+        $type = trim($_POST['type'] ?? '');
+        $experience = trim($_POST['experience'] ?? '');
+        $salary = trim($_POST['salary'] ?? '');
+        $phones = trim($_POST['phones'] ?? '');
+        $emails = trim($_POST['emails'] ?? '');
+        $vacant_positions = intval($_POST['vacant_positions'] ?? 1);
+        $aiSummary = trim($_POST['ai_summary'] ?? '');
+
+        // Validate required fields
+        if (empty($jobId) || empty($title)) {
+            $_SESSION['admin_status'] = [
+                'message' => 'Job ID and title are required.',
+                'type' => 'error'
+            ];
+            header('Location: dashboard.php?view=edit_job&id=' . urlencode($jobId));
+            exit();
+        }
+
+        // Load existing jobs
+        $jobsFile = __DIR__ . '/../data/jobs.json';
+        $jobs = file_exists($jobsFile) ? json_decode(file_get_contents($jobsFile), true) : [];
+
+        // Find and update the job
+        $jobUpdated = false;
+        foreach ($jobs as &$job) {
+            if ($job['id'] === $jobId) {
+                $job['title'] = $title;
+                $job['company'] = $company;
+                $job['location'] = $location;
+                $job['description'] = $description;
+                $job['type'] = $type;
+                $job['experience'] = $experience;
+                $job['salary'] = $salary;
+                $job['phones'] = $phones;
+                $job['emails'] = $emails;
+                $job['vacant_positions'] = $vacant_positions;
+                $job['ai_summary'] = $aiSummary; // Update the AI summary
+                $jobUpdated = true;
+                break;
+            }
+        }
+
+        // Save the updated jobs back to the file
+        if ($jobUpdated) {
+            file_put_contents($jobsFile, json_encode($jobs, JSON_PRETTY_PRINT));
+            $_SESSION['admin_status'] = [
+                'message' => 'Job updated successfully!',
+                'type' => 'success'
+            ];
+        } else {
+            $_SESSION['admin_status'] = [
+                'message' => 'Job not found.',
+                'type' => 'error'
+            ];
+        }
+
+        // Redirect back to the manage jobs page
+        header('Location: dashboard.php?view=manage_jobs');
+        exit();
+    }
 }
 
 // If no valid action was provided, redirect to the dashboard

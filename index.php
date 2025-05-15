@@ -47,6 +47,15 @@ if (!empty($_SESSION['feedback_alert'])) {
 // Initialize $filteredJobs with all jobs from $phpJobsArray for PHP logic
 $filteredJobs = $phpJobsArray;
 
+// Filter jobs based on job type
+$jobType = isset($_GET['type']) ? strtolower(trim($_GET['type'])) : '';
+if ($jobType === 'all' || empty($jobType)) {
+    $filteredJobs = $phpJobsArray; // Show all jobs if "All Jobs" is selected or no type is specified
+} else {
+    $filteredJobs = array_filter($phpJobsArray, function ($job) use ($jobType) {
+        return strtolower($job['type'] ?? '') === $jobType;
+    });
+}
 
 // 1. Apply Search Filter (using $phpJobsArray - should apply to the initial array)
 $search = isset($_GET['search']) ? strtolower(trim($_GET['search'])) : '';
@@ -65,7 +74,6 @@ if ($search !== '') {
     $filteredJobs = $tempJobs; // Update $filteredJobs with search results
 }
 
-
 // 2. Apply Date Filter (operates on the potentially search-filtered $filteredJobs)
 $filter = isset($_GET['filter']) ? $_GET['filter'] : 'all';
 $currentDate = time(); // PHP current Unix timestamp (seconds)
@@ -79,12 +87,8 @@ if ($filter !== 'all') {
 
     if ($daysToFilter > 0) {
         $cutoffDate = $currentDate - ($daysToFilter * 24 * 60 * 60); // Cutoff in seconds
-        // Iterate over the current $filteredJobs array (already includes search filter)
         foreach ($filteredJobs as $job) {
-            // Use the consistent 'posted_on_unix_ts' if available, fallback to strtotime if needed
-             $jobTimestamp = $job['posted_on_unix_ts'] ?? (isset($job['posted_on']) && is_string($job['posted_on']) ? strtotime($job['posted_on']) : 0);
-
-
+            $jobTimestamp = $job['posted_on_unix_ts'] ?? (isset($job['posted_on']) && is_string($job['posted_on']) ? strtotime($job['posted_on']) : 0);
             if ($jobTimestamp !== false && $jobTimestamp > 0 && $jobTimestamp >= $cutoffDate) {
                 $tempJobs[] = $job;
             }
@@ -93,32 +97,18 @@ if ($filter !== 'all') {
     }
 }
 
-// --- Sorting (Jobs are already sorted newest first from how they are added to JSON) ---
-// No need to explicitly sort here if the JSON file maintains newest-first order,
-// and we removed array_reverse below. If the JSON file order isn't guaranteed,
-// you would add a usort here to sort by 'posted_on_unix_ts' descending:
-/*
-usort($filteredJobs, function($a, $b) {
-    $ts_a = $a['posted_on_unix_ts'] ?? (strtotime($a['posted_on'] ?? '') ?: 0);
-    $ts_b = $b['posted_on_unix_ts'] ?? (strtotime($b['posted_on'] ?? '') ?: 0);
-    return $ts_b - $ts_a; // Descending order (newest first)
+// Sort jobs by posted date (descending)
+usort($filteredJobs, function ($a, $b) {
+    return ($b['posted_on_unix_ts'] ?? 0) <=> ($a['posted_on_unix_ts'] ?? 0);
 });
-*/
-
 
 // Then: apply pagination
 $limit = 10;
-$page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
+$page = max(1, intval($_GET['page'] ?? 1));
+$totalJobs = count($filteredJobs);
+$totalPages = ceil($totalJobs / $limit);
 $offset = ($page - 1) * $limit;
-
-// --- REMOVED array_reverse() HERE ---
-// $reversedFilteredJobs = array_reverse($filteredJobs); // Removed this line
-
-// Apply slice directly to $filteredJobs which is already sorted newest first
 $pagedJobs = array_slice($filteredJobs, $offset, $limit);
-
-
-$totalPages = ceil(count($filteredJobs) / $limit);
 
 ?>
 
@@ -298,19 +288,20 @@ $totalPages = ceil(count($filteredJobs) / $limit);
         <div class="content-wrapper">
             <aside class="sidebar">
                 <h4>Job Filters</h4>
-                <a href="?search=remote&filter=<?= urlencode($filter) ?>">💻 Remote</a>
-                <a href="?search=onsite&filter=<?= urlencode($filter) ?>">🏢 Onsite</a>
-                <a href="?search=hybrid&filter=<?= urlencode($filter) ?>">🌐 Hybrid</a>
+                <a href="?type=all">📋 All Jobs</a>
+                <a href="?type=remote&filter=<?= urlencode($filter) ?>">💻 Remote</a>
+                <a href="?type=onsite&filter=<?= urlencode($filter) ?>">🏢 Onsite</a>
+                <a href="?type=hybrid&filter=<?= urlencode($filter) ?>">🌐 Hybrid</a>
                 <h4>Quick Filters</h4>
-                <a href="?search=full-time&filter=<?= urlencode($filter) ?>">🕐 Full-Time</a>
-                <a href="?search=part-time&filter=<?= urlencode($filter) ?>">⌛ Part-Time</a>
-                <a href="?search=intern&filter=<?= urlencode($filter) ?>">🎓 Internships</a>
-                <a href="?search=developer&filter=<?= urlencode($filter) ?>">👨‍💻 Developer</a>
+                <a href="?type=full time&filter=<?= urlencode($filter) ?>">🕐 Full-Time</a>
+                <a href="?type=part time&filter=<?= urlencode($filter) ?>">⌛ Part-Time</a>
+                <a href="?type=internship&filter=<?= urlencode($filter) ?>">🎓 Internships</a>
+                <a href="?type=developer&filter=<?= urlencode($filter) ?>">👨‍💻 Developer</a>
                 <h4>Date Posted</h4>
-                <a href="?search=<?= urlencode($search) ?>&filter=all">All (<span id="countAll">0</span>)</a>
-                <a href="?search=<?= urlencode($search) ?>&filter=30">Past 30 Days (<span id="count30">0</span>)</a>
-                <a href="?search=<?= urlencode($search) ?>&filter=7">Past 7 Days (<span id="count7">0</span>)</a>
-                <a href="?search=<?= urlencode($search) ?>&filter=1">Past 24 Hours (<span id="count1">0</span>)</a>
+                <a href="?filter=all&type=<?= urlencode($jobType) ?>">All</a>
+                <a href="?filter=30&type=<?= urlencode($jobType) ?>">Past 30 Days</a>
+                <a href="?filter=7&type=<?= urlencode($jobType) ?>">Past 7 Days</a>
+                <a href="?filter=1&type=<?= urlencode($jobType) ?>">Past 24 Hours</a>
             </aside>
 
             <main>
@@ -336,7 +327,7 @@ $totalPages = ceil(count($filteredJobs) / $limit);
                             <?php endif; ?>
                         </h3>
                         <strong><?= htmlspecialchars($job['company'] ?? 'N/A') ?></strong> – <?= htmlspecialchars($job['location'] ?? 'N/A') ?><br>
-                        <p class="job-summary"><?= nl2br(htmlspecialchars(substr($job['description'] ?? '', 0, 200))) ?>...</p>
+                        <p class="job-summary"><?= nl2br(htmlspecialchars(substr($job['description'] ?? '', 0, 1200))) ?>...</p>
 
                         <!-- Expandable job details -->
                         <div class="job-details" style="display: none;">

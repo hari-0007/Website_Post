@@ -123,27 +123,33 @@ if ($loggedIn) {
 
             break;
         case 'edit_job':
-            $jobId = $_GET['id'] ?? null;
+            $jobId = $_GET['id'] ?? null; // Retrieve the job ID from the URL
             if ($jobId) {
                 $jobToEdit = null;
-                 // Find the job to edit in the $allJobs array
-                 foreach ($allJobs as $job) {
-                      if (isset($job['id']) && (string)$job['id'] === (string)$jobId) {
-                           $jobToEdit = $job;
-                           break;
-                      }
-                 }
-                 // If job not found, redirect to manage jobs with an error
-                 if (!$jobToEdit) {
-                      $_SESSION['admin_status'] = ['message' => 'Error: Job not found.', 'type' => 'error'];
-                      header('Location: dashboard.php?view=manage_jobs');
-                      exit;
-                 }
+                // Find the job to edit in the $allJobs array
+                foreach ($allJobs as $job) {
+                    if (isset($job['id']) && (string)$job['id'] === (string)$jobId) {
+                        $jobToEdit = $job;
+                        break;
+                    }
+                }
+                // If job not found, redirect to manage jobs with an error
+                if (!$jobToEdit) {
+                    $_SESSION['admin_status'] = [
+                        'message' => 'Error: Job not found.',
+                        'type' => 'error'
+                    ];
+                    header('Location: dashboard.php?view=manage_jobs');
+                    exit;
+                }
             } else {
                 // If no job ID provided, redirect to manage jobs with a warning
-                 $_SESSION['admin_status'] = ['message' => 'Warning: No job ID specified for editing.', 'type' => 'warning'];
-                 header('Location: dashboard.php?view=manage_jobs');
-                 exit;
+                $_SESSION['admin_status'] = [
+                    'message' => 'Warning: No job ID specified for editing.',
+                    'type' => 'warning'
+                ];
+                header('Location: dashboard.php?view=manage_jobs');
+                exit;
             }
             break;
         case 'generate_message':

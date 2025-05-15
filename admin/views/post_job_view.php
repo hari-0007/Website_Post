@@ -107,6 +107,20 @@
     }
 </style>
 
+<script>
+    function toggleCustomExperience(select) {
+        const customExperienceInput = document.getElementById('custom_experience');
+        if (select.value === 'other') {
+            customExperienceInput.style.display = 'block';
+            customExperienceInput.required = true; // Make it required when visible
+        } else {
+            customExperienceInput.style.display = 'none';
+            customExperienceInput.required = false; // Remove required when hidden
+            customExperienceInput.value = ''; // Clear the input value
+        }
+    }
+</script>
+
 <div id="postJobPage" class="post-job-container">
     <h1>Post a Job</h1>
 
@@ -117,22 +131,22 @@
         <?php unset($_SESSION['admin_status']); // Clear the status message ?>
     <?php endif; ?>
 
-    <form method="POST" action="job_actions.php">
+    <form method="POST" action="post_job.php">
         <label for="title">Job Title:</label>
         <input type="text" id="title" name="title" required>
 
         <label for="company">Company:</label>
-        <input type="text" id="company" name="company" required>
+        <input type="text" id="company" name="company" placeholder="Optional">
 
         <label for="location">Location:</label>
-        <input type="text" id="location" name="location" required>
+        <input type="text" id="location" name="location" placeholder="Optional">
 
         <label for="description">Description:</label>
-        <textarea id="description" name="description" required></textarea>
+        <textarea id="description" name="description" placeholder="Optional"></textarea>
 
         <label for="experience">Experience:</label>
-        <select id="experience" name="experience" required>
-            <option value="0">Select Experience</option>
+        <select id="experience" name="experience" onchange="toggleCustomExperience(this)">
+            <option value="0" selected>No Experience</option>
             <option value="Fresher">Fresher</option>
             <option value="Internship">Internship</option>
             <option value="1">1 Year</option>
@@ -140,24 +154,48 @@
             <option value="3">3 Years</option>
             <option value="4">4 Years</option>
             <option value="5">5 Years</option>
+    
+            <option value="6">6 Years</option>
             <option value="7">7 Years</option>
             <option value="8">8 Years</option>
             <option value="9">9 Years</option>
             <option value="10">10 Years</option>
-            <option value="15+">15+ Years</option>
+            <option value="11">11 Years</option>
+            <option value="12">12 Years</option>
+            <option value="13">13 Years</option>
+            <option value="14">14 Years</option>
+            <option value="15">15 Years</option>
+            <option value="16">16 Years</option>
+            <option value="17">17 Years</option>
+            <option value="18">18 Years</option>
+            <option value="19">19 Years</option>
+            <option value="20">20 Years</option>
+            <option value="21">20+ Years</option>
+        </select>
+        <input type="text" id="custom_experience" name="custom_experience" placeholder="Enter custom experience" style="display: none; margin-top: 10px;">
+
+        <label for="type">Job Type:</label>
+        <select id="type" name="type" required>
+            <option value="Full Time">Full Time</option>
+            <option value="Part Time">Part Time</option>
+            <option value="Internship">Internship</option>
+            <option value="Remote">Remote</option>
+            <option value="Hybrid">Hybrid</option>
+            <option value="Onsite">Onsite</option>
+            <option value="Developer">Developer</option>
         </select>
 
         <label for="salary">Salary:</label>
-        <input type="text" id="salary" name="salary" placeholder="e.g., $50,000 - $60,000 per year" required>
+        <input type="text" id="salary" name="salary" placeholder="e.g., $50,000 - $60,000 per year" value="0">
 
         <label for="phones">Phone:</label>
-        <input type="text" id="phones" name="phones" required>
+        <input type="text" id="phones" name="phones" placeholder="Optional">
 
         <label for="emails">Email:</label>
-        <input type="email" id="emails" name="emails" required>
+        <input type="email" id="emails" name="emails" placeholder="Optional">
 
         <label for="vacant_positions">Vacant Positions:</label>
-        <input type="number" id="vacant_positions" name="vacant_positions" min="1" required>
+        <input type="number" id="vacant_positions" name="vacant_positions" min="1" value="1">
 
         <button type="submit">Post Job</button>
     </form>

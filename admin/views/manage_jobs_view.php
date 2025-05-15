@@ -8,6 +8,41 @@
 // Ensure $allJobs is an array, even if loadJobs failed
 $allJobs = $allJobs ?? [];
 
+// Get search and filter inputs
+$search = $_GET['search'] ?? '';
+$startDate = $_GET['start_date'] ?? '';
+$endDate = $_GET['end_date'] ?? '';
+
+// Filter jobs based on search and date range
+$filteredJobs = array_filter($allJobs, function ($job) use ($search, $startDate, $endDate) {
+    $matchesSearch = empty($search) || stripos($job['title'] ?? '', $search) !== false || stripos($job['company'] ?? '', $search) !== false || stripos($job['location'] ?? '', $search) !== false;
+
+    $matchesDate = true;
+    if (!empty($startDate)) {
+        $matchesDate = $matchesDate && (strtotime($job['posted_at'] ?? $job['posted_on'] ?? '') >= strtotime($startDate));
+    }
+    if (!empty($endDate)) {
+        $matchesDate = $matchesDate && (strtotime($job['posted_at'] ?? $job['posted_on'] ?? '') <= strtotime($endDate));
+    }
+
+    return $matchesSearch && $matchesDate;
+});
+
+// Sort filtered jobs by posted_at or posted_on_unix_ts in descending order
+usort($filteredJobs, function ($a, $b) {
+    return strtotime($b['posted_at'] ?? $b['posted_on'] ?? 0) - strtotime($a['posted_at'] ?? $a['posted_on'] ?? 0);
+});
+
+// Pagination logic
+$jobsPerPage = 20;
+$totalJobs = count($filteredJobs);
+$totalPages = ceil($totalJobs / $jobsPerPage);
+$currentPage = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+
+// Slice the filtered and sorted jobs array for the current page
+$startIndex = ($currentPage - 1) * $jobsPerPage;
+$pagedJobs = array_slice($filteredJobs, $startIndex, $jobsPerPage);
+
 ?>
 <div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
     <h3 style="margin: 0;">Manage Jobs</h3>

@@ -1,266 +1,303 @@
 <?php
+session_start();
 
-// admin/job_actions.php - Handles Job Management Actions
+// Define the path to your jobs data file
+define('JOBS_FILE_PATH', '/../data/jobs.json');
+// define('OPENAI_API_KEY', 'your_openai_api_key_here'); // Example: For a real AI service
 
-session_start(); // Start the session
+// --- Helper Functions ---
 
-// Include configuration and helper functions
-require_once __DIR__ . '/includes/config.php';
-require_once __DIR__ . '/includes/job_helpers.php';
-
-// Check if the user is logged in. If not, redirect to login page.
-if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
-    header('Location: dashboard.php'); // Redirect to the main page which handles login
-    exit;
+/**
+ * Loads jobs from the JSON file.
+ * @return array An array of jobs, or an empty array on failure.
+ */
+function loadJobs() {
+    if (!file_exists(JOBS_FILE_PATH)) {
+        return [];
+    }
+    $json = file_get_contents(JOBS_FILE_PATH);
+    if ($json === false) {
+        return []; // Or handle error more explicitly
+    }
+    $jobs = json_decode($json, true);
+    return is_array($jobs) ? $jobs : [];
 }
 
-// Initialize status messages (will be stored in session and displayed on dashboard.php)
-$_SESSION['admin_status'] = ['message' => '', 'type' => ''];
-
-// Determine the action from GET or POST request
-$action = $_GET['action'] ?? $_POST['action'] ?? null;
-$jobId = $_GET['id'] ?? $_POST['job_id'] ?? null; // Get job ID from GET or POST
-
-// Load existing jobs data (needed for delete, edit POST, and potentially post POST)
-$allJobs = loadJobs($jobsFilename);
-
-// Handle Delete Action (Triggered by GET request from manage_jobs)
-if ($action === 'delete_job' && $jobId && $_SERVER['REQUEST_METHOD'] === 'GET') {
-    $initialCount = count($allJobs);
-    // Filter out the job with the matching ID
-    $updatedJobs = array_filter($allJobs, function($job) use ($jobId) {
-        return ($job['id'] ?? null) !== $jobId;
-    });
-
-    if (count($updatedJobs) < $initialCount) {
-        // Re-index the array after filtering
-        $updatedJobs = array_values($updatedJobs);
-
-        if (saveJobs($updatedJobs, $jobsFilename)) {
-            $_SESSION['admin_status'] = ['message' => 'Success: Job deleted successfully!', 'type' => 'success'];
-        } else {
-            $_SESSION['admin_status'] = ['message' => 'Error: Could not save updated job data to file.', 'type' => 'error'];
-            error_log("Admin Delete Job Error: Could not write to jobs.json after deletion: " . $jobsFilename);
+/**
+ * Saves jobs to the JSON file.
+ * @param array $jobs The array of jobs to save.
+ * @return bool True on success, false on failure.
+ */
+function saveJobs(array $jobs) {
+    $json = json_encode($jobs, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+    if ($json === false) {
+        return false; // JSON encoding error
+    }
+    if (file_put_contents(JOBS_FILE_PATH, $json) === false) {
+        // Attempt to create the directory if it doesn't exist
+        $dir = dirname(JOBS_FILE_PATH);
+        if (!is_dir($dir)) {
+            if (!mkdir($dir, 0777, true) && !is_dir($dir)) { // Check if mkdir failed
+                 error_log('Failed to create directory: ' . $dir);
+                 return false;
+            }
         }
-    } else {
-        $_SESSION['admin_status'] = ['message' => 'Error: Job with specified ID not found for deletion.', 'type' => 'error'];
-        error_log("Admin Delete Job Error: Job ID not found: " . $jobId);
+        // Try saving again after ensuring directory exists
+        if (file_put_contents(JOBS_FILE_PATH, $json) === false) {
+            error_log('Failed to write to jobs file: ' . JOBS_FILE_PATH);
+            return false;
+        }
+    }
+    return true;
+}
+
+/**
+ * Generates a unique ID for a new job.
+ * @return string A unique ID.
+ */
+function generateUniqueId() {
+    return uniqid('job_', true);
+}
+
+/**
+ * Generates an AI summary for job details.
+ * (Mock implementation - replace with actual AI API call)
+ * @param array $jobDetails Associative array of job details.
+ * @return array ['success' => bool, 'ai_summary' => string (if success), 'error' => string (if failure)]
+ */
+function generateAISummary(array $jobDetails) {
+    // Basic validation
+    if (empty($jobDetails['title'])) {
+        return ['success' => false, 'error' => 'Job title is required to generate AI summary.'];
     }
 
-    // Redirect back to manage jobs view
-    header('Location: dashboard.php?view=manage_jobs');
-    exit;
+    // Construct a simple prompt/summary
+    $summaryParts = [];
+    $summaryParts[] = "We are looking for a talented " . htmlspecialchars($jobDetails['title'] ?? 'individual');
+    if (!empty($jobDetails['company'])) {
+        $summaryParts[] = "to join our team at " . htmlspecialchars($jobDetails['company']) . ".";
+    } else {
+        $summaryParts[] = "to join our team.";
+    }
+    if (!empty($jobDetails['location'])) {
+        $summaryParts[] = "The role is based in " . htmlspecialchars($jobDetails['location']) . ".";
+    }
+    $summaryParts[] = "This is a " . htmlspecialchars(strtolower($jobDetails['type'] ?? 'challenging')) . " position.";
+    if (!empty($jobDetails['experience']) && $jobDetails['experience'] !== '0') {
+        $summaryParts[] = "Ideal candidates will have " . htmlspecialchars($jobDetails['experience']) . " of experience.";
+    }
+    if (!empty($jobDetails['description'])) {
+        $descriptionPreview = substr(strip_tags($jobDetails['description']), 0, 150);
+        $summaryParts[] = "Key responsibilities will involve: " . htmlspecialchars($descriptionPreview) . (strlen($jobDetails['description']) > 150 ? "..." : ".");
+    }
+    if (!empty($jobDetails['salary']) && strtolower($jobDetails['salary']) !== 'not disclosed') {
+        $summaryParts[] = "The offered salary is " . htmlspecialchars($jobDetails['salary']) . ".";
+    }
+    $summaryParts[] = "If you are passionate and meet the criteria, we encourage you to apply.";
+
+    // In a real scenario, you would send these details to an AI API.
+    // e.g., callOpenAI($prompt, OPENAI_API_KEY);
+    // For now, we just concatenate them.
+    $generatedSummary = implode(" ", $summaryParts);
+
+    return ['success' => true, 'ai_summary' => $generatedSummary];
 }
 
-// Handle POST Job Submission (Triggered by POST request from post_job_view.php)
-if ($action === 'post_job' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Get form data
-    $formData = $_POST;
 
-    // Basic validation
-    if (empty($formData['title']) || empty($formData['company']) || empty($formData['location']) || empty($formData['description']) || empty($formData['phones']) || empty($formData['emails'])) {
-        $_SESSION['admin_status'] = ['message' => 'Error: Title, Company, Location, Description, Phones, and Emails are required.', 'type' => 'error'];
-        // Redirect back to post_job view with form data (handled by dashboard.php reading POST)
-        header('Location: dashboard.php?view=post_job'); // Redirect to allow dashboard.php to display errors and old data
+// --- Request Handling ---
+
+// Simplified admin check for demonstration. Implement robust authentication.
+if (!isset($_SESSION['admin_logged_in']) || !$_SESSION['admin_logged_in']) {
+    if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
+        header('Content-Type: application/json');
+        echo json_encode(['success' => false, 'error' => 'Unauthorized access. Please log in.']);
         exit;
     } else {
-        // Data seems valid, create new job
-        $newJobId = time() . '_' . mt_rand(1000, 9999); // Simple unique ID
-        $postedOn = date('Y-m-d H:i:s');
-        $postedOnUnixTs = time();
-        $vacantPositions = filter_var($formData['vacant_positions'] ?? 1, FILTER_VALIDATE_INT);
-        $vacantPositions = ($vacantPositions === false || $vacantPositions < 1) ? 1 : $vacantPositions;
-        $type = trim($formData['type'] ?? 'Full Time'); // Default to Full Time
-
-        $newJob = [
-            'id' => $newJobId,
-            'title' => trim($formData['title']),
-            'company' => trim($formData['company']),
-            'location' => trim($formData['location']),
-            'description' => trim($formData['description']),
-            'type' => $type, // Save the job type
-            'posted_on' => $postedOn,
-            'posted_on_unix_ts' => $postedOnUnixTs,
-            'phones' => trim($formData['phones']),
-            'emails' => trim($formData['emails']),
-            'vacant_positions' => $vacantPositions,
-            'experience' => trim($formData['experience'] ?? '0'), // Default to "0" (Select Experience)
-            'salary' => trim($formData['salary'] ?? ''),
-        ];
-
-        // Add the new job to the beginning of the array (most recent first)
-        array_unshift($allJobs, $newJob);
-
-        // Save the updated array
-        if (saveJobs($allJobs, $jobsFilename)) {
-            $_SESSION['admin_status'] = ['message' => 'Success: Job "' . htmlspecialchars($newJob['title']) . '" posted successfully!', 'type' => 'success'];
-            // Redirect to manage jobs view after successful post
-            header('Location: dashboard.php?view=manage_jobs');
-            exit;
-        } else {
-            $_SESSION['admin_status'] = ['message' => 'Error: Could not save job data to file.', 'type' => 'error'];
-            error_log("Admin Post Job Error: Could not write to jobs.json: " . $jobsFilename);
-            // Redirect back to post_job view to show error (dashboard.php will handle displaying it)
-            header('Location: dashboard.php?view=post_job');
-            exit;
-        }
+        $_SESSION['admin_status'] = ['type' => 'error', 'message' => 'Please log in to perform this action.'];
+        header('Location: dashboard.php'); // Or login.php
+        exit;
     }
 }
 
-// Handle Edit Job Submission (Triggered by POST request from edit_job_view.php)
+
+$isAjax = isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+$inputData = [];
+$action = '';
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $action = $_POST['action'] ?? '';
-
-    // Handle regenerating AI summary
-    if ($action === 'regenerate_summary') {
-        header('Content-Type: application/json');
-
-        try {
-            $input = json_decode(file_get_contents('php://input'), true);
-
-            $title = $input['title'] ?? '';
-            $company = $input['company'] ?? '';
-            $location = $input['location'] ?? '';
-            $description = $input['description'] ?? '';
-            $experience = $input['experience'] ?? '';
-            $type = $input['type'] ?? '';
-            $salary = $input['salary'] ?? '';
-
-            if (empty($title)) {
-                echo json_encode(['success' => false, 'error' => 'Job title is required.']);
-                exit;
-            }
-
-            $apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyCWoj7th8DArYw7PGf83JAVcYsXBJHFjAk';
-
-            $prompt = "Generate a professional job description based on the following details:\n";
-            $prompt .= "- Job Title: $title\n";
-            $prompt .= "- Company: $company\n";
-            $prompt .= "- Location: $location\n";
-            $prompt .= "- Experience Required: $experience\n";
-            $prompt .= "- Job Type: $type\n";
-            $prompt .= "- Salary: $salary\n";
-            $prompt .= "- Description: $description";
-
-            $data = [
-                'contents' => [
-                    [
-                        'parts' => [
-                            ['text' => $prompt]
-                        ]
-                    ]
-                ]
-            ];
-
-            // Log the API request
-            error_log('API Request: ' . json_encode($data));
-
-            $ch = curl_init($apiUrl);
-            curl_setopt($ch, CURLOPT_POST, true);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, [
-                'Content-Type: application/json'
-            ]);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-
-            $response = curl_exec($ch);
-            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-            $curlError = curl_error($ch);
-            curl_close($ch);
-
-            // Log the API response and HTTP code
-            error_log('HTTP Code: ' . $httpCode);
-            error_log('API Response: ' . $response);
-
-            if ($httpCode === 200) {
-                $responseData = json_decode($response, true);
-                $aiSummary = $responseData['candidates'][0]['content']['parts'][0]['text'] ?? '';
-                echo json_encode(['success' => true, 'ai_summary' => $aiSummary]);
-            } else {
-                error_log("API Error: HTTP Code $httpCode. cURL Error: $curlError");
-                echo json_encode(['success' => false, 'error' => 'Failed to generate AI summary.']);
-            }
-        } catch (Exception $e) {
-            error_log('Error: ' . $e->getMessage());
-            echo json_encode(['success' => false, 'error' => $e->getMessage()]);
-        }
-        exit();
+    // Check if content type is JSON
+    if (isset($_SERVER['CONTENT_TYPE']) && stripos($_SERVER['CONTENT_TYPE'], 'application/json') !== false) {
+        $jsonPayload = file_get_contents('php://input');
+        $inputData = json_decode($jsonPayload, true) ?: [];
+    } else {
+        // Assume form-data
+        $inputData = $_POST;
     }
+    $action = $inputData['action'] ?? $_POST['action'] ?? ''; // Get action from payload or POST
+} elseif ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    $inputData = $_GET;
+    $action = $_GET['action'] ?? '';
+}
 
-    // Other actions (e.g., save_job)
-    if ($action === 'save_job') {
-        $jobId = $_POST['job_id'] ?? '';
-        $title = trim($_POST['title'] ?? '');
-        $company = trim($_POST['company'] ?? '');
-        $location = trim($_POST['location'] ?? '');
-        $description = trim($_POST['description'] ?? '');
-        $type = trim($_POST['type'] ?? '');
-        $experience = trim($_POST['experience'] ?? '');
-        $salary = trim($_POST['salary'] ?? '');
-        $phones = trim($_POST['phones'] ?? '');
-        $emails = trim($_POST['emails'] ?? '');
-        $vacant_positions = intval($_POST['vacant_positions'] ?? 1);
-        $aiSummary = trim($_POST['ai_summary'] ?? '');
+if ($isAjax) {
+    header('Content-Type: application/json');
+}
 
+switch ($action) {
+    case 'generate_ai_summary_for_new_job':
+    case 'regenerate_summary': // Handles both new job summary and edit job summary regeneration
+        if (!$isAjax) {
+            echo json_encode(['success' => false, 'error' => 'Invalid request method for summary generation.']);
+            exit;
+        }
+        // Extract details needed for summary generation
+        $jobDetailsForSummary = [
+            'title'       => $inputData['title'] ?? '',
+            'company'     => $inputData['company'] ?? '',
+            'location'    => $inputData['location'] ?? '',
+            'description' => $inputData['description'] ?? '',
+            'experience'  => $inputData['experience'] ?? '',
+            'type'        => $inputData['type'] ?? '',
+            'salary'      => $inputData['salary'] ?? '',
+        ];
+        $summaryResult = generateAISummary($jobDetailsForSummary);
+        echo json_encode($summaryResult);
+        break;
+
+    case 'save_new_job':
+        if (!$isAjax || $_SERVER['REQUEST_METHOD'] !== 'POST') {
+             echo json_encode(['success' => false, 'error' => 'Invalid request method for saving job.']);
+            exit;
+        }
         // Validate required fields
-        if (empty($jobId) || empty($title)) {
-            $_SESSION['admin_status'] = [
-                'message' => 'Job ID and title are required.',
-                'type' => 'error'
-            ];
-            header('Location: dashboard.php?view=edit_job&id=' . urlencode($jobId));
-            exit();
+        if (empty($inputData['title'])) {
+            echo json_encode(['success' => false, 'error' => 'Job title is required.']);
+            exit;
+        }
+        if (empty($inputData['phones']) && empty($inputData['emails'])) {
+            echo json_encode(['success' => false, 'error' => 'At least one contact method (phone or email) is required.']);
+            exit;
         }
 
-        // Load existing jobs
-        $jobsFile = __DIR__ . '/../data/jobs.json';
-        $jobs = file_exists($jobsFile) ? json_decode(file_get_contents($jobsFile), true) : [];
+        $jobs = loadJobs();
+        $newJob = [
+            'id'                => generateUniqueId(),
+            'title'             => trim($inputData['title']),
+            'company'           => trim($inputData['company'] ?? ''),
+            'location'          => trim($inputData['location'] ?? ''),
+            'description'       => trim($inputData['description'] ?? ''),
+            'experience'        => trim($inputData['experience'] ?? '0'),
+            'type'              => trim($inputData['type'] ?? 'Full Time'),
+            'salary'            => trim($inputData['salary'] ?? 'Not Disclosed'),
+            'phones'            => trim($inputData['phones'] ?? ''),
+            'emails'            => trim($inputData['emails'] ?? ''),
+            'vacant_positions'  => (int)($inputData['vacant_positions'] ?? 1),
+            'ai_summary'        => trim($inputData['ai_summary'] ?? ''),
+            'posted_on'         => date('Y-m-d H:i:s'),
+            'posted_on_unix_ts' => time(),
+            // 'posted_by' => $_SESSION['admin_username'] ?? 'admin' // Optional: track who posted
+        ];
 
-        // Find and update the job
+        $jobs[] = $newJob;
+
+        if (saveJobs($jobs)) {
+            echo json_encode(['success' => true, 'message' => 'Job posted successfully!']);
+        } else {
+            echo json_encode(['success' => false, 'error' => 'Failed to save job. Check server logs.']);
+        }
+        break;
+
+    case 'save_job': // For editing existing jobs (traditional form post or AJAX)
+        $jobId = $inputData['job_id'] ?? null;
+        if (empty($jobId)) {
+            if ($isAjax) echo json_encode(['success' => false, 'error' => 'Job ID is missing.']);
+            else { $_SESSION['admin_status'] = ['type' => 'error', 'message' => 'Job ID is missing.']; header('Location: dashboard.php?view=manage_jobs'); }
+            exit;
+        }
+        if (empty($inputData['title'])) {
+             if ($isAjax) echo json_encode(['success' => false, 'error' => 'Job title is required.']);
+             else { $_SESSION['admin_status'] = ['type' => 'error', 'message' => 'Job title is required.']; header('Location: dashboard.php?view=edit_job&id=' . urlencode($jobId)); }
+            exit;
+        }
+         if (empty($inputData['phones']) && empty($inputData['emails'])) {
+            if ($isAjax) echo json_encode(['success' => false, 'error' => 'At least one contact method (phone or email) is required.']);
+            else { $_SESSION['admin_status'] = ['type' => 'error', 'message' => 'At least one contact method (phone or email) is required.']; header('Location: dashboard.php?view=edit_job&id=' . urlencode($jobId)); }
+            exit;
+        }
+
+
+        $jobs = loadJobs();
         $jobUpdated = false;
-        foreach ($jobs as &$job) {
+        foreach ($jobs as $index => &$job) { // Use reference &$job
             if ($job['id'] === $jobId) {
-                $job['title'] = $title;
-                $job['company'] = $company;
-                $job['location'] = $location;
-                $job['description'] = $description;
-                $job['type'] = $type;
-                $job['experience'] = $experience;
-                $job['salary'] = $salary;
-                $job['phones'] = $phones;
-                $job['emails'] = $emails;
-                $job['vacant_positions'] = $vacant_positions;
-                $job['ai_summary'] = $aiSummary; // Update the AI summary
+                $job['title']             = trim($inputData['title']);
+                $job['company']           = trim($inputData['company'] ?? $job['company']);
+                $job['location']          = trim($inputData['location'] ?? $job['location']);
+                $job['description']       = trim($inputData['description'] ?? $job['description']);
+                $job['type']              = trim($inputData['type'] ?? $job['type']);
+                $job['experience']        = trim($inputData['experience'] ?? $job['experience']);
+                $job['salary']            = trim($inputData['salary'] ?? $job['salary']);
+                $job['vacant_positions']  = (int)($inputData['vacant_positions'] ?? $job['vacant_positions']);
+                $job['phones']            = trim($inputData['phones'] ?? $job['phones']);
+                $job['emails']            = trim($inputData['emails'] ?? $job['emails']);
+                $job['ai_summary']        = trim($inputData['ai_summary'] ?? $job['ai_summary']);
+                // posted_on and posted_on_unix_ts usually don't change on edit, unless specified
+                // If 'posted_on' is submitted and different, update it.
+                if (isset($inputData['posted_on']) && $inputData['posted_on'] !== $job['posted_on']) {
+                    $newTimestamp = strtotime($inputData['posted_on']);
+                    if ($newTimestamp) {
+                        $job['posted_on'] = date('Y-m-d H:i:s', $newTimestamp);
+                        $job['posted_on_unix_ts'] = $newTimestamp;
+                    }
+                }
+                // Or, add an 'updated_at' field
+                // $job['updated_at'] = date('Y-m-d H:i:s');
                 $jobUpdated = true;
                 break;
             }
         }
 
-        // Save the updated jobs back to the file
-        if ($jobUpdated) {
-            file_put_contents($jobsFile, json_encode($jobs, JSON_PRETTY_PRINT));
-            $_SESSION['admin_status'] = [
-                'message' => 'Job updated successfully!',
-                'type' => 'success'
-            ];
+        if ($jobUpdated && saveJobs($jobs)) {
+            if ($isAjax) echo json_encode(['success' => true, 'message' => 'Job updated successfully!']);
+            else { $_SESSION['admin_status'] = ['type' => 'success', 'message' => 'Job updated successfully!']; header('Location: dashboard.php?view=manage_jobs'); }
         } else {
-            $_SESSION['admin_status'] = [
-                'message' => 'Job not found.',
-                'type' => 'error'
-            ];
+            if ($isAjax) echo json_encode(['success' => false, 'error' => $jobUpdated ? 'Failed to save updated job.' : 'Job not found.']);
+            else { $_SESSION['admin_status'] = ['type' => 'error', 'message' => $jobUpdated ? 'Failed to save updated job.' : 'Job not found.']; header('Location: dashboard.php?view=edit_job&id=' . urlencode($jobId)); }
+        }
+        break;
+
+    case 'delete_job':
+        $jobId = $inputData['id'] ?? null;
+        if (empty($jobId)) {
+            if ($isAjax) echo json_encode(['success' => false, 'error' => 'Job ID is missing.']);
+            else { $_SESSION['admin_status'] = ['type' => 'error', 'message' => 'Job ID is missing.']; header('Location: dashboard.php?view=manage_jobs'); }
+            exit;
         }
 
-        // Redirect back to the manage jobs page
-        header('Location: dashboard.php?view=manage_jobs');
-        exit();
-    }
+        $jobs = loadJobs();
+        $initialCount = count($jobs);
+        $jobs = array_filter($jobs, function ($job) use ($jobId) {
+            return $job['id'] !== $jobId;
+        });
+
+        if (count($jobs) < $initialCount && saveJobs(array_values($jobs))) { // Re-index array
+             if ($isAjax) echo json_encode(['success' => true, 'message' => 'Job deleted successfully!']);
+             else { $_SESSION['admin_status'] = ['type' => 'success', 'message' => 'Job deleted successfully!']; header('Location: dashboard.php?view=manage_jobs'); }
+        } else {
+            if ($isAjax) echo json_encode(['success' => false, 'error' => (count($jobs) < $initialCount) ? 'Failed to save after deletion.' : 'Job not found or already deleted.']);
+            else { $_SESSION['admin_status'] = ['type' => 'error', 'message' => (count($jobs) < $initialCount) ? 'Failed to save after deletion.' : 'Job not found or already deleted.']; header('Location: dashboard.php?view=manage_jobs'); }
+        }
+        break;
+
+    default:
+        if ($isAjax) {
+            echo json_encode(['success' => false, 'error' => 'Invalid action specified.']);
+        } else {
+            // For non-AJAX, redirect or show error page
+            $_SESSION['admin_status'] = ['type' => 'error', 'message' => 'Invalid action.'];
+            header('Location: dashboard.php');
+        }
+        break;
 }
-
-// If no valid action was provided, redirect to the dashboard
-$_SESSION['admin_status'] = ['message' => 'Invalid job action.', 'type' => 'error'];
-header('Location: dashboard.php');
 exit;
-
 ?>

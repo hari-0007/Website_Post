@@ -36,6 +36,44 @@ if (file_exists($filename)) {
      error_log("Frontend Error: Job data file not found: " . $filename);
 }
 
+// Filepath for the daily visitor counter
+$visitorCounterFile = __DIR__ . '/data/daily_visitors.json';
+
+// Function to increment the visitor count for the current day
+function incrementDailyVisitorCounter($filePath) {
+    // Get today's date
+    $today = date('Y-m-d');
+
+    // Read the current data
+    if (!file_exists($filePath)) {
+        $visitorData = [];
+    } else {
+        $visitorData = json_decode(file_get_contents($filePath), true);
+        if (!is_array($visitorData)) {
+            $visitorData = [];
+        }
+    }
+
+    // Increment the count for today
+    if (!isset($visitorData[$today])) {
+        $visitorData[$today] = 0;
+    }
+    $visitorData[$today]++;
+
+    // Save the updated data back to the file
+    file_put_contents($filePath, json_encode($visitorData));
+
+    return $visitorData[$today];
+}
+
+// Check if the visitor is unique using a cookie
+if (!isset($_COOKIE['unique_visitor'])) {
+    // Set a cookie to track the unique visitor (expires in 24 hours)
+    setcookie('unique_visitor', '1', time() + (24 * 60 * 60), '/');
+
+    // Increment the daily visitor counter
+    incrementDailyVisitorCounter($visitorCounterFile);
+}
 
 // Feedback alert (Remains the same)
 if (!empty($_SESSION['feedback_alert'])) {

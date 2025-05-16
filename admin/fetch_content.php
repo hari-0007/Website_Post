@@ -45,6 +45,47 @@ $users = [];
 $jobToEdit = null; // For edit_job view
 $whatsappMessage = null; // Initialize for generate_message view
 
+// Filepath for the daily visitor counter
+$visitorCounterFile = __DIR__ . '/../data/daily_visitors.json';
+
+// Function to retrieve daily visitor data
+function getDailyVisitorData($filePath) {
+    if (!file_exists($filePath)) {
+        return [];
+    }
+
+    $visitorData = json_decode(file_get_contents($filePath), true);
+    if (!is_array($visitorData)) {
+        return [];
+    }
+
+    return $visitorData;
+}
+
+// Get the daily visitor data
+$dailyVisitorData = getDailyVisitorData($visitorCounterFile);
+
+// Prepare data for the visitors graph (last 30 days)
+$visitorGraphLabels = [];
+$visitorGraphData = [];
+for ($i = 29; $i >= 0; $i--) {
+    $date = date('Y-m-d', strtotime("-$i days"));
+    $visitorGraphLabels[] = date('M d', strtotime($date)); // Format as "Jan 01"
+    $visitorGraphData[] = $dailyVisitorData[$date] ?? 0; // Use 0 if no data for the date
+}
+
+// Calculate total views (unique visitors)
+$totalViews = array_sum($dailyVisitorData);
+
+// Calculate monthly visitors (current month only)
+$currentMonth = date('Y-m');
+$monthlyVisitors = 0;
+foreach ($dailyVisitorData as $date => $count) {
+    if (strpos($date, $currentMonth) === 0) {
+        $monthlyVisitors += $count;
+    }
+}
+
 // Load necessary data or perform actions based on the requested view
 switch ($requestedView) {
     case 'dashboard':

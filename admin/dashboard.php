@@ -206,6 +206,54 @@ require_once __DIR__ . '/partials/header.php';
 
 ?>
 
+<style>
+    .stats-grid {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+
+    .stat-card {
+        flex: 1;
+        padding: 15px;
+        background-color: #f9f9f9;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        text-align: center;
+    }
+
+    .stat-card h4 {
+        margin-bottom: 10px;
+        font-size: 1.2rem;
+        color: #333;
+    }
+
+    .stat-card p {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #007bff;
+    }
+
+    .chart-container {
+        margin-top: 20px;
+        padding: 15px;
+        background-color: #f9f9f9;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+    }
+
+    .chart-container h3 {
+        margin-bottom: 10px;
+        font-size: 1.5rem;
+        color: #333;
+    }
+
+    canvas {
+        max-width: 100%;
+        height: auto;
+    }
+</style>
+
     <div class="container">
         <h2>Admin Dashboard</h2>
         <div class="admin-nav">

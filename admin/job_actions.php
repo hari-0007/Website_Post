@@ -1,8 +1,8 @@
 <?php
 session_start();
 
-// Define the path to your jobs data file
-define('JOBS_FILE_PATH', '/../data/jobs.json');
+// Define the path to your jobs data file using __DIR__ for robustness
+define('JOBS_FILE_PATH', __DIR__ . '/../data/jobs.json');
 // define('OPENAI_API_KEY', 'your_openai_api_key_here'); // Example: For a real AI service
 
 // --- Helper Functions ---

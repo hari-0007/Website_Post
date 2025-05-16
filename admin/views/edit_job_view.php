@@ -146,7 +146,10 @@ if(empty($displayData['id']) && isset($jobId)) {
         try {
             const response = await fetch('job_actions.php', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest' // This header is crucial
+                },
                 body: JSON.stringify({
                     action: 'regenerate_summary',
                     title,

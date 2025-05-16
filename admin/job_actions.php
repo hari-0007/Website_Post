@@ -61,7 +61,7 @@ function generateUniqueId() {
 
 /**
  * Generates an AI summary for job details.
- * (Mock implementation - replace with actual AI API call)
+ * Uses Gemini AI.
  * @param array $jobDetails Associative array of job details.
  * @return array ['success' => bool, 'ai_summary' => string (if success), 'error' => string (if failure)]
  */
@@ -71,36 +71,89 @@ function generateAISummary(array $jobDetails) {
         return ['success' => false, 'error' => 'Job title is required to generate AI summary.'];
     }
 
-    // Construct a simple prompt/summary
-    $summaryParts = [];
-    $summaryParts[] = "We are looking for a talented " . htmlspecialchars($jobDetails['title'] ?? 'individual');
-    if (!empty($jobDetails['company'])) {
-        $summaryParts[] = "to join our team at " . htmlspecialchars($jobDetails['company']) . ".";
+    // Using API key and model from your post_job.php.
+    // IMPORTANT: For security, API keys should ideally be stored in a config file or environment variable.
+    $apiKey = 'AIzaSyCWoj7th8DArYw7PGf83JAVcYsXBJHFjAk'; // WARNING: Hardcoded API Key
+    // The post_job.php used gemini-2.0-flash, but gemini-1.5-flash-latest is often more readily available and effective.
+    // If gemini-2.0-flash is specifically required and available, you can change this.
+    $apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=' . $apiKey;
+
+    $title = htmlspecialchars($jobDetails['title'] ?? 'N/A');
+    $company = htmlspecialchars($jobDetails['company'] ?? '');
+    $location = htmlspecialchars($jobDetails['location'] ?? '');
+    $experience = htmlspecialchars($jobDetails['experience'] ?? '');
+    $type = htmlspecialchars($jobDetails['type'] ?? '');
+    $salary = htmlspecialchars($jobDetails['salary'] ?? '');
+    $description = strip_tags($jobDetails['description'] ?? ''); // Remove HTML for the prompt
+
+    // Prepare the prompt for AI summary generation (more focused on summary than full description)
+    // Updated prompt to request a more comprehensive job description
+    $prompt = "Generate a professional job description based on the following details. Ensure it is well-structured, engaging, and covers key responsibilities, qualifications, and company information if available.\n\n";
+    $prompt .= "Job Title: $title\n";
+    if (!empty($company)) $prompt .= "Company: $company\n";
+    if (!empty($location)) $prompt .= "Location: $location\n";
+    if (!empty($experience) && $experience !== '0' && strtolower($experience) !== 'no experience') $prompt .= "Experience Required: $experience\n";
+    if (!empty($type)) $prompt .= "Job Type: $type\n";
+    if (!empty($salary) && strtolower($salary) !== 'not disclosed' && $salary !== '0') $prompt .= "Salary: $salary\n";
+    if (!empty($description)) $prompt .= "Original Description/Core Responsibilities: " . $description . "\n"; // Use full original description
+    $prompt .= "\nGenerate the full job description now.";
+
+    $data = [
+        'contents' => [['parts' => [['text' => $prompt]]]],
+        'generationConfig' => [ // Optional: Fine-tune generation
+            'temperature' => 0.7,
+            'maxOutputTokens' => 800, // Increase for a longer job description
+        ]
+    ];
+
+    $ch = curl_init($apiUrl);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+
+    // Temporarily disable SSL verification if you have local SSL issues; NOT FOR PRODUCTION.
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false); // For local dev only
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // For local dev only
+
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $curlError = curl_error($ch);
+    curl_close($ch);
+
+    if ($curlError) {
+        error_log("cURL Error for Gemini AI (job_actions.php): " . $curlError);
+        return ['success' => false, 'error' => 'AI summary generation failed (network issue): ' . $curlError];
+    }
+
+    if ($httpCode === 200) {
+        $responseData = json_decode($response, true);
+        if (isset($responseData['candidates'][0]['content']['parts'][0]['text'])) {
+            $aiSummary = trim($responseData['candidates'][0]['content']['parts'][0]['text']);
+            // Clean up common conversational prefixes from the AI
+            $aiSummary = preg_replace('/^(Okay, |Sure, |Here is |Here\'s )?(the |a )?(job summary|summary|description)( for you)?[:\s]*/im', '', $aiSummary);
+            if (empty(trim($aiSummary))) { // Check again after stripping prefixes
+                 error_log('Gemini AI summary became empty after stripping prefixes. Original: ' . $responseData['candidates'][0]['content']['parts'][0]['text']);
+                 return ['success' => false, 'error' => 'The AI service returned a summary that became empty after processing. Please try again.'];
+            }
+            return ['success' => true, 'ai_summary' => $aiSummary];
+        } elseif (isset($responseData['error'])) {
+            error_log('Gemini AI API Error (job_actions.php): ' . json_encode($responseData['error']));
+            return ['success' => false, 'error' => 'AI summary generation failed: ' . ($responseData['error']['message'] ?? 'Unknown API error')];
+        } else {
+            error_log('Gemini AI (job_actions.php): AI summary not found in response. HTTP Code: ' . $httpCode . '. Response: ' . $response);
+            return ['success' => false, 'error' => 'AI summary not found in the response from the AI service.'];
+        }
     } else {
-        $summaryParts[] = "to join our team.";
+        error_log("Gemini AI API error (job_actions.php): HTTP Code $httpCode. Response: $response.");
+        // Try to get more specific error from response if available
+        $errorMsg = "AI summary generation failed. Service returned HTTP code $httpCode.";
+        $responseData = json_decode($response, true);
+        if (isset($responseData['error']['message'])) {
+            $errorMsg .= " Message: " . $responseData['error']['message'];
+        }
+        return ['success' => false, 'error' => $errorMsg];
     }
-    if (!empty($jobDetails['location'])) {
-        $summaryParts[] = "The role is based in " . htmlspecialchars($jobDetails['location']) . ".";
-    }
-    $summaryParts[] = "This is a " . htmlspecialchars(strtolower($jobDetails['type'] ?? 'challenging')) . " position.";
-    if (!empty($jobDetails['experience']) && $jobDetails['experience'] !== '0') {
-        $summaryParts[] = "Ideal candidates will have " . htmlspecialchars($jobDetails['experience']) . " of experience.";
-    }
-    if (!empty($jobDetails['description'])) {
-        $descriptionPreview = substr(strip_tags($jobDetails['description']), 0, 150);
-        $summaryParts[] = "Key responsibilities will involve: " . htmlspecialchars($descriptionPreview) . (strlen($jobDetails['description']) > 150 ? "..." : ".");
-    }
-    if (!empty($jobDetails['salary']) && strtolower($jobDetails['salary']) !== 'not disclosed') {
-        $summaryParts[] = "The offered salary is " . htmlspecialchars($jobDetails['salary']) . ".";
-    }
-    $summaryParts[] = "If you are passionate and meet the criteria, we encourage you to apply.";
-
-    // In a real scenario, you would send these details to an AI API.
-    // e.g., callOpenAI($prompt, OPENAI_API_KEY);
-    // For now, we just concatenate them.
-    $generatedSummary = implode(" ", $summaryParts);
-
-    return ['success' => true, 'ai_summary' => $generatedSummary];
 }
 
 

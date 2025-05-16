@@ -44,21 +44,21 @@ $startIndex = ($currentPage - 1) * $jobsPerPage;
 $pagedJobs = array_slice($filteredJobs, $startIndex, $jobsPerPage);
 
 ?>
-<div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
-    <h3 style="margin: 0;">Manage Jobs</h3>
-    <div style="display: flex; gap: 10px; align-items: center;">
+<header class="manage-jobs-header">
+    <h3 class="manage-jobs-title">Manage Jobs</h3>
+    <div class="manage-jobs-header-actions">
         <form method="GET" action="dashboard.php" class="search-filter-form">
             <input type="hidden" name="view" value="manage_jobs">
-            <input type="text" name="search" placeholder="Search jobs" value="<?= htmlspecialchars($_GET['search'] ?? '') ?>" class="search-input">
-            <input type="date" name="start_date" value="<?= htmlspecialchars($_GET['start_date'] ?? '') ?>" class="filter-input">
-            <input type="date" name="end_date" value="<?= htmlspecialchars($_GET['end_date'] ?? '') ?>" class="filter-input">
+            <input type="text" name="search" placeholder="Search jobs" value="<?= htmlspecialchars($_GET['search'] ?? '') ?>" class="search-input" >
+            <input type="date" name="start_date" value="<?= htmlspecialchars($_GET['start_date'] ?? '') ?>" class="filter-input" aria-label="Start Date">
+            <input type="date" name="end_date" value="<?= htmlspecialchars($_GET['end_date'] ?? '') ?>" class="filter-input" aria-label="End Date">
             <button type="submit" class="button filter-button">Filter</button>
         </form>
         <button id="postNewJobBtn" class="button post-job-btn">
             + Post New Job
         </button>
     </div>
-</div>
+</header>
 
 <table>
     <thead>
@@ -107,7 +107,7 @@ $pagedJobs = array_slice($filteredJobs, $startIndex, $jobsPerPage);
     <?php endif; ?>
 </div>
 
-<div id="postJobModal" class="modal" style="display: none;">
+<div id="postJobModal" class="modal">
     <div class="modal-content">
         <span class="close" id="closePostJobModal">&times;</span>
         <h3>Post New Job</h3>
@@ -118,6 +118,27 @@ $pagedJobs = array_slice($filteredJobs, $startIndex, $jobsPerPage);
 </div>
 
 <style>
+    /* Styles for the Manage Jobs header section */
+    .manage-jobs-header {
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap; /* Allow wrapping for responsiveness */
+        gap: 15px; /* Add some gap for wrapped items */
+    }
+
+    .manage-jobs-title {
+        margin: 0;
+        /* Consider matching the h3 style from .modal-content h3 if consistency is desired */
+    }
+
+    .manage-jobs-header-actions {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap; /* Allow actions to wrap as well */
+    }
     /* Enhance the table appearance */
     table {
         width: 100%;
@@ -201,8 +222,8 @@ $pagedJobs = array_slice($filteredJobs, $startIndex, $jobsPerPage);
         width: 100%;
         height: 100%;
         overflow: auto;
-        background-color: rgba(0,0,0,0.4);
-        display: flex; /* Use flexbox for centering */
+        background-color: rgba(0,0,0,0.4); /* Default to hidden, JS will show it */
+        display: none; /* Use flexbox for centering when shown by JS */
         align-items: center; /* Center vertically */
         justify-content: center; /* Center horizontally */
         padding: 20px;
@@ -398,7 +419,7 @@ $pagedJobs = array_slice($filteredJobs, $startIndex, $jobsPerPage);
 
         if (postJobModal && postJobFormContainer) {
             postJobFormContainer.innerHTML = '<p>Loading form...</p>';
-            postJobModal.style.display = 'flex';
+            postJobModal.style.display = 'flex'; // JS will change display to flex when opening
 
             // Fetch the job post form content via AJAX
             fetch('fetch_content.php?view=post_job', {

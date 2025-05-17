@@ -1,0 +1,34 @@
+[
+    {
+        "timestamp": "2025-05-17 19:26:14",
+        "consent_status": "accepted",
+        "username": null,
+        "email": null,
+        "phone": null,
+        "job_interests": [
+            "full time",
+            "remote",
+            "developer",
+            "onsite",
+            "hybrid"
+        ],
+        "unique_visitor_cookie_present": true,
+        "current_search_query": ""
+    },
+    {
+        "timestamp": "2025-05-17 19:26:14",
+        "consent_status": "accepted",
+        "username": null,
+        "email": null,
+        "phone": null,
+        "job_interests": [
+            "full time",
+            "remote",
+            "developer",
+            "onsite",
+            "hybrid"
+        ],
+        "unique_visitor_cookie_present": true,
+        "current_search_query": null
+    }
+]

@@ -94,6 +94,16 @@
         .profile-dropdown:hover .profile-dropdown-content {
             display: block;
         }
+        /* Style for the unread count badge */
+        .unread-badge {
+            background-color: #dc3545; /* Red color for attention */
+            color: white;
+            border-radius: 50%; /* Make it circular */
+            padding: 2px 6px;
+            font-size: 0.75em;
+            margin-left: 5px;
+            vertical-align: super; /* Align it nicely with the text */
+        }
 
          .admin-nav a.button {
              background-color: #dc3545;

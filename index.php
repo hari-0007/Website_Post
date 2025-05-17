@@ -36,6 +36,21 @@ if (file_exists($filename)) {
      error_log("Frontend Error: Job data file not found: " . $filename);
 }
 
+// Check if a specific job ID is requested to be expanded
+$jobIdToExpandFromUrl = isset($_GET['job_id_to_expand']) ? trim($_GET['job_id_to_expand']) : null;
+$singleJobView = false;
+
+if ($jobIdToExpandFromUrl) {
+    $foundJob = null;
+    foreach ($phpJobsArray as $job) {
+        if (isset($job['id']) && $job['id'] === $jobIdToExpandFromUrl) {
+            $foundJob = $job;
+            break;
+        }
+    }
+    $phpJobsArray = $foundJob ? [$foundJob] : []; // If found, phpJobsArray now contains only this job
+    $singleJobView = (bool)$foundJob;
+}
 // Filepath for the daily visitor counter
 $visitorCounterFile = __DIR__ . '/data/daily_visitors.json';
 
@@ -83,7 +98,7 @@ if (!empty($_SESSION['feedback_alert'])) {
 }
 
 // Initialize $filteredJobs with all jobs from $phpJobsArray for PHP logic
-$filteredJobs = $phpJobsArray;
+$filteredJobs = $phpJobsArray; // This will be either all jobs or just the single job if $jobIdToExpandFromUrl was set
 
 // Filter jobs based on job type
 $jobType = isset($_GET['type']) ? strtolower(trim($_GET['type'])) : '';
@@ -95,47 +110,52 @@ if ($jobType === 'all' || empty($jobType)) {
     });
 }
 
-// 1. Apply Search Filter (using $phpJobsArray - should apply to the initial array)
-$search = isset($_GET['search']) ? strtolower(trim($_GET['search'])) : '';
-if ($search !== '') {
-    $tempJobs = [];
-    // Iterate over the original $phpJobsArray for search
-    foreach ($phpJobsArray as $job) {
-        if (
-            (isset($job['title']) && is_string($job['title']) && strpos(strtolower($job['title']), $search) !== false) ||
-            (isset($job['company']) && is_string($job['company']) && strpos(strtolower($job['company']), $search) !== false) ||
-            (isset($job['location']) && is_string($job['location']) && strpos(strtolower($job['location']), $search) !== false)
-        ) {
-            $tempJobs[] = $job;
-        }
-    }
-    $filteredJobs = $tempJobs; // Update $filteredJobs with search results
-}
-
-// 2. Apply Date Filter (operates on the potentially search-filtered $filteredJobs)
-$filter = isset($_GET['filter']) ? $_GET['filter'] : 'all';
-$currentDate = time(); // PHP current Unix timestamp (seconds)
-
-if ($filter !== 'all') {
-    $tempJobs = [];
-    $daysToFilter = 0;
-    if ($filter === '30') $daysToFilter = 30;
-    elseif ($filter === '7') $daysToFilter = 7;
-    elseif ($filter === '1') $daysToFilter = 1;
-
-    if ($daysToFilter > 0) {
-        $cutoffDate = $currentDate - ($daysToFilter * 24 * 60 * 60); // Cutoff in seconds
-        foreach ($filteredJobs as $job) {
-            $jobTimestamp = $job['posted_on_unix_ts'] ?? (isset($job['posted_on']) && is_string($job['posted_on']) ? strtotime($job['posted_on']) : 0);
-            if ($jobTimestamp !== false && $jobTimestamp > 0 && $jobTimestamp >= $cutoffDate) {
+// Apply search and date filters only if not in single job view
+if (!$singleJobView) {
+    // 1. Apply Search Filter
+    $search = isset($_GET['search']) ? strtolower(trim($_GET['search'])) : '';
+    if ($search !== '') {
+        $tempJobs = [];
+        foreach ($phpJobsArray as $job) { // Search the original full list if not single view
+            if (
+                (isset($job['title']) && is_string($job['title']) && strpos(strtolower($job['title']), $search) !== false) ||
+                (isset($job['company']) && is_string($job['company']) && strpos(strtolower($job['company']), $search) !== false) ||
+                (isset($job['location']) && is_string($job['location']) && strpos(strtolower($job['location']), $search) !== false)
+            ) {
                 $tempJobs[] = $job;
             }
         }
-        $filteredJobs = $tempJobs; // Update $filteredJobs with date results
+        $filteredJobs = $tempJobs;
     }
+
+    // 2. Apply Date Filter
+    $filter = isset($_GET['filter']) ? $_GET['filter'] : 'all';
+    $currentDate = time();
+
+    if ($filter !== 'all') {
+        $tempJobs = [];
+        $daysToFilter = 0;
+        if ($filter === '30') $daysToFilter = 30;
+        elseif ($filter === '7') $daysToFilter = 7;
+        elseif ($filter === '1') $daysToFilter = 1;
+
+        if ($daysToFilter > 0) {
+            $cutoffDate = $currentDate - ($daysToFilter * 24 * 60 * 60);
+            foreach ($filteredJobs as $job) { // Filter the already search-filtered list
+                $jobTimestamp = $job['posted_on_unix_ts'] ?? (isset($job['posted_on']) && is_string($job['posted_on']) ? strtotime($job['posted_on']) : 0);
+                if ($jobTimestamp !== false && $jobTimestamp > 0 && $jobTimestamp >= $cutoffDate) {
+                    $tempJobs[] = $job;
+                }
+            }
+            $filteredJobs = $tempJobs;
+        }
+    }
+} else { // If it's a single job view, clear search and filter parameters for display consistency
+    $search = '';
+    $filter = 'all';
 }
 
-// Sort jobs by posted date (descending)
+// Sort jobs by posted date (descending) - still useful even for a single job array (though it won't change order)
 usort($filteredJobs, function ($a, $b) {
     return ($b['posted_on_unix_ts'] ?? 0) <=> ($a['posted_on_unix_ts'] ?? 0);
 });
@@ -157,6 +177,7 @@ function formatAiSummary($summary) {
 
     return $formatted;
 }
+
 
 ?>
 
@@ -336,26 +357,30 @@ function formatAiSummary($summary) {
         <div class="content-wrapper">
             <aside class="sidebar">
                 <h4>Job Filters</h4>
-                <a href="?type=all">📋 All Jobs</a>
-                <a href="?type=remote&filter=<?= urlencode($filter) ?>">💻 Remote</a>
-                <a href="?type=onsite&filter=<?= urlencode($filter) ?>">🏢 Onsite</a>
-                <a href="?type=hybrid&filter=<?= urlencode($filter) ?>">🌐 Hybrid</a>
+                <a href="?type=all&filter=<?= urlencode($filter) ?>">📋 All Jobs (<span id="countAll">0</span>)</a>
+                <a href="?type=remote&filter=<?= urlencode($filter) ?>">💻 Remote (<span id="countRemote">0</span>)</a>
+                <a href="?type=onsite&filter=<?= urlencode($filter) ?>">🏢 Onsite (<span id="countOnsite">0</span>)</a>
+                <a href="?type=hybrid&filter=<?= urlencode($filter) ?>">🌐 Hybrid (<span id="countHybrid">0</span>)</a>
                 <h4>Quick Filters</h4>
-                <a href="?type=full time&filter=<?= urlencode($filter) ?>">🕐 Full-Time</a>
-                <a href="?type=part time&filter=<?= urlencode($filter) ?>">⌛ Part-Time</a>
-                <a href="?type=internship&filter=<?= urlencode($filter) ?>">🎓 Internships</a>
-                <a href="?type=developer&filter=<?= urlencode($filter) ?>">👨‍💻 Developer</a>
+                <a href="?type=full time&filter=<?= urlencode($filter) ?>">🕐 Full-Time (<span id="countFullTime">0</span>)</a>
+                <a href="?type=part time&filter=<?= urlencode($filter) ?>">⌛ Part-Time (<span id="countPartTime">0</span>)</a>
+                <a href="?type=internship&filter=<?= urlencode($filter) ?>">🎓 Internships (<span id="countInternship">0</span>)</a>
+                <a href="?type=developer&filter=<?= urlencode($filter) ?>">👨‍💻 Developer (<span id="countDeveloper">0</span>)</a>
                 <h4>Date Posted</h4>
-                <a href="?filter=all&type=<?= urlencode($jobType) ?>">All</a>
-                <a href="?filter=30&type=<?= urlencode($jobType) ?>">Past 30 Days</a>
-                <a href="?filter=7&type=<?= urlencode($jobType) ?>">Past 7 Days</a>
-                <a href="?filter=1&type=<?= urlencode($jobType) ?>">Past 24 Hours</a>
+                <a href="?filter=all&type=<?= urlencode($jobType) ?>">All Time (<span id="countAllTime">0</span>)</a>
+                <a href="?filter=30&type=<?= urlencode($jobType) ?>">Past 30 Days (<span id="count30">0</span>)</a>
+                <a href="?filter=7&type=<?= urlencode($jobType) ?>">Past 7 Days (<span id="count7">0</span>)</a>
+                <a href="?filter=1&type=<?= urlencode($jobType) ?>">Past 24 Hours (<span id="count1">0</span>)</a>
             </aside>
 
             <main>
                 <div class="search-bar">
                     <form method="GET" action="">
                         <input type="text" name="search" placeholder="Search by job title, company, or location" value="<?php echo htmlspecialchars($search); ?>">
+                        <!-- If in single job view, a search should clear the single job view -->
+                        <?php if ($singleJobView): ?>
+                            <!-- No need for a hidden input, just don't include job_id_to_expand in the form action -->
+                        <?php endif; ?>
                         <input type="hidden" name="filter" value="<?php echo htmlspecialchars($filter); ?>">
                         <button type="submit">Search</button>
                     </form>
@@ -364,8 +389,13 @@ function formatAiSummary($summary) {
                 <?php if(empty($pagedJobs)): ?>
                     <p style="text-align:center; padding: 20px;">No matching jobs found for the current criteria.</p>
                 <?php else: ?>
+                    <!-- This button will be shown by JS if only one job is displayed -->
+                    <?php if ($singleJobView): ?>
+                        <a href="<?= strtok($_SERVER["REQUEST_URI"], '?') ?>" id="showAllJobsBtn" class="button" style="display:inline-block; margin-bottom: 15px; background-color: #28a745;">Show All Jobs</a>
+                    <?php endif; ?>
+
                     <?php foreach ($pagedJobs as $job): ?>
-                    <div class="job-card" style="margin-top: 10px;" onclick="toggleJobDetails(this)">
+                    <div class="job-card" style="margin-top: 10px;" onclick="toggleJobDetails(this)" data-job-id="<?= htmlspecialchars($job['id'] ?? '') ?>">
                         <h3>
                             <?= htmlspecialchars($job['title'] ?? 'N/A') ?>
                             <?php if (!empty($job['vacant_positions']) && $job['vacant_positions'] > 1): ?>
@@ -419,12 +449,12 @@ function formatAiSummary($summary) {
 
                         <small>Posted on <?= htmlspecialchars($job['posted_on'] ?? 'N/A') ?></small><br>
 
-                        <button style="margin-top: 10px;" class="share-button" onclick="shareJob('<?= htmlspecialchars($job['title'] ?? '') ?>', '<?= htmlspecialchars($job['company'] ?? '') ?>'); event.stopPropagation();">Share</button>
+                        <button style="margin-top: 10px;" class="share-button" onclick="shareJob('<?= htmlspecialchars($job['id'] ?? '') ?>', '<?= htmlspecialchars($job['title'] ?? '') ?>', '<?= htmlspecialchars($job['company'] ?? '') ?>'); event.stopPropagation();">Share</button>
                     </div>
                     <?php endforeach; ?>
                 <?php endif; ?>
 
-                <?php if ($totalPages > 1): ?>
+                <?php if (!$singleJobView && $totalPages > 1): // Hide pagination in single job view ?>
                 <div style="text-align:center; margin: 20px 0;">
                     <?php for ($i = 1; $i <= $totalPages; $i++): ?>
                         <a href="?search=<?= urlencode($search) ?>&filter=<?= urlencode($filter) ?>&page=<?= $i ?>"
@@ -501,15 +531,18 @@ function formatAiSummary($summary) {
         function openWModal(){ document.getElementById('modal').style.display='flex'; }
         function closeWModal(){ document.getElementById('modal').style.display='none'; }
 
-        function shareJob(title, company) {
+        function shareJob(jobId, title, company) {
             const shareText = `Check out this job at ${company}: ${title}`;
-            const jobUrl = window.location.href;
+            // Construct URL without existing query parameters, then add our job_id_to_expand
+            const baseUrl = window.location.origin + window.location.pathname;
+            const jobUrlWithId = `${baseUrl}?job_id_to_expand=${encodeURIComponent(jobId)}`;
+
 
             if (navigator.share) {
                 navigator.share({
                     title: `${title} at ${company}`,
                     text: shareText,
-                    url: jobUrl
+                    url: jobUrlWithId
                 }).catch(err => console.log('Share canceled or error:', err));
             } else {
                 const fullShareMessage = `${shareText} - ${jobUrl}`;
@@ -566,12 +599,15 @@ function formatAiSummary($summary) {
                     // and convert to milliseconds for JavaScript Date operations.
                     if (post && typeof post.posted_on_unix_ts === 'number' && post.posted_on_unix_ts > 0) {
                         ts_ms = post.posted_on_unix_ts * 1000;
-                    } else if (post && post.posted_on_unix_ts === 0 && post.posted_on) {
+                    } else if (post && (!post.posted_on_unix_ts || post.posted_on_unix_ts <= 0) && post.posted_on) {
                         // This means strtotime likely failed in PHP for this date string
                          console.warn(`PHP's strtotime couldn't parse date: "${post.posted_on}" for job: "${post.title || 'Unknown'}". This job won't be included in date-filtered counts.`);
                     }
                     return {
                         // Keep original post data if needed, or just what's necessary for counts
+                        // We need 'type' for type-based filters now.
+                        // Ensure 'type' is always a string and lowercase for consistent filtering.
+                        type: (post && typeof post.type === 'string') ? post.type.toLowerCase() : '',
                         // For simplicity, we just need the timestamp for filtering counts.
                         // If other post data is needed by other JS functions using this array, spread post: ...post,
                         timestamp: ts_ms
@@ -586,48 +622,126 @@ function formatAiSummary($summary) {
 
         function updateSidebarCounts() {
             if (!allJobPostsForCounts || !Array.isArray(allJobPostsForCounts)) {
-                document.getElementById('countAll').innerText = '0';
-                document.getElementById('count30').innerText = '0';
-                document.getElementById('count7').innerText = '0';
-                document.getElementById('count1').innerText = '0';
+                // Set all counts to 0 if data is not available
+                const countIds = ['countAll', 'countRemote', 'countOnsite', 'countHybrid', 
+                                  'countFullTime', 'countPartTime', 'countInternship', 'countDeveloper', 'countAllTime',
+                                  'count30', 'count7', 'count1'];
+                countIds.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.innerText = '0';
+                });
                 return;
             }
 
             const now_ms = Date.now(); // Current time in milliseconds
             const oneDay_ms = 24 * 60 * 60 * 1000; // Milliseconds in a day
 
-            document.getElementById('countAll').innerText = allJobPostsForCounts.length;
+            // Helper function to safely update innerText
+            const setCount = (id, count) => {
+                const el = document.getElementById(id);
+                if (el) el.innerText = count;
+            };
 
-            // Filter posts that have a valid, non-zero millisecond timestamp
-            document.getElementById('count30').innerText = allJobPostsForCounts.filter(p => p.timestamp > 0 && (now_ms - p.timestamp <= 30 * oneDay_ms)).length;
-            document.getElementById('count7').innerText = allJobPostsForCounts.filter(p => p.timestamp > 0 && (now_ms - p.timestamp <= 7 * oneDay_ms)).length;
-            document.getElementById('count1').innerText = allJobPostsForCounts.filter(p => p.timestamp > 0 && (now_ms - p.timestamp <= oneDay_ms)).length;
+            // Total count
+            setCount('countAll', allJobPostsForCounts.length);
+            setCount('countAllTime', allJobPostsForCounts.length); // For the "All Time" date filter
+
+            // Type-based counts
+            setCount('countRemote', allJobPostsForCounts.filter(p => p.type === 'remote').length);
+            setCount('countOnsite', allJobPostsForCounts.filter(p => p.type === 'onsite').length);
+            setCount('countHybrid', allJobPostsForCounts.filter(p => p.type === 'hybrid').length);
+            setCount('countFullTime', allJobPostsForCounts.filter(p => p.type === 'full time').length); // Ensure 'full time' matches the value in your job data
+            setCount('countPartTime', allJobPostsForCounts.filter(p => p.type === 'part time').length); // Ensure 'part time' matches
+            setCount('countInternship', allJobPostsForCounts.filter(p => p.type === 'internship').length);
+            setCount('countDeveloper', allJobPostsForCounts.filter(p => p.type === 'developer').length);
+
+            // Date-based counts (filter posts that have a valid, non-zero millisecond timestamp)
+            const validDatePosts = allJobPostsForCounts.filter(p => p.timestamp > 0);
+            setCount('count30', validDatePosts.filter(p => (now_ms - p.timestamp <= 30 * oneDay_ms)).length);
+            setCount('count7', validDatePosts.filter(p => (now_ms - p.timestamp <= 7 * oneDay_ms)).length);
+            setCount('count1', validDatePosts.filter(p => (now_ms - p.timestamp <= oneDay_ms)).length);
         }
 
         function toggleJobDetails(jobCard) {
-            // Close any currently expanded job card
-            const allJobCards = document.querySelectorAll('.job-card');
-            allJobCards.forEach(card => {
-                const details = card.querySelector('.job-details');
-                const summary = card.querySelector('.job-summary');
-                if (details && summary) {
-                    details.style.display = 'none'; // Hide full description
-                    summary.style.display = 'block'; // Show summary
-                }
-            });
-
-            // Expand the clicked job card
             const details = jobCard.querySelector('.job-details');
             const summary = jobCard.querySelector('.job-summary');
+
             if (details && summary) {
-                details.style.display = 'block'; // Show full description
-                summary.style.display = 'none'; // Hide summary
+                // If the details are currently hidden, show them and hide the summary.
+                // Otherwise, hide details and show summary (standard toggle behavior).
+                if (details.style.display === 'none' || details.style.display === '') {
+                    // Close all other job cards first
+                    const allJobCards = document.querySelectorAll('.job-card');
+                    allJobCards.forEach(card => {
+                        if (card !== jobCard) { // Don't collapse the one we are about to open
+                            const otherDetails = card.querySelector('.job-details');
+                            const otherSummary = card.querySelector('.job-summary');
+                            if (otherDetails && otherSummary) {
+                                otherDetails.style.display = 'none';
+                                otherSummary.style.display = 'block'; // Or 'flex', 'grid' etc. if that's its default
+                            }
+                        }
+                    });
+                    // Now expand the clicked one
+                    details.style.display = 'block';
+                    summary.style.display = 'none';
+                    // Scroll the top of the job card into view
+                    jobCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                } else {
+                    details.style.display = 'none';
+                    summary.style.display = 'block'; // Or 'flex', 'grid' etc.
+                    // Scroll the top of the job card into view even when collapsing
+                    jobCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }
+        }
+
+        function expandJobFromUrl() {
+            console.log('[DEBUG] expandJobFromUrl called');
+            const urlParams = new URLSearchParams(window.location.search);
+            const jobIdToExpand = urlParams.get('job_id_to_expand');
+            console.log('[DEBUG] Job ID to expand from URL (JS):', jobIdToExpand);
+
+            if (jobIdToExpand) {
+                // PHP should have already filtered to this single job.
+                // This JS is now just to ensure it's expanded.
+                const jobCardToExpand = document.querySelector(`.job-card[data-job-id="${jobIdToExpand}"]`);
+
+                if (jobCardToExpand) {
+                    console.log('[DEBUG] Found job card to expand:', jobCardToExpand);
+
+                    // Expand its details
+                    const details = jobCardToExpand.querySelector('.job-details');
+                    const summary = jobCardToExpand.querySelector('.job-summary');
+                    if (details && summary) {
+                        // Since PHP ensures only this job is on the page when job_id_to_expand is set,
+                        // we can directly manipulate its display properties.
+                        // No need to loop and hide others as they shouldn't be there.
+
+                        details.style.display = 'block';
+                        summary.style.display = 'none';
+                        console.log('[DEBUG] Job card expanded.');
+                    } else {
+                        console.log('[DEBUG] Could not find .job-details or .job-summary within the target card.');
+                    }
+                    // Scroll to the job card, or more specifically, its title
+                    const titleElement = jobCardToExpand.querySelector('h3');
+                    if (titleElement) {
+                        titleElement.scrollIntoView({ behavior: 'smooth', block: 'start' }); // 'start' aligns top of title with top of viewport
+                    } else {
+                        jobCardToExpand.scrollIntoView({ behavior: 'smooth', block: 'center' }); // Fallback to card
+                    }
+                } else {
+                    console.log('[DEBUG] Job card with ID', jobIdToExpand, 'not found on page (JS check). This might be okay if PHP handled it.');
+                }
             }
         }
 
         window.onload = function() {
             processJobDataForCounts(); // Process the PHP-provided data
+            expandJobFromUrl(); // Check if a job needs to be expanded on load
         };
+
     </script>
 </body>
 </html>

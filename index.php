@@ -60,8 +60,10 @@ if ($phoneFromCookie !== null) $currentLogEntry['phone'] = $phoneFromCookie;
 
 if (isset($_COOKIE['unique_visitor'])) $currentLogEntry['unique_visitor_cookie_present'] = true;
 
-$currentSearch = $_GET['search'] ?? null;
-if ($currentSearch !== null && $currentSearch !== '') $currentLogEntry['current_search_query'] = $currentSearch;
+// Use raw $_GET['search'] for logging current search query, not the processed $search_param
+$rawSearchQueryForLog = $_GET['search'] ?? null;
+if ($rawSearchQueryForLog !== null && $rawSearchQueryForLog !== '') $currentLogEntry['current_search_query'] = $rawSearchQueryForLog;
+
 
 if (isset($_SERVER['HTTP_USER_AGENT'])) $currentLogEntry['user_agent'] = $_SERVER['HTTP_USER_AGENT'];
 if (isset($_SERVER['REMOTE_ADDR'])) $currentLogEntry['ip_address_hash'] = md5($_SERVER['REMOTE_ADDR']);
@@ -144,13 +146,15 @@ if (isset($_COOKIE[COOKIE_CONSENT_STATUS_NAME]) && $_COOKIE[COOKIE_CONSENT_STATU
     $userInterests = [];
     $currentInterestsRaw = isset($_COOKIE[USER_INTERESTS_COOKIE_NAME]) ? $_COOKIE[USER_INTERESTS_COOKIE_NAME] : '[]';
     try {
-        $decodedInterests = json_decode($currentInterestsRaw, true);
-        if (is_array($decodedInterests)) {
-            $userInterests = $decodedInterests;
+        $userInterests = json_decode($currentInterestsRaw, true);
+        if (!is_array($userInterests)) { // Ensure it's an array after decoding
+            $userInterests = [];
         }
-    } catch (Exception $e) { /* Malformed cookie, start fresh */ $userInterests = []; }
+    } catch (Exception $e) { $userInterests = []; error_log("Exception decoding interests cookie: " . $e->getMessage()); }
 
+    // Determine what to record as an interest
     $interestToRecord = null;
+    // Use the raw $_GET['search'] for recording interest, not the processed $search_param
     if (isset($_GET['search']) && !empty(trim($_GET['search']))) {
         $interestToRecord = strtolower(trim($_GET['search']));
     } elseif (isset($_GET['type']) && !empty($_GET['type']) && strtolower($_GET['type']) !== 'all') {
@@ -184,6 +188,7 @@ $filename = __DIR__ . '/data/jobs.json'; // Assuming data/ is in the same direct
 
 $phpJobsArray = []; // For PHP's internal filtering and display
 $jobsForJS = [];    // For passing to JavaScript with pre-calculated Unix timestamps
+$decodedJobs = []; // Holds the pristine full list of jobs from JSON
 
 if (file_exists($filename)) {
     $jsonData = file_get_contents($filename);
@@ -219,20 +224,27 @@ if (file_exists($filename)) {
      error_log("Frontend Error: Job data file not found: " . $filename);
 }
 
-// --- START: Force reset of filters on page load, unless a specific job is being expanded OR IT'S AN AJAX REQUEST ---
-// We need to check for ajax flag here specifically for this reset logic,
-// as the main $isAjaxRequest variable is defined much later.
+// --- START: Logic to determine filter parameters ---
+// This section determines the actual filter values to be used for querying and display.
 $isAjaxRequestForResetCheck = isset($_GET['ajax']) && $_GET['ajax'] === '1';
-$forceResetFilters = !isset($_GET['job_id']) && !$isAjaxRequestForResetCheck; 
 
-if ($forceResetFilters) {
-    error_log("[DEBUG] Forcing reset of filters for non-AJAX, non-expanded view. URL: " . $_SERVER['REQUEST_URI']);
-    $_GET['search'] = ''; // Effectively clear search from URL for this load
-    $_GET['filter'] = 'all'; // Effectively clear date filter from URL
-    $_GET['type'] = '';   // Effectively clear type filter from URL
-    // $_GET['page'] is not reset here, typically defaults to 1 if not present.
+$filter_param = isset($_GET['filter']) ? trim($_GET['filter']) : 'all';
+if ($filter_param === '') $filter_param = 'all'; // Treat empty filter as 'all'
+$type_param = isset($_GET['type']) ? trim($_GET['type']) : '';
+if ($type_param === 'all') $type_param = ''; // Treat 'all' type as no specific type (empty string)
+
+// Initialize search parameter.
+// If it's an AJAX request, use the search term from GET.
+// Otherwise (initial load/refresh), default to no search, effectively showing all jobs.
+$search_param = ''; // Default to no search
+if ($isAjaxRequestForResetCheck) { // Only use GET['search'] if it's an AJAX request
+    $search_param = isset($_GET['search']) ? trim($_GET['search']) : '';
 }
-// --- END: Force reset of filters ---
+
+// Log the raw parameters received from GET for debugging
+// error_log("[DEBUG] Raw GET params: search='{$_GET['search']}', filter='{$_GET['filter']}', type='{$_GET['type']}'");
+// error_log("[DEBUG] Initialized params: search_param='{$search_param}', filter_param='{$filter_param}', type_param='{$type_param}'");
+// --- END: Logic to determine filter parameters ---
 
 // Check if a specific job ID is requested to be expanded
 $jobIdToExpandFromUrl = isset($_GET['job_id']) ? trim($_GET['job_id']) : null;
@@ -240,7 +252,7 @@ $singleJobView = false;
 
 if ($jobIdToExpandFromUrl) {
     $foundJob = null;
-    foreach ($phpJobsArray as $job) {
+    foreach ($phpJobsArray as $job) { // $phpJobsArray is currently the full list from $decodedJobs
         if (isset($job['id']) && $job['id'] === $jobIdToExpandFromUrl) {
             $foundJob = $job;
             break;
@@ -250,38 +262,44 @@ if ($jobIdToExpandFromUrl) {
     $singleJobView = (bool)$foundJob;
 }
 
-// Interest-based filtering logic (before other filters if no explicit GET filters are set)
+// Interest-based filtering logic
+// This applies ONLY if no explicit search, type, or date filters are in the URL.
+// It modifies $phpJobsArray directly if conditions are met.
 $appliedInterestFilter = false;
 if (!$singleJobView &&
-    empty($_GET['search']) && empty($_GET['type']) && empty($_GET['filter']) && // No explicit filters in URL
+    empty($search_param) && empty($type_param) && ($filter_param === 'all') && // Check against processed params
     isset($_COOKIE[COOKIE_CONSENT_STATUS_NAME]) && $_COOKIE[COOKIE_CONSENT_STATUS_NAME] === 'accepted') {
 
+    error_log("[DEBUG] Applying interest-based filtering.");
     $userInterestsCookieVal = isset($_COOKIE[USER_INTERESTS_COOKIE_NAME]) ? $_COOKIE[USER_INTERESTS_COOKIE_NAME] : '[]';
     $userStoredInterests = json_decode($userInterestsCookieVal, true);
 
     if (is_array($userStoredInterests) && !empty($userStoredInterests)) {
         $tempInterestJobs = [];
-        foreach ($phpJobsArray as $job) { // Filter the original full list
+        // IMPORTANT: Interest filter should operate on the *original full list* of jobs.
+        $fullJobListForInterestFilter = $decodedJobs; // $decodedJobs is the pristine list from JSON.
+
+        foreach ($fullJobListForInterestFilter as $job) {
             if (!is_array($job)) { // Defensive check for each job item
                 error_log("Skipping non-array job item in interest filter: " . print_r($job, true));
                 continue;
             }
             $jobMatchesInterest = false;
-            // Explicitly cast job fields to string for safer comparison
-            $jobTitle = (string)($job['title'] ?? '');
-            $jobCompany = (string)($job['company'] ?? '');
-            $jobLocation = (string)($job['location'] ?? '');
-            $jobTypeData = (string)($job['type'] ?? '');
-            $jobSummary = (string)($job['ai_summary'] ?? '');
+            // Explicitly cast job fields to string and lowercase for safer comparison
+            $jobTitle = strtolower((string)($job['title'] ?? ''));
+            $jobCompany = strtolower((string)($job['company'] ?? ''));
+            $jobLocation = strtolower((string)($job['location'] ?? ''));
+            $jobTypeData = strtolower((string)($job['type'] ?? ''));
+            $jobSummary = strtolower((string)($job['ai_summary'] ?? ''));
 
             foreach ($userStoredInterests as $interest) {
                 $interest = strtolower(trim($interest));
-                if ( // Use the explicitly cast string variables
-                    (stripos(strtolower($jobTitle), $interest) !== false) ||
-                    (stripos(strtolower($jobCompany), $interest) !== false) ||
-                    (stripos(strtolower($jobLocation), $interest) !== false) ||
-                    (stripos(strtolower($jobTypeData), $interest) !== false) ||
-                    (stripos(strtolower($jobSummary), $interest) !== false)
+                if ( 
+                    (stripos($jobTitle, $interest) !== false) || 
+                    (stripos($jobCompany, $interest) !== false) ||
+                    (stripos($jobLocation, $interest) !== false) ||
+                    (stripos($jobTypeData, $interest) !== false) ||
+                    (stripos($jobSummary, $interest) !== false)
                 ) {
                     $jobMatchesInterest = true;
                     break; // Job matches one interest, no need to check others for this job
@@ -292,8 +310,9 @@ if (!$singleJobView &&
             }
         }
         if (!empty($tempInterestJobs)) {
-            $phpJobsArray = $tempInterestJobs; // Update the main array to be filtered further
+            $phpJobsArray = $tempInterestJobs; // $phpJobsArray now holds interest-filtered jobs
             $appliedInterestFilter = true;
+            error_log("[DEBUG] Interest filter applied. Job count: " . count($phpJobsArray));
         }
     }
 }
@@ -356,26 +375,32 @@ if ($appliedInterestFilter && empty($_SESSION['feedback_alert'])) { // Avoid ove
 }
 
 
-// Initialize $filteredJobs with all jobs from $phpJobsArray for PHP logic
-// $phpJobsArray might already be filtered by interests at this point
-$filteredJobs = $phpJobsArray; // This will be either all jobs or just the single job if $jobIdToExpandFromUrl was set
+// Initialize $filteredJobs. This will be the array that gets progressively filtered.
+// If interest filter was applied, $phpJobsArray is already narrowed. Otherwise, it's the full list (or single job).
+$filteredJobs = $phpJobsArray; 
+error_log("[DEBUG] Initial count for \$filteredJobs (before explicit filters): " . count($filteredJobs));
 
-// Filter jobs based on job type (if explicitly set in URL)
-$jobType = isset($_GET['type']) ? strtolower(trim($_GET['type'])) : '';
-if ($jobType !== '' && $jobType !== 'all') { // Apply type filter if a specific type is chosen
+
+// These are the final variables used for filtering and display.
+// They are derived from the _param variables determined earlier.
+$jobType = strtolower($type_param);
+$search = strtolower($search_param);
+$filter = $filter_param;
+
+// Apply explicit filters (type, search, date)
+// These filters are applied sequentially to $filteredJobs.
+
+// 1. Apply Job Type Filter (if a specific type is chosen)
+if ($jobType !== '') { // Note: $jobType is already '' if 'all' was passed
     $filteredJobs = array_filter($filteredJobs, function ($job) use ($jobType) {
-        if (!is_array($job)) { // Ensure $job is an array before accessing keys
+        if (!is_array($job)) { 
             error_log("Filtering out non-array job item in type filter: " . print_r($job, true));
             return false; 
         }
-
-        // More robust check for the 'type' field
         if (!array_key_exists('type', $job) || $job['type'] === null) {
             return false; 
         }
-
         $currentJobTypeVal = $job['type'];
-
         if (!is_scalar($currentJobTypeVal)) {
             error_log("[TYPE FILTER DEBUG] Job 'type' is not scalar. Type: " . gettype($currentJobTypeVal) . ". Value: " . print_r($currentJobTypeVal, true) . ". ID/Title: " . ($job['id'] ?? $job['title'] ?? 'N/A'));
             return false;
@@ -385,65 +410,72 @@ if ($jobType !== '' && $jobType !== 'all') { // Apply type filter if a specific 
 }
 error_log("After type filter ('{$jobType}'): " . count($filteredJobs) . " jobs.");
 
+// 2. Apply Search Filter (if search term is provided)
+// This is applied *after* the type filter, to the result of the type filter.
+if ($search !== '') {
+    $tempJobs = [];
+    foreach ($filteredJobs as $job) { // $filteredJobs here is potentially already type-filtered
+        if (!is_array($job)) { 
+            error_log("Skipping non-array job item in search filter: " . print_r($job, true));
+            continue;
+        }
+        $jobTitle = (string)($job['title'] ?? '');
+        $jobCompany = (string)($job['company'] ?? '');
+        $jobLocation = (string)($job['location'] ?? '');
+        if (
+            (stripos(strtolower($jobTitle), $search) !== false) ||
+            (stripos(strtolower($jobCompany), $search) !== false) ||
+            (stripos(strtolower($jobLocation), $search) !== false)
+        ) {
+            $tempJobs[] = $job;
+        }
+    }
+    $filteredJobs = $tempJobs;
+}
+error_log("After search filter ('{$search}'): " . count($filteredJobs) . " jobs.");
 
-// Apply search and date filters only if not in single job view
-if (!$singleJobView) {
-    // 1. Apply Search Filter (if explicitly set in URL)
-    $search = isset($_GET['search']) ? strtolower(trim($_GET['search'])) : '';
-    if ($search !== '') {
-        $tempJobs = [];
-        foreach ($filteredJobs as $job) {
+// 3. Apply Date Filter (if not 'all')
+// This is applied *after* type and search filters.
+if ($filter !== 'all') {
+    $currentDate = time();
+    $tempJobs = [];
+    $daysToFilter = 0;
+    if ($filter === '30') $daysToFilter = 30;
+    elseif ($filter === '7') $daysToFilter = 7;
+    elseif ($filter === '1') $daysToFilter = 1;
+
+    if ($daysToFilter > 0) {
+        $cutoffDate = $currentDate - ($daysToFilter * 24 * 60 * 60);
+        foreach ($filteredJobs as $job) { // $filteredJobs here is potentially type- AND search-filtered
             if (!is_array($job)) { 
-                error_log("Skipping non-array job item in search filter: " . print_r($job, true));
+                error_log("Skipping non-array job item in date filter: " . print_r($job, true));
                 continue;
             }
-            $jobTitle = (string)($job['title'] ?? '');
-            $jobCompany = (string)($job['company'] ?? '');
-            $jobLocation = (string)($job['location'] ?? '');
-            if (
-                (stripos(strtolower($jobTitle), $search) !== false) ||
-                (stripos(strtolower($jobCompany), $search) !== false) ||
-                (stripos(strtolower($jobLocation), $search) !== false)
-            ) {
+            $jobTimestamp = $job['posted_on_unix_ts'] ?? (isset($job['posted_on']) && is_string($job['posted_on']) ? strtotime($job['posted_on']) : 0);
+            if ($jobTimestamp !== false && $jobTimestamp > 0 && $jobTimestamp >= $cutoffDate) {
                 $tempJobs[] = $job;
             }
         }
         $filteredJobs = $tempJobs;
     }
-    error_log("After search filter ('{$search}'): " . count($filteredJobs) . " jobs.");
-
-    // 2. Apply Date Filter (if explicitly set in URL)
-    $filter = isset($_GET['filter']) ? $_GET['filter'] : 'all';
-    $currentDate = time();
-
-    if ($filter !== 'all') {
-        $tempJobs = [];
-        $daysToFilter = 0;
-        if ($filter === '30') $daysToFilter = 30;
-        elseif ($filter === '7') $daysToFilter = 7;
-        elseif ($filter === '1') $daysToFilter = 1;
-
-        if ($daysToFilter > 0) {
-            $cutoffDate = $currentDate - ($daysToFilter * 24 * 60 * 60);
-            foreach ($filteredJobs as $job) {
-                if (!is_array($job)) { 
-                    error_log("Skipping non-array job item in date filter: " . print_r($job, true));
-                    continue;
-                }
-                $jobTimestamp = $job['posted_on_unix_ts'] ?? (isset($job['posted_on']) && is_string($job['posted_on']) ? strtotime($job['posted_on']) : 0);
-                if ($jobTimestamp !== false && $jobTimestamp > 0 && $jobTimestamp >= $cutoffDate) {
-                    $tempJobs[] = $job;
-                }
-            }
-            $filteredJobs = $tempJobs;
-        }
-    }
-    error_log("After date filter ('{$filter}'): " . count($filteredJobs) . " jobs.");
-
-} else { 
-    $search = '';
-    $filter = 'all';
 }
+error_log("After date filter ('{$filter}'): " . count($filteredJobs) . " jobs.");
+
+// If it's a single job view, the $filteredJobs array should ideally contain only that job.
+// The above filters might empty it if the single job doesn't match, which is okay.
+// The $singleJobView flag primarily controls the display (e.g., "Show All Jobs" button).
+if ($singleJobView) {
+    // If we are in single job view, the $search, $filter, $jobType for display/links should reflect no active filtering
+    // This ensures that if the user clicks "Show All Jobs", they go to a non-filtered list.
+    // And the search box value is correctly empty.
+    $search = ''; // This variable is used for the value attribute of the search input
+    $filter = 'all';
+    $jobType = ''; // This will be used for HTML output value for search input and hidden fields
+} elseif (!$isAjaxRequestForResetCheck) { // If it's an initial page load/refresh (not AJAX)
+    // Clear the search term that would be displayed in the input box
+    $search = '';
+}
+
 
 // Sort jobs by posted date (descending)
 usort($filteredJobs, function ($a, $b) {
@@ -458,7 +490,7 @@ usort($filteredJobs, function ($a, $b) {
 
 // Then: apply pagination
 $limit = 10;
-$page = max(1, intval($_GET['page'] ?? 1));
+$page = max(1, intval($_GET['page'] ?? 1)); // Page number from URL
 $totalJobs = count($filteredJobs);
 $totalPages = ceil($totalJobs / $limit);
 $offset = ($page - 1) * $limit;
@@ -555,7 +587,7 @@ function render_job_listings_and_pagination($pagedJobs, $singleJobView, $totalPa
 
 $isAjaxRequest = isset($_GET['ajax']) && $_GET['ajax'] === '1';
 error_log("[REQUEST_INFO] URL: " . $_SERVER['REQUEST_URI'] . " | Is AJAX: " . ($isAjaxRequest ? "Yes" : "No"));
-error_log("[REQUEST_INFO] Filter Params: type='{$jobType}', search='{$search}', filter='{$filter}', page='{$page}'");
+error_log("[REQUEST_INFO] Effective Filter Params for this request: type='{$jobType}', search='{$search}', filter='{$filter}', page='{$page}'");
 error_log("[REQUEST_INFO] Total filtered jobs (before pagination): " . count($filteredJobs) . ". Total pages: " . $totalPages);
 error_log("[REQUEST_INFO] Jobs for paged view (before AJAX check): " . count($pagedJobs) . " jobs. SingleView: " . ($singleJobView ? 'Yes':'No'));
 
@@ -573,42 +605,105 @@ if ($isAjaxRequest) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         * { box-sizing: border-box; }
-        body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f9f9f9; color:#333; }
+        body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f7faff; color:#333; }
         .container { width:100%; }
 
         .title-card {
-            background: #005fa3; /* Solid professional blue */
-            color:#fff;
-            padding:50px 20px; /* Increased padding for better spacing */
-            margin-bottom:25px;
+            background: #ffffff; /* White background */
+            background-color: #f7faff; /* New: Very light cool blue/off-white */
+            color: #2c3e50;
+            padding: 60px 20px; /* Increased padding */
+            margin-bottom: 20px; /* Increased margin */
             text-align:center;
-            box-shadow:0 2px 8px rgba(0,0,0,0.1); /* Softer, cleaner shadow */
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.07); /* Slightly softer, more diffused shadow */
             width: 100%;
+            position: relative; /* For potential pseudo-elements or overlays */
+            overflow: hidden;
+            border-radius: 12px; /* Add some rounded corners for a softer look */
         }
         .title-card h1 {
-            margin:0 0 15px;
-            font-size:30px; /* Slightly larger for more impact */
-            color: #fff; /* Ensure heading is white */
-            font-weight: 600; /* Maintain existing weight or adjust if needed for clarity */
+            margin:0 0 20px; /* Increased bottom margin */
+            font-size: 40px; /* Slightly larger */
+            color: #005fa3; /* Ensure heading is white */
+            font-weight: 700; /* Maintain existing weight or adjust if needed for clarity */
+            letter-spacing: -0.5px;
+            position: relative; /* To ensure it's above animated icons if they overlap */
+            z-index: 2;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.1); /* Subtle text shadow */
         }
         .title-card p {
-            font-size:17px; /* Slightly larger subtitle */
-            color: #e0e0e0; /* Lighter white for subtitle, clear but distinct */
-            margin-bottom:25px;
-            opacity: 0.9;
+            font-size: 19px; /* Slightly larger */
+            color: #4a5568; /* Slightly softer dark grey */
+            margin-bottom: 35px; /* More space */
+            opacity: 0.95;
+            max-width: 700px; /* Constrain width of paragraph for better line length */
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+            position: relative; /* To ensure it's above animated icons */
+            z-index: 2;
+            line-height: 1.7; /* Increased line height */
         }
-        .title-card .join-buttons { display:inline-flex; gap:10px; flex-wrap:wrap; justify-content:center; }
+        .title-card .join-buttons {
+            display:inline-flex;
+            gap:12px; /* Slightly more gap */
+            flex-wrap:wrap;
+            justify-content:center;
+            position: relative; /* To ensure it's above animated icons */
+            z-index: 2;
+        }
+
         .title-card .join-buttons a {
-            color:#fff; text-decoration:none; padding:12px 20px; /* More padding for buttons */
+            color:#fff; text-decoration:none; padding:12px 22px; /* More padding for buttons */
             border-radius:6px; /* Slightly more rounded */
-            background:rgba(255,255,255,0.15); /* Subtle background */
-            border: 1px solid rgba(255,255,255,0.25); /* Subtle border */
             transition: background-color 0.3s, border-color 0.3s;
             font-weight: 500; /* Clearer button text */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         .title-card .join-buttons a.whatsapp { background:#25D366; }
         .title-card .join-buttons a.telegram { background:#0088cc; } /* Corrected class name */
-        .title-card .join-buttons a:hover { background:rgba(255,255,255,0.25); border-color: rgba(255,255,255,0.4); }
+        .title-card .join-buttons a:hover {
+            opacity:.85; /* Slightly more noticeable opacity change */
+            transform: translateY(-2px); /* Slightly more lift */
+            box-shadow: 0 4px 10px rgba(0,0,0,0.12); /* Enhanced shadow on hover */
+        }
+
+        /* 2D Animation Styles */
+        .animated-icons-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1; /* Behind text content */
+            pointer-events: none; /* So icons don't interfere with clicks */
+        }
+        .animated-icon {
+            position: absolute;
+            font-size: 28px; /* Adjust size of icons */
+            color: #005fa3; /* Primary blue for icons */
+            opacity: 0.12; /* Default opacity slightly reduced for subtlety with new bg */
+            animation: float 15s infinite ease-in-out alternate;
+        }
+
+        .animated-icon.icon-magnify { top: 15%; left: 10%; animation-duration: 17s; font-size: 32px; opacity: 0.15;} /* opacity adjusted */
+        .animated-icon.icon-briefcase { top: 60%; left: 85%; animation-duration: 14s; transform: rotate(-15deg); opacity: 0.12;} /* opacity adjusted */
+        .animated-icon.icon-document { top: 75%; left: 20%; animation-duration: 16s; opacity: 0.08; } /* opacity adjusted */
+        .animated-icon.icon-profile { top: 20%; left: 70%; animation-duration: 18s; font-size: 30px; transform: rotate(10deg); opacity: 0.1; } /* opacity adjusted */
+        .animated-icon.icon-graph { top: 40%; left: 40%; animation-duration: 13s; opacity: 0.07; font-size: 36px; } /* opacity adjusted */
+
+        @keyframes float {
+            0% {
+                transform: translateY(0px) translateX(0px) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-15px) translateX(10px) rotate(5deg);
+            }
+            100% {
+                transform: translateY(5px) translateX(-10px) rotate(-5deg);
+            }
+        }
 
         .content-wrapper { display:flex; gap:20px; padding:0 20px; }
 
@@ -627,13 +722,49 @@ if ($isAjaxRequest) {
 
         .search-bar {
           margin:0 auto 20px auto;
-          padding: 0;
+          /* padding: 0; */ /* Kept as is, form will have padding */
           max-width: 800px;
         }
-        .search-bar form { display: flex; width: 100%; gap: 10px; margin-bottom:0px; }
-        .search-bar input[type="text"] { flex-grow: 1; padding:10px; border:1px solid #ccc; border-radius:4px; font-size: 1rem; }
-        .search-bar button { background: #005fa3; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 1rem; }
-        .search-bar button:hover { background: #004577; }
+        .search-bar form { 
+            display: flex; 
+            width: 100%; 
+            gap: 10px; 
+            margin-bottom:0px; 
+            background-color: var(--card-bg); /* Using card background for the form */
+            padding: 10px; /* Padding inside the form, around input and button */
+            border-radius: var(--border-radius, 8px); /* Use defined border-radius or a default */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.06); /* Softer shadow */
+        }
+        .search-bar input[type="text"] { 
+            flex-grow: 1; 
+            padding:10px 15px; /* Adjusted padding for a sleeker look */
+            border:1px solid var(--border-color, #ced4da); 
+            border-radius:var(--border-radius, 6px); 
+            font-size: 1rem; 
+            color: var(--text-color, #212529);
+            background-color: #fff; /* Ensure input background is white */
+            transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .search-bar input[type="text"]:focus {
+            border-color: var(--primary-color, #005fa3); 
+            box-shadow: 0 0 0 0.2rem rgba(0, 95, 163, 0.25); /* Focus shadow using primary color */
+            outline: none;
+        }
+        .search-bar button { 
+            background: var(--primary-color, #005fa3); 
+            color: white; border: none; 
+            padding: 10px 20px; /* Adjusted padding */
+            border-radius: var(--border-radius, 6px); 
+            cursor: pointer; font-size: 1rem; font-weight: 500;
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease;
+        }
+        .search-bar button:hover { 
+            background: #004a8c; /* Slightly darker shade of primary for hover */
+            transform: translateY(-1px); /* Subtle lift on hover */
+        }
+        .search-bar button:active {
+            transform: translateY(0px); /* Press down effect */
+        }
 
         main {
             flex: 1;
@@ -692,7 +823,17 @@ if ($isAjaxRequest) {
                  margin-top: 15px; /* Adjust margin */
                  margin-bottom: 15px;
                  padding: 0 10px; /* Add horizontal padding */
-                 max-width: none; /* Allow search bar to take more width */
+                 /* max-width: 100%; */ /* .search-bar itself doesn't need max-width here */
+            }
+            .search-bar form {
+                width: 100%; /* Ensure the form takes full width of .search-bar */
+            }
+            .search-bar input[type="text"], .search-bar button {
+                padding: 10px 15px; /* Adjust padding for mobile */
+                font-size: 0.95rem;
+            }
+            .search-bar form {
+                padding: 8px; /* Slightly less padding on mobile for the form itself */
             }
             .search-bar form { gap: 5px; } /* Reduce gap in search bar */
             .job-card { padding: 10px; /* Adjust job card padding */ }
@@ -714,11 +855,11 @@ if ($isAjaxRequest) {
         /* --- End Responsive Styles --- */
 
         .job-card {
-            background: #fff;
+            background: #ffffff;
             padding: 15px;
             border-radius: 8px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px; /* Existing margin */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Softer, slightly more pronounced shadow */
             cursor: pointer;
             transition: background-color 0.3s;
         }
@@ -1001,11 +1142,43 @@ if ($isAjaxRequest) {
             #cookieConsentBanner .button { width: auto; padding: 8px 15px; font-size: 13px; }
         }
     </style>
+    <!-- Ensure the 3D background div doesn't interfere if not used, or styles it minimally -->
+    <style>
+        #title-card-3d-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0; /* Behind animated icons and text */
+            pointer-events: none; /* If it's purely decorative and shouldn't capture mouse events */
+        }
+        /* Ensure the canvas created by Three.js fills the container */
+        #title-card-3d-background canvas {
+            display: block; /* Removes extra space below canvas */
+            width: 100% !important; /* Override Three.js inline styles if necessary */
+            height: 100% !important; /* Override Three.js inline styles if necessary */
+        }
+    </style>
 </head>
 <body>
 
     <div class="container">
         <div class="title-card">
+            <!-- Layer 0: Potential 3D Background -->
+            <div id="title-card-3d-background" class="title-card-animation-bg">
+                <!-- The 3D scene will be rendered here by Three.js -->
+            </div>
+            <!-- Layer 1: 2D Animated Icons -->
+            <div class="animated-icons-container">
+                <!-- Replace emojis with actual font icons (e.g., Font Awesome) or SVGs -->
+                <span class="animated-icon icon-magnify">🔍</span>
+                <span class="animated-icon icon-briefcase">💼</span>
+                <span class="animated-icon icon-document">📄</span>
+                <span class="animated-icon icon-profile">👤</span>
+                <span class="animated-icon icon-graph">📈</span>
+            </div>
+            <!-- Layer 2: Content -->
             <h1>🎯 Discover the Latest Jobs in UAE</h1>
             <p>Find fresh opportunities daily from top companies across UAE. Remote, onsite, and hybrid roles available.</p>
             <div class="join-buttons">
@@ -1042,13 +1215,16 @@ if ($isAjaxRequest) {
                 ?>
                 <div class="search-bar">
                     <form method="GET" action="">
-                        <input type="text" name="search" placeholder="Search by job title, company, or location" value="<?php echo htmlspecialchars($search); ?>">
+                        <input type="text" name="search" placeholder="Search by job title, company, or location" value="<?php echo htmlspecialchars($_GET['search'] ?? ''); ?>">
                         <!-- If in single job view, a search should clear the single job view -->
                         <?php if ($singleJobView): ?>
                             <!-- No need for a hidden input, just don't include job_id in the form action -->
                         <?php endif; ?>
+                        <!-- These hidden inputs are not strictly necessary if JS always constructs the full URL for search,
+                             but they don't harm and can be useful if JS is disabled or for other form submissions.
+                             However, for search bar submissions, JS will override these. -->
                         <input type="hidden" name="filter" value="<?php echo htmlspecialchars($filter); ?>">
-                        <input type="hidden" name="type" value="<?php echo htmlspecialchars($jobType); ?>"> <!-- Preserve type filter on search -->
+                        <input type="hidden" name="type" value="<?php echo htmlspecialchars($jobType); ?>">
                         <button type="submit">Search</button>
                     </form>
                 </div>
@@ -1587,7 +1763,9 @@ if ($isAjaxRequest) {
 
                     console.log("Listings container updated."); // DEBUG: Confirm update attempt
                     // Update browser history and URL bar
-                    history.pushState({}, '', url); // Use the original URL for history
+                    // The 'url' parameter is either an absolute URL from a link's href
+                    // or a root-relative path (e.g., /index.php?search=...) from the search form. Both are fine.
+                    history.pushState({}, '', url);
                     
                     // Re-attach event listeners to new pagination links if any
                     attachAjaxToPagination();
@@ -1596,6 +1774,20 @@ if ($isAjaxRequest) {
                     // The toggleJobDetails is an inline onclick, so it should still work.
                     // The shareJob is also inline onclick.
                     // Scroll to the top of the job listings container
+
+                    // Clear the search input field if the current navigation was a search
+                    // This is now handled by the fact that on refresh, PHP sets $search to '' for filtering,
+                    // but the input field's value attribute directly uses $_GET['search'] ?? ''
+                    // If we want to clear it *after an AJAX search completes*, this logic is still valid.
+                    // For the "refresh shows all jobs" requirement, the PHP change is key.
+                    // Let's keep this JS clear for after an AJAX search, as per previous request.
+
+                    // The 'url' variable here holds the URL that was used for navigation (e.g., from a link or search form)
+                    const navigatedUrlParams = new URLSearchParams(new URL(url, window.location.origin).search);
+                    if (navigatedUrlParams.has('search') && navigatedUrlParams.get('search') !== '') {
+                        const searchInput = document.querySelector('.search-bar input[name="search"]');
+                        if (searchInput) searchInput.value = '';
+                    }
                     // Use a short timeout to ensure the DOM has updated and heights are calculated
                     setTimeout(() => {
                         if (listingsContainer) {
@@ -1635,9 +1827,19 @@ if ($isAjaxRequest) {
         if (searchForm) {
             searchForm.addEventListener('submit', function(event) {
                 const formData = new FormData(searchForm);
-                const params = new URLSearchParams(formData);
-                const actionUrl = searchForm.action || window.location.pathname; // Default to current path if action is empty
-                const searchUrl = `${actionUrl}?${params.toString()}`;
+                const currentSearchTerm = formData.get('search'); // Get the new search term
+                
+                // For a search bar submission, we want to search the total list.
+                // This means resetting other filters (type, date) to their 'all' state
+                // and resetting pagination to page 1.
+                const params = new URLSearchParams();
+                params.set('search', currentSearchTerm);
+                params.set('filter', 'all'); // Reset date filter to 'all'
+                params.set('type', '');      // Reset type filter to empty (which PHP treats as 'all types')
+                params.set('page', '1');     // Reset to page 1 for a new search
+
+                // Construct URL based on current pathname and new params to avoid appending to old query string
+                const searchUrl = window.location.pathname + '?' + params.toString();
                 handleAjaxNavigation(event, searchUrl);
             });
         }
@@ -1666,21 +1868,99 @@ if ($isAjaxRequest) {
             handleAjaxNavigation(event, this.href);
         }
         
-        // When the page loads, if there's a 'search' URL parameter,
-        // it means a search was just performed. Clear the visual input.
         document.addEventListener('DOMContentLoaded', function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const searchInput = document.querySelector('.search-bar input[name="search"]');
-            
-            // If a search parameter exists in the URL (meaning a search was just performed and page reloaded)
-            // and the search input field exists on the page.
-            if (urlParams.has('search') && searchInput) {
-                searchInput.value = ''; // Clear the displayed value in the input box
-            }
+            // const urlParams = new URLSearchParams(window.location.search);
+            // const searchInput = document.querySelector('.search-bar input[name="search"]');
+            // The PHP value attribute on the search input now correctly handles displaying the search term.
+            // No need for JS to clear or set it on initial load.
 
             // Initial attachment of event listeners for AJAX navigation
             attachAjaxToFilterLinks();
             attachAjaxToPagination();
+        });
+
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // --- Three.js Background Animation for Title Card: Rotating Icosahedron ---
+        let scene, camera, renderer, icosahedronMesh;
+        const container = document.getElementById('title-card-3d-background');
+
+        function initThreeJS() {
+            if (!container) {
+                console.warn('Three.js: Container #title-card-3d-background not found.');
+                return;
+            }
+
+            // Scene
+            scene = new THREE.Scene();
+
+            // Camera
+            camera = new THREE.PerspectiveCamera(75, container.offsetWidth / container.offsetHeight, 0.1, 1000);
+            camera.position.z = 30; // Adjusted for better particle visibility
+
+            // Renderer
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true }); // alpha:true for transparent background
+            renderer.setSize(container.offsetWidth, container.offsetHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            // renderer.setClearColor(0xf7faff, 1); // Match title card background if not using alpha
+            container.appendChild(renderer.domElement);
+
+            // Create an Icosahedron
+            const geometry = new THREE.IcosahedronGeometry(10, 0); // Radius 10, detail 0
+            const material = new THREE.MeshBasicMaterial({
+                color: 0x60a5fa, // A nice blue, similar to your theme accents
+                wireframe: true,
+                transparent: true,
+                opacity: 0.5 // Make it somewhat transparent
+            });
+
+            icosahedronMesh = new THREE.Mesh(geometry, material);
+            scene.add(icosahedronMesh);
+
+            // Optional: Add a subtle ambient light if you ever use non-basic materials
+            // const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+            // scene.add(ambientLight);
+
+            // Optional: Add a point light for more dynamic shading with other materials
+            // const pointLight = new THREE.PointLight(0xffffff, 0.8);
+            // pointLight.position.set(5, 15, 25);
+            // scene.add(pointLight);
+
+            // Event Listener
+            window.addEventListener('resize', onWindowResize, false);
+
+            animateThreeJS();
+        }
+
+        function animateThreeJS() {
+            requestAnimationFrame(animateThreeJS);
+
+            if (icosahedronMesh) {
+                // Subtle rotation
+                icosahedronMesh.rotation.x += 0.001;
+                icosahedronMesh.rotation.y += 0.0015;
+            }
+            
+            if (renderer && scene && camera) {
+                 renderer.render(scene, camera);
+            }
+        }
+
+        function onWindowResize() {
+            if (container && camera && renderer) {
+                camera.aspect = container.offsetWidth / container.offsetHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(container.offsetWidth, container.offsetHeight);
+            }
+        }
+
+        // Initialize Three.js scene on DOMContentLoaded or window.onload
+        // Using DOMContentLoaded for potentially faster initialization
+        document.addEventListener('DOMContentLoaded', function() {
+            // The other DOMContentLoaded listener for search input clearing is already there.
+            // We can add to it or have a separate one. For clarity, a separate call here is fine.
+            initThreeJS();
         });
 
     </script>

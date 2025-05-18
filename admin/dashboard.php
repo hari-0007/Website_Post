@@ -32,6 +32,22 @@ $forgotPasswordMessage = ''; // Specific variable for forgot password messages o
 // Check login status
 $loggedIn = isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true;
 $loggedInUserRole = $_SESSION['admin_role'] ?? 'user'; // Default role if not set
+$loggedInUsername = $_SESSION['admin_username'] ?? '';
+
+
+// Calculate unread messages count if logged in
+$unreadMessagesCount = 0;
+if ($loggedIn) {
+    $messagesFilePath = __DIR__ . '/../data/feedback.json';
+    $messages = file_exists($messagesFilePath) ? json_decode(file_get_contents($messagesFilePath), true) : [];
+    if (!is_array($messages)) $messages = []; // Ensure it's an array
+
+    foreach ($messages as $message) {
+        if (isset($message['read']) && $message['read'] === false) {
+            $unreadMessagesCount++;
+        }
+    }
+}
 
 // Determine the requested view
 $requestedView = $_GET['view'] ?? ($loggedIn ? 'dashboard' : 'login'); // Default to dashboard if logged in, login if not
@@ -39,11 +55,17 @@ $requestedAction = $_GET['action'] ?? null; // For handling specific actions rou
 
 // Validate requested view if logged in
 // 'post_job' view is removed from allowed views as its navigation link is removed, but fetchable via AJAX
-$allowedViews = ['dashboard', 'manage_jobs', 'edit_job', 'profile', 'messages', 'generate_message', 'manage_users'];
+$allowedViews = ['dashboard', 'manage_jobs', 'edit_job', 'profile', 'messages', 'generate_message', 'manage_users', 'post_job'];
 if ($loggedIn) {
     if (!in_array($requestedView, $allowedViews)) {
         // If view is invalid for logged-in user, default to dashboard without an error
         $requestedView = 'dashboard';
+    }
+    // Authorization check for manage_users view
+    if ($requestedView === 'manage_users' && !in_array($loggedInUserRole, ['super_admin', 'admin', 'user_group_manager'])) {
+        $_SESSION['admin_status'] = ['message' => 'Access Denied: You do not have permission to manage users.', 'type' => 'error'];
+        header('Location: dashboard.php?view=dashboard'); // Redirect to a safe page
+        exit;
     }
 }
 
@@ -154,10 +176,15 @@ if ($loggedIn) {
             break;
         case 'generate_message':
             // This section attempts to include the message generation logic.
-            // *** THE FATAL ERROR OCCURS ON THE NEXT LINE (around 160) IF generate_whatsapp_message.php IS NOT FOUND ***
             ob_start(); // Start output buffering
             // Include the script that generates the WhatsApp message content
-            require __DIR__ . '/views/generate_message_view.php'; // <-- This line causes the error if the file is missing
+            // Ensure generate_whatsapp_message.php is correctly located or adjust path
+            if (file_exists(__DIR__ . '/generate_whatsapp_message.php')) {
+                 require __DIR__ . '/generate_whatsapp_message.php'; 
+            } else {
+                 error_log("Error: generate_whatsapp_message.php not found in " . __DIR__);
+                 echo "Error: Message generation script not found."; // Fallback message
+            }
             $whatsappMessage = ob_get_clean(); // Capture the output
 
              // Check if the included script outputted an error indicating data file not found
@@ -200,8 +227,11 @@ if ($loggedIn) {
     }
 }
 
-
 // Include header (contains opening HTML, head, and navigation)
+// Pass $unreadMessagesCount and $loggedInUserRole to header.php
+$userRole = $loggedInUserRole; // Make it available with a simpler name if header expects $userRole
+// The $unreadMessagesCount is already calculated above and will be in scope for header.php
+error_log("[DEBUG] dashboard.php: Final Unread messages before including header: " . $unreadMessagesCount . " | LoggedIn: " . ($loggedIn ? 'Yes' : 'No')); // DETAILED DEBUG
 require_once __DIR__ . '/partials/header.php';
 
 ?>
@@ -258,16 +288,21 @@ require_once __DIR__ . '/partials/header.php';
         <h2>Admin Dashboard</h2>
         <div class="admin-nav">
             <?php $displayName = $_SESSION['admin_display_name'] ?? $_SESSION['admin_username'] ?? 'Admin'; ?>
-            <a href="dashboard.php?view=dashboard" class="<?= $loggedIn && $requestedView === 'dashboard' ? 'active' : '' ?>">Dashboard</a>
+            <a href="?view=dashboard" class="<?= $loggedIn && $requestedView === 'dashboard' ? 'active' : '' ?>">Dashboard</a>
             <?php /* Removed Post New Job Tab: <a href="dashboard.php?view=post_job" class="<?= $loggedIn && $requestedView === 'post_job' ? 'active' : '' ?>">Post New Job</a> */ ?>
-            <a href="dashboard.php?view=manage_jobs" class="<?= $loggedIn && ($requestedView === 'manage_jobs' || $requestedView === 'edit_job') ? 'active' : '' ?>">Manage Jobs</a>
-            <a href="dashboard.php?view=messages" class="<?= $loggedIn && $requestedView === 'messages' ? 'active' : '' ?>">Messages</a>
-             <a href="dashboard.php?view=generate_message" class="<?= $loggedIn && $requestedView === 'generate_message' ? 'active' : '' ?>">Generate Post</a>
+            <a href="?view=manage_jobs" class="<?= $loggedIn && ($requestedView === 'manage_jobs' || $requestedView === 'edit_job') ? 'active' : '' ?>">Manage Jobs</a>
+                            <a href="?view=messages">
+                    Messages
+                    <?php if (isset($unreadMessagesCount) && $unreadMessagesCount > 0): ?>
+                        <span class="unread-badge"><?= htmlspecialchars($unreadMessagesCount) ?></span>
+                    <?php endif; ?>
+                </a>
+             <a href="?view=generate_message" class="<?= $loggedIn && $requestedView === 'generate_message' ? 'active' : '' ?>">Generate Post</a>
             <div class="profile-dropdown">
                 <a href="javascript:void(0);"><?= htmlspecialchars($displayName) ?> ▼</a>
                 <div class="profile-dropdown-content">
                     <a href="dashboard.php?view=profile" class="<?= $loggedIn && $requestedView === 'profile' ? 'active' : '' ?>">Manage Profile</a>
-                    <?php if ($loggedInUserRole === 'super_admin' || $loggedInUserRole === 'admin'): ?>
+                    <?php if ($loggedInUserRole === 'super_admin' || $loggedInUserRole === 'admin' || $loggedInUserRole === 'user_group_manager'): ?>
                          <a href="dashboard.php?view=manage_users" class="<?= $loggedIn && $requestedView === 'manage_users' ? 'active' : '' ?>">User Manager</a>
                     <?php endif; ?>
                     <a href="auth.php?action=logout">Logout</a>

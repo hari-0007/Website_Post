@@ -292,12 +292,17 @@ switch ($requestedView) {
                 $vacantPositions = is_numeric($vacantPositions) ? (int)$vacantPositions : 1;
 
                 // Format: "• Title (Count) at Company"
-                $message .= "• " . $title;
-                if ($vacantPositions > 1) {
-                    $message .= " (" . $vacacantPositions . ")"; // Corrected variable name here
-                }
-                $message .= " at " . $company; // Added " at Company"
-                $message .= "\n"; // New line after each job
+                // $message .= "• " . $title;
+                // if ($vacantPositions > 1) {
+                //     $message .= " (" . $vacacantPositions . ")"; // Corrected variable name here
+                // }
+                // $message .= " at " . $company; // Added " at Company"
+                // $message .= "\n"; // New line after each job
+                if (!empty($company)) {
+                    $message .= "➡️ *$title* at *$company*\n";
+                        } else {
+                    $message .= "➡️ *$title*\n"; // Omit 'at [Company]' if company is empty
+                    }
             }
         }
 

@@ -1,202 +1,239 @@
 <?php
 
 // admin/views/post_job_view.php - Displays the form for posting a new job
+// admin/views/post_job_view.php - Form for posting a new job, with review step
 
 // This file is included by dashboard.php when $requestedView is 'post_job'.
 // It assumes $formData is available (for pre-filling on validation errors).
+// Determine if we are in review mode
+$isReviewMode = isset($_GET['step']) && $_GET['step'] === 'review';
+
+// If in review mode, get data from 'review_job_data' session
+// Otherwise, get data from 'form_data' (for repopulating after validation errors on initial post)
+if ($isReviewMode) {
+    $formData = $_SESSION['review_job_data'] ?? [];
+    // Don't unset review_job_data here, it's needed if the final submission fails and needs to show review again.
+    // It will be unset in post_job.php after successful final submission or if the user navigates away from review.
+} else {
+    $formData = $_SESSION['form_data'] ?? [];
+    unset($_SESSION['form_data']); // Clear initial form data after retrieving
+}
+
+$pageTitle = $isReviewMode ? "Review and Post Job" : "Post New Job";
+$submitButtonText = $isReviewMode ? "Confirm and Post Job" : "Generate Summary & Review";
+$formActionValue = $isReviewMode ? "final_post" : "initial_post";
 
 ?>
 <style>
-    /* General Page Styles */
-    #postJobPage {
-        max-width: 500px;
-        margin: 30px auto;
-        background: #fff;
-        padding: 15px 20px;
-        border-radius: 5px;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    .post-job-container {
+        max-width: 700px; /* Wider for more content */
+        margin: 20px auto;
+        padding: 20px 25px;
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     }
 
-    #postJobPage h1 {
+    .post-job-container h3 { /* Changed from h1 for better semantic structure within dashboard */
         text-align: center;
-        font-size: 1.5rem;
-        color: #333;
-        margin-bottom: 15px;
+        color: #0056b3; /* Primary color */
+        margin-top: 0;
+        margin-bottom: 10px;
+        font-size: 1.6rem;
     }
 
-    #postJobPage form {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
+    .post-job-container p.form-description {
+        text-align: center;
+        color: #555;
+        margin-bottom: 25px;
+        font-size: 0.95rem;
     }
-
-    #postJobPage label {
+    .styled-form .form-group {
+        margin-bottom: 18px;
+    }
+    .styled-form label {
+        display: block;
         font-weight: 600;
-        color: #444;
-        font-size: 0.9rem;
-        margin-bottom: 3px;
-    }
-
-    #postJobPage input[type="text"],
-    #postJobPage input[type="email"],
-    #postJobPage input[type="number"],
-    #postJobPage textarea,
-    #postJobPage select {
-        width: 100%;
-        padding: 8px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        font-size: 0.85rem;
         color: #333;
-        background-color: #f9f9f9;
-        transition: border-color 0.3s ease;
+        margin-bottom: 6px;
+        font-size: 0.9rem;
     }
-
-    #postJobPage input[type="text"]:focus,
-    #postJobPage input[type="email"]:focus,
-    #postJobPage input[type="number"]:focus,
-    #postJobPage textarea:focus,
-    #postJobPage select:focus {
-        border-color: #007bff;
+    .styled-form input[type="text"],
+    .styled-form input[type="email"],
+    .styled-form input[type="number"],
+    .styled-form textarea,
+    .styled-form select {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #ced4da;
+        border-radius: 5px;
+        font-size: 0.95rem;
+        color: #495057;
+        background-color: #fdfdfd;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .styled-form input[type="text"]:focus,
+    .styled-form input[type="email"]:focus,
+    .styled-form input[type="number"]:focus,
+    .styled-form textarea:focus,
+    .styled-form select:focus {
+        border-color: #0056b3;
         outline: none;
+        box-shadow: 0 0 0 0.2rem rgba(0, 86, 179, 0.2);
         background-color: #fff;
     }
-
-    #postJobPage textarea {
+    .styled-form textarea {
         resize: vertical;
-        min-height: 80px;
+        min-height: 100px;
     }
-
-    #postJobPage button {
-        padding: 8px 12px;
-        background-color: #007bff;
+    .styled-form .button { /* Re-using .button style if defined globally, or define here */
+        padding: 10px 18px;
+        background-color: #0056b3;
         color: #fff;
         border: none;
-        border-radius: 4px;
-        font-size: 0.9rem;
-        font-weight: 600;
+        border-radius: 5px;
+        font-size: 1rem;
+        font-weight: 500;
         cursor: pointer;
-        transition: background-color 0.3s ease, transform 0.2s ease;
+        transition: background-color 0.2s ease, transform 0.1s ease;
+        display: inline-block; /* For proper button behavior */
+        width: auto; /* Don't force full width unless intended */
     }
-
-    #postJobPage button:hover {
-        background-color: #0056b3;
+    .styled-form .button:hover {
+        background-color: #00418a;
         transform: translateY(-1px);
     }
-
-    #postJobPage button:active {
-        background-color: #004085;
+    .styled-form .button:active {
+        background-color: #003775;
         transform: translateY(0);
     }
-
-    /* Responsive Design */
-    @media (max-width: 768px) {
-        #postJobPage {
-            margin: 15px;
-            padding: 10px;
-        }
-
-        #postJobPage form {
-            gap: 8px;
-        }
-
-        #postJobPage button {
-            font-size: 0.85rem;
-            padding: 6px 10px;
-        }
+    .required {
+        color: #dc3545; /* Red for required fields */
+        font-weight: bold;
+        margin-left: 2px;
+    }
+    /* Styles for the AI summary review section */
+    .ai-summary-review-section {
+        border: 1px solid #0056b3;
+        padding: 15px;
+        margin-top: 20px;
+        margin-bottom: 20px;
+        border-radius: 5px;
+        background-color: #eef2f7;
+    }
+    .ai-summary-review-section label {
+        color: #0056b3;
+        font-size: 1rem;
     }
 </style>
 
-<script>
-    function toggleCustomExperience(select) {
-        const customExperienceInput = document.getElementById('custom_experience');
-        if (select.value === 'other') {
-            customExperienceInput.style.display = 'block';
-            customExperienceInput.required = true; // Make it required when visible
-        } else {
-            customExperienceInput.style.display = 'none';
-            customExperienceInput.required = false; // Remove required when hidden
-            customExperienceInput.value = ''; // Clear the input value
-        }
-    }
-</script>
+<div class="post-job-container">
+    <h3><?= htmlspecialchars($pageTitle) ?></h3>
+    <!-- <p class="form-description">
+        <?php if ($isReviewMode): ?>
+            Please review all details below, edit the AI-generated summary if needed, and then click "Confirm and Post Job".
+        <?php else: ?>
+            Fill in the details below. An AI summary will be generated for your review in the next step. Fields marked with <span class="required">*</span> are mandatory.
+        <?php endif; ?>
+    </p> -->
 
-<div id="postJobPage" class="post-job-container">
-    <h1>Post a Job</h1>
-
-    <?php if (isset($_SESSION['admin_status'])): ?>
-        <div class="status-message <?= htmlspecialchars($_SESSION['admin_status']['type']) ?>">
-            <?= htmlspecialchars($_SESSION['admin_status']['message']) ?>
+    <form action="post_job.php" method="POST" id="postJobForm" class="styled-form">
+        <input type="hidden" name="action" value="<?= htmlspecialchars($formActionValue) ?>">
+        
+        <?php if (!$isReviewMode): // Only show these fields in initial entry mode ?>
+        <div class="form-group">
+            <label for="title">Job Title: <span class="required">*</span></label>
+            <input type="text" id="title" name="title" required value="<?= htmlspecialchars($formData['title'] ?? '') ?>">
         </div>
-        <?php unset($_SESSION['admin_status']); // Clear the status message ?>
-    <?php endif; ?>
+        
+        <div class="form-group">
+            <label for="company">Company Name:</label>
+            <input type="text" id="company" name="company" value="<?= htmlspecialchars($formData['company'] ?? '') ?>" placeholder="Optional">
+        </div>
+        
+        <div class="form-group">
+            <label for="location">Location:</label>
+            <input type="text" id="location" name="location" value="<?= htmlspecialchars($formData['location'] ?? '') ?>">
+        </div>
+        
+        <div class="form-group">
+            <label for="vacant_positions">Number of Vacant Positions:</label>
+            <input type="number" id="vacant_positions" name="vacant_positions" min="1" value="<?= htmlspecialchars($formData['vacant_positions'] ?? 1) ?>">
+        </div>
+        
+        <div class="form-group">
+            <label for="experience">Experience Level:</label>
+            <select id="experience" name="experience" onchange="toggleCustomExperience(this)">
+                <option value="0" <?= (($formData['experience'] ?? '0') == '0') ? 'selected' : '' ?>>No Experience / Fresher</option>
+                <option value="internship" <?= (($formData['experience'] ?? '') === 'internship') ? 'selected' : '' ?>>Internship</option>
+                <?php for ($i = 1; $i <= 20; $i++): // Extended to 20 years ?>
+                    <option value="<?= $i ?>" <?= (isset($formData['experience']) && $formData['experience'] == $i) ? 'selected' : '' ?>><?= $i ?> year<?= $i > 1 ? 's' : '' ?></option>
+                <?php endfor; ?>
+                <option value="20+" <?= (isset($formData['experience']) && $formData['experience'] == '20+') ? 'selected' : '' ?>>20+ years</option>
+                <option value="other" <?= (isset($formData['experience']) && $formData['experience'] === 'other') ? 'selected' : '' ?>>Other (Specify)</option>
+            </select>
+            <input type="text" id="custom_experience" name="custom_experience" placeholder="Specify experience (e.g., 2-3 years, Project Management)" style="display:none; margin-top:10px;" value="<?= htmlspecialchars($formData['custom_experience'] ?? '') ?>">
+        </div>
+        
+        <div class="form-group">
+            <label for="type">Job Type:</label>
+            <select id="type" name="type">
+                <option value="Full Time" <?= (($formData['type'] ?? 'Full Time') === 'Full Time') ? 'selected' : '' ?>>Full Time</option>
+                <option value="Part Time" <?= (($formData['type'] ?? '') === 'Part Time') ? 'selected' : '' ?>>Part Time</option>
+                <option value="Contract" <?= (($formData['type'] ?? '') === 'Contract') ? 'selected' : '' ?>>Contract</option>
+                <option value="Internship" <?= (($formData['type'] ?? '') === 'Internship') ? 'selected' : '' ?>>Internship</option>
+                <option value="Remote" <?= (($formData['type'] ?? '') === 'Remote') ? 'selected' : '' ?>>Remote</option>
+                <option value="Hybrid" <?= (($formData['type'] ?? '') === 'Hybrid') ? 'selected' : '' ?>>Hybrid</option>
+                <option value="Onsite" <?= (($formData['type'] ?? '') === 'Onsite') ? 'selected' : '' ?>>Onsite</option>
+                <option value="Developer" <?= (($formData['type'] ?? '') === 'Developer') ? 'selected' : '' ?>>Developer</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="salary">Salary:</label>
+            <input type="text" id="salary" name="salary" value="<?= htmlspecialchars($formData['salary'] ?? '') ?>" placeholder="e.g., AED 5000 - 7000, or Negotiable">
+        </div>
+        
+        <div class="form-group">
+            <label for="phones">Contact Phone(s) (comma-separated): <span class="required">*</span></label>
+            <input type="text" id="phones" name="phones" value="<?= htmlspecialchars($formData['phones'] ?? '') ?>">
+        </div>
+        
+        <div class="form-group">
+            <label for="emails">Contact Email(s) (comma-separated): <span class="required">*</span></label>
+            <input type="text" id="emails" name="emails" value="<?= htmlspecialchars($formData['emails'] ?? '') ?>">
+        </div>       
+        <div class="form-group">
+            <label for="description">Key Responsibilities/Details:</label>
+            <textarea id="description" name="description" rows="8" <?= $isReviewMode ? 'readonly' : '' ?>><?= htmlspecialchars($formData['description'] ?? '') ?></textarea>
+            <!-- <?php if ($isReviewMode): ?>
+                <small>Original description is locked during review. Edit the AI summary below.</small>
+            <?php endif; ?> -->
+        </div>
+        <?php else: // In Review Mode, we need to pass these values as hidden fields so they are submitted ?>
+            <input type="hidden" name="title" value="<?= htmlspecialchars($formData['title'] ?? '') ?>">
+            <input type="hidden" name="company" value="<?= htmlspecialchars($formData['company'] ?? '') ?>">
+            <input type="hidden" name="location" value="<?= htmlspecialchars($formData['location'] ?? '') ?>">
+            <input type="hidden" name="vacant_positions" value="<?= htmlspecialchars($formData['vacant_positions'] ?? 1) ?>">
+            <input type="hidden" name="experience" value="<?= htmlspecialchars($formData['experience'] ?? '0') ?>">
+            <?php if (isset($formData['experience']) && $formData['experience'] === 'other' && isset($formData['custom_experience'])): ?>
+                <input type="hidden" name="custom_experience" value="<?= htmlspecialchars($formData['custom_experience']) ?>">
+            <?php endif; ?>
+            <input type="hidden" name="type" value="<?= htmlspecialchars($formData['type'] ?? 'Full Time') ?>">
+            <input type="hidden" name="salary" value="<?= htmlspecialchars($formData['salary'] ?? '') ?>">
+            <input type="hidden" name="phones" value="<?= htmlspecialchars($formData['phones'] ?? '') ?>">
+            <input type="hidden" name="emails" value="<?= htmlspecialchars($formData['emails'] ?? '') ?>">
+            <input type="hidden" name="description" value="<?= htmlspecialchars($formData['description'] ?? '') ?>">
+        <?php endif; ?>
 
-    <form method="POST" action="post_job.php">
-        <label for="title">Job Title:</label>
-        <input type="text" id="title" name="title" required>
 
-        <label for="company">Company:</label>
-        <input type="text" id="company" name="company" placeholder="Optional">
+        <?php if ($isReviewMode): ?>
+            <div class="form-group ai-summary-review-section">
+                <label for="ai_summary">AI Generated Summary (Editable): <span class="required">*</span></label>
+                <textarea id="ai_summary" name="ai_summary" rows="10" required><?= htmlspecialchars($formData['ai_summary'] ?? '') ?></textarea>
+            </div>
+        <?php endif; ?>
 
-        <label for="location">Location:</label>
-        <input type="text" id="location" name="location" placeholder="Optional">
-
-        <label for="description">Description:</label>
-        <textarea id="description" name="description" placeholder="Optional"></textarea>
-
-        <label for="experience">Experience:</label>
-        <select id="experience" name="experience" onchange="toggleCustomExperience(this)">
-            <option value="0" selected>No Experience</option>
-            <option value="Fresher">Fresher</option>
-            <option value="Internship">Internship</option>
-            <option value="1">1 Year</option>
-            <option value="2">2 Years</option>
-            <option value="3">3 Years</option>
-            <option value="4">4 Years</option>
-            <option value="5">5 Years</option>
-    
-            <option value="6">6 Years</option>
-            <option value="7">7 Years</option>
-            <option value="8">8 Years</option>
-            <option value="9">9 Years</option>
-            <option value="10">10 Years</option>
-            <option value="11">11 Years</option>
-            <option value="12">12 Years</option>
-            <option value="13">13 Years</option>
-            <option value="14">14 Years</option>
-            <option value="15">15 Years</option>
-            <option value="16">16 Years</option>
-            <option value="17">17 Years</option>
-            <option value="18">18 Years</option>
-            <option value="19">19 Years</option>
-            <option value="20">20 Years</option>
-            <option value="21">20+ Years</option>
-        </select>
-        <input type="text" id="custom_experience" name="custom_experience" placeholder="Enter custom experience" style="display: none; margin-top: 10px;">
-
-        <label for="type">Job Type:</label>
-        <select id="type" name="type" required>
-            <option value="Full Time">Full Time</option>
-            <option value="Part Time">Part Time</option>
-            <option value="Internship">Internship</option>
-            <option value="Remote">Remote</option>
-            <option value="Hybrid">Hybrid</option>
-            <option value="Onsite">Onsite</option>
-            <option value="Developer">Developer</option>
-        </select>
-
-        <label for="salary">Salary:</label>
-        <input type="text" id="salary" name="salary" placeholder="e.g., $50,000 - $60,000 per year" value="0">
-
-        <label for="phones">Phone:</label>
-        <input type="text" id="phones" name="phones" placeholder="Optional">
-
-        <label for="emails">Email:</label>
-        <input type="email" id="emails" name="emails" placeholder="Optional">
-
-        <label for="vacant_positions">Vacant Positions:</label>
-        <input type="number" id="vacant_positions" name="vacant_positions" min="1" value="1">
-
-        <button type="submit">Post Job</button>
+        <button type="submit" class="button"><?= htmlspecialchars($submitButtonText) ?></button>
     </form>
 </div>

@@ -1,5 +1,7 @@
 <?php
 // Ensure no whitespace or output before this tag
+// --- DEBUGGING: Check if unreadMessagesCount is available ---
+// error_log("[DEBUG] header.php: Received unreadMessagesCount: " . (isset($unreadMessagesCount) ? $unreadMessagesCount : 'NOT SET') . " | LoggedIn in header scope: " . (isset($loggedIn) ? ($loggedIn ? 'Yes' : 'No') : 'NOT SET'));
 ?>
 <!DOCTYPE html>
 <html lang="en">

@@ -54,9 +54,10 @@ $pagedJobs = array_slice($filteredJobs, $startIndex, $jobsPerPage);
             <input type="date" name="end_date" value="<?= htmlspecialchars($_GET['end_date'] ?? '') ?>" class="filter-input" aria-label="End Date">
             <button type="submit" class="button filter-button">Filter</button>
         </form>
-        <button id="postNewJobBtn" class="button post-job-btn">
+        <!-- <button id="postNewJobBtn" class="button post-job-btn">
             + Post New Job
-        </button>
+        </button> -->
+        <a href="dashboard.php?view=post_job" class="button post-new-job-button">Post New Job</a>
     </div>
 </header>
 

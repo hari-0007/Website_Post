@@ -727,11 +727,11 @@ if ($isAjaxRequest) {
         }
         .search-bar form { 
             display: flex; 
-            width: 100%; 
-            gap: 10px; 
+            width: 100%; /* Form takes full width of .search-bar */
+            /* gap: 10px; */ /* No longer needed as button is removed */
             margin-bottom:0px; 
             background-color: var(--card-bg); /* Using card background for the form */
-            padding: 10px; /* Padding inside the form, around input and button */
+            padding: 0; /* Remove padding from form, input will handle it */
             border-radius: var(--border-radius, 8px); /* Use defined border-radius or a default */
             box-shadow: 0 2px 5px rgba(0,0,0,0.06); /* Softer shadow */
         }
@@ -739,31 +739,21 @@ if ($isAjaxRequest) {
             flex-grow: 1; 
             padding:10px 15px; /* Adjusted padding for a sleeker look */
             border:1px solid var(--border-color, #ced4da); 
-            border-radius:var(--border-radius, 6px); 
+            border-radius:inherit; /* Inherit border-radius from the form for a unified look */
             font-size: 1rem; 
             color: var(--text-color, #212529);
             background-color: #fff; /* Ensure input background is white */
             transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            width: 100%; /* Ensure input takes full width of the form */
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%236c757d' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            padding-right: 40px; /* Add padding to prevent text from overlapping the icon */
         }
         .search-bar input[type="text"]:focus {
             border-color: var(--primary-color, #005fa3); 
             box-shadow: 0 0 0 0.2rem rgba(0, 95, 163, 0.25); /* Focus shadow using primary color */
             outline: none;
-        }
-        .search-bar button { 
-            background: var(--primary-color, #005fa3); 
-            color: white; border: none; 
-            padding: 10px 20px; /* Adjusted padding */
-            border-radius: var(--border-radius, 6px); 
-            cursor: pointer; font-size: 1rem; font-weight: 500;
-            transition: background-color 0.2s ease-in-out, transform 0.1s ease;
-        }
-        .search-bar button:hover { 
-            background: #004a8c; /* Slightly darker shade of primary for hover */
-            transform: translateY(-1px); /* Subtle lift on hover */
-        }
-        .search-bar button:active {
-            transform: translateY(0px); /* Press down effect */
         }
 
         main {
@@ -831,9 +821,8 @@ if ($isAjaxRequest) {
             .search-bar input[type="text"], .search-bar button {
                 padding: 10px 15px; /* Adjust padding for mobile */
                 font-size: 0.95rem;
-            }
-            .search-bar form {
-                padding: 8px; /* Slightly less padding on mobile for the form itself */
+                background-position: right 10px center; /* Adjust icon position for mobile */
+                padding-right: 35px; /* Adjust padding for icon on mobile */
             }
             .search-bar form { gap: 5px; } /* Reduce gap in search bar */
             .job-card { padding: 10px; /* Adjust job card padding */ }
@@ -1225,7 +1214,7 @@ if ($isAjaxRequest) {
                              However, for search bar submissions, JS will override these. -->
                         <input type="hidden" name="filter" value="<?php echo htmlspecialchars($filter); ?>">
                         <input type="hidden" name="type" value="<?php echo htmlspecialchars($jobType); ?>">
-                        <button type="submit">Search</button>
+                        <!-- <button type="submit">Search</button> --> <!-- Button Removed -->
                     </form>
                 </div>
                 

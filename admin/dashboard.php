@@ -108,7 +108,7 @@ if ($loggedIn) {
     switch ($requestedView) {
         case 'dashboard':
             // Calculate dashboard stats (total views, jobs today/month, graph data)
-            $totalViews = (int)file_get_contents($viewCounterFile);
+            // $totalViews = (int)file_get_contents($viewCounterFile);
             $today = date('Y-m-d');
             $thisMonth = date('Y-m');
 

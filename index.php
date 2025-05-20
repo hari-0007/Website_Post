@@ -228,23 +228,33 @@ if (file_exists($filename)) {
 // This section determines the actual filter values to be used for querying and display.
 $isAjaxRequestForResetCheck = isset($_GET['ajax']) && $_GET['ajax'] === '1';
 
-$filter_param = isset($_GET['filter']) ? trim($_GET['filter']) : 'all';
-if ($filter_param === '') $filter_param = 'all'; // Treat empty filter as 'all'
-$type_param = isset($_GET['type']) ? trim($_GET['type']) : '';
-if ($type_param === 'all') $type_param = ''; // Treat 'all' type as no specific type (empty string)
+// Date filter parameter
+$filter_param_raw = $_GET['filter'] ?? 'all'; // Default to 'all' if not set
+$filter_param = trim($filter_param_raw);
+if ($filter_param === '' || !in_array($filter_param, ['1', '7', '30', 'all'])) { // Validate and default
+    $filter_param = 'all';
+}
+
+// Job type parameter
+$type_param_raw = $_GET['type'] ?? ''; // Default to empty (all types) if not set
+$type_param = strtolower(trim($type_param_raw));
+if ($type_param === 'all') { // Explicitly treat 'all' as empty string for "all types"
+    $type_param = '';
+}
 
 // Initialize search parameter.
-// If it's an AJAX request, use the search term from GET.
-// Otherwise (initial load/refresh), default to no search, effectively showing all jobs.
-$search_param = ''; // Default to no search
-if ($isAjaxRequestForResetCheck) { // Only use GET['search'] if it's an AJAX request
-    $search_param = isset($_GET['search']) ? trim($_GET['search']) : '';
-}
+$search_param_raw = $_GET['search'] ?? ''; // Default to empty if not set
+$search_param = trim($search_param_raw);
+// Note: The JS for search submission correctly resets other filters.
+// For direct URL loads or non-JS scenarios, $search_param will be used as is.
 
 // Log the raw parameters received from GET for debugging
 // error_log("[DEBUG] Raw GET params: search='{$_GET['search']}', filter='{$_GET['filter']}', type='{$_GET['type']}'");
 // error_log("[DEBUG] Initialized params: search_param='{$search_param}', filter_param='{$filter_param}', type_param='{$type_param}'");
 // --- END: Logic to determine filter parameters ---
+
+// --- START: Logic to determine if this is a recommendations view ---
+$isRecommendationsView = isset($_GET['recommendations']) && $_GET['recommendations'] === '1';
 
 // Check if a specific job ID is requested to be expanded
 $jobIdToExpandFromUrl = isset($_GET['job_id']) ? trim($_GET['job_id']) : null;
@@ -267,7 +277,7 @@ if ($jobIdToExpandFromUrl) {
 // It modifies $phpJobsArray directly if conditions are met.
 $appliedInterestFilter = false;
 if (!$singleJobView &&
-    empty($search_param) && empty($type_param) && ($filter_param === 'all') && // Check against processed params
+    $isRecommendationsView && // Apply interest filter ONLY if recommendations=1 is explicitly set
     isset($_COOKIE[COOKIE_CONSENT_STATUS_NAME]) && $_COOKIE[COOKIE_CONSENT_STATUS_NAME] === 'accepted') {
 
     error_log("[DEBUG] Applying interest-based filtering.");
@@ -445,14 +455,35 @@ if ($filter !== 'all') {
     elseif ($filter === '1') $daysToFilter = 1;
 
     if ($daysToFilter > 0) {
+        // Specific logging for 7-day filter
+        if ($filter === '7') {
+            error_log("[7_DAY_FILTER_DEBUG] Current Time (Unix): " . $currentDate . " (" . date('Y-m-d H:i:s', $currentDate) . ")");
+        }
+
         $cutoffDate = $currentDate - ($daysToFilter * 24 * 60 * 60);
         foreach ($filteredJobs as $job) { // $filteredJobs here is potentially type- AND search-filtered
             if (!is_array($job)) { 
                 error_log("Skipping non-array job item in date filter: " . print_r($job, true));
                 continue;
             }
-            $jobTimestamp = $job['posted_on_unix_ts'] ?? (isset($job['posted_on']) && is_string($job['posted_on']) ? strtotime($job['posted_on']) : 0);
-            if ($jobTimestamp !== false && $jobTimestamp > 0 && $jobTimestamp >= $cutoffDate) {
+            // Ensure 'posted_on_unix_ts' exists and is a valid positive number.
+            // This field should have been reliably populated when $jobsForJS and $phpJobsArray were created.
+            $jobTimestamp = $job['posted_on_unix_ts'] ?? 0; 
+            if (!is_numeric($jobTimestamp) || $jobTimestamp <= 0) {
+                 // This block is a fallback, but ideally posted_on_unix_ts is always correct.
+                 error_log("[DATE_FILTER_WARN] Job ID '{$job['id']}' (Title: '{$job['title']}') missing or invalid 'posted_on_unix_ts'. Original value: " . ($job['posted_on_unix_ts'] ?? 'NOT SET') . ". Attempting to parse '{$job['posted_on']}'.");
+                 if (isset($job['posted_on']) && is_string($job['posted_on'])) {
+                    $parsed_ts = strtotime($job['posted_on']);
+                    $jobTimestamp = ($parsed_ts === false) ? 0 : $parsed_ts;
+                 } else {
+                    $jobTimestamp = 0; // Still 0 if 'posted_on' is also unusable
+                 }
+            }
+            
+            if ($filter === '7') { // Log details only when the 7-day filter is active
+                error_log("[7_DAY_FILTER_DEBUG] Job ID '{$job['id']}' (Title: '{$job['title']}') - JobTS: {$jobTimestamp} (" . ($jobTimestamp > 0 ? date('Y-m-d H:i:s', $jobTimestamp) : 'Invalid/Zero') . ", Original: '{$job['posted_on']}') vs CutoffTS: {$cutoffDate} (" . date('Y-m-d H:i:s', $cutoffDate) . ") - Included: " . (($jobTimestamp > 0 && $jobTimestamp >= $cutoffDate) ? 'Yes' : 'No'));
+            }
+            if ($jobTimestamp > 0 && $jobTimestamp >= $cutoffDate) { // Job must be on or after the cutoff date
                 $tempJobs[] = $job;
             }
         }
@@ -505,7 +536,7 @@ function formatAiSummary($summary) {
 
 <?php
 // Start of the function to render job listings and pagination
-function render_job_listings_and_pagination($pagedJobs, $singleJobView, $totalPages, $search, $filter, $jobType, $page) {
+function render_job_listings_and_pagination($pagedJobs, $singleJobView, $totalPages, $search, $filter, $jobType, $page, $isRecommendationsView = false) {
     ob_start(); 
 ?>
     <?php if(empty($pagedJobs)): ?>
@@ -517,6 +548,17 @@ function render_job_listings_and_pagination($pagedJobs, $singleJobView, $totalPa
 
         <?php foreach ($pagedJobs as $job): ?>
         <div class="job-card" onclick="toggleJobDetails(this)" data-job-id="<?= htmlspecialchars($job['id'] ?? '') ?>">
+            <!-- 2D Animated Icons for Job Card -->
+            <div class="animated-icons-container">
+                <span class="animated-icon icon-magnify" style="top: <?= rand(5, 95) ?>%; left: <?= rand(5, 95) ?>%; animation-delay: -<?= rand(0, 10) ?>s;">🔍</span>
+                <span class="animated-icon icon-briefcase" style="top: <?= rand(5, 95) ?>%; left: <?= rand(5, 95) ?>%; animation-delay: -<?= rand(0, 10) ?>s;">💼</span>
+                <span class="animated-icon icon-document" style="top: <?= rand(5, 95) ?>%; left: <?= rand(5, 95) ?>%; animation-delay: -<?= rand(0, 10) ?>s;">📄</span>
+                <span class="animated-icon icon-profile" style="top: <?= rand(5, 95) ?>%; left: <?= rand(5, 95) ?>%; animation-delay: -<?= rand(0, 10) ?>s;">👤</span>
+            </div>
+            <!-- Job Card Title with Shadow -->
+            <style>
+                .job-card h3 { text-shadow: 1px 1px 3px rgba(0,0,0,0.15); }
+            </style>
             <h3>
                 <?= htmlspecialchars($job['title'] ?? 'N/A') ?>
                 <?php if (!empty($job['vacant_positions']) && $job['vacant_positions'] > 1): ?>
@@ -525,6 +567,7 @@ function render_job_listings_and_pagination($pagedJobs, $singleJobView, $totalPa
                     </span>
                 <?php endif; ?>
             </h3>
+            <p class="job-card-company-location" style="position: relative; z-index: 2;"> <!-- Ensure text is above icons -->
             <strong><?= htmlspecialchars($job['company'] ?? 'N/A') ?></strong> – <?= htmlspecialchars($job['location'] ?? 'N/A') ?><br>
             
             <p class="job-summary" style="margin-top: 5px; margin-bottom: 10px;"><?= formatAiSummary(substr($job['ai_summary'] ?? '', 0, 300)) ?><?php if(strlen($job['ai_summary'] ?? '') > 300) echo "..."; ?></p>
@@ -573,27 +616,120 @@ function render_job_listings_and_pagination($pagedJobs, $singleJobView, $totalPa
 
     <?php if (!$singleJobView && $totalPages > 1): ?>
     <div class="pagination-container">
-        <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-            <a href="?search=<?= urlencode($search) ?>&filter=<?= urlencode($filter) ?>&type=<?= urlencode($jobType) ?>&page=<?= $i ?>"
-               class="<?= $i == $page ? 'current-page' : '' ?>">
-                <?= $i ?>
-            </a>
-        <?php endfor; ?>
-    </div>
-    <?php endif; ?>
+        <?php
+        // Previous Page Link
+        $baseQueryForPagination = "?search=" . urlencode($search) . "&filter=" . urlencode($filter) . "&type=" . urlencode($jobType);
+        if ($isRecommendationsView) {
+            $baseQueryForPagination .= "&recommendations=1";
+        }
+
+        // First Page Link
+        if ($page > 1) {
+            echo '<a href="' . $baseQueryForPagination . '&page=1" class="nav-arrow first-arrow"><span class="short-text">««</span><span class="long-text"> First</span></a>';
+        } else {
+            echo '<a href="#" class="nav-arrow first-arrow disabled"><span class="short-text">««</span><span class="long-text"> First</span></a>';
+        }
+
+        // Previous Page Link
+        if ($page > 1) {
+            echo '<a href="' . $baseQueryForPagination . '&page=' . ($page - 1) . '" class="nav-arrow prev-arrow"><span class="short-text">«</span><span class="long-text"> Previous</span></a>';
+        } else {
+            echo '<a href="#" class="nav-arrow prev-arrow disabled"><span class="short-text">«</span><span class="long-text"> Previous</span></a>';
+        }
+
+        ?>
+        <div class="page-numbers">
+            <?php
+                // Standard Pagination Logic
+                // Show fewer links by default to better suit mobile, will also affect desktop
+                // but desktop usually has more space.
+                $num_links_to_show = 3; // Max links to show (e.g., 1 ... current ... total)
+                $num_central_links = 1; // Number of links around current page (just current page itself)
+
+                if ($totalPages <= $num_links_to_show) {
+                    // If total pages are few, show all pages
+                    for ($i = 1; $i <= $totalPages; $i++) {
+                        echo '<a href="' . $baseQueryForPagination . '&page=' . $i . '" class="' . ($i == $page ? 'current-page' : '') . '">' . $i . '</a>';
+                    }
+                } else {
+                    // If total pages are many, show a window around the current page
+
+                    // Calculate start and end of the central window (pages between 1 and $totalPages)
+                    $start_central = $page - floor($num_central_links / 2);
+                    $end_central = $page + ceil($num_central_links / 2) - 1;
+
+                    // Adjust window if it goes out of bounds (needs to be within 2 and $totalPages-1)
+                    if ($start_central < 2) {
+                        $end_central = min($totalPages - 1, $end_central + (2 - $start_central));
+                        $start_central = 2;
+                    }
+                    if ($end_central > $totalPages - 1) {
+                        $start_central = max(2, $start_central - ($end_central - ($totalPages - 1)));
+                        $end_central = $totalPages - 1;
+                    }
+                     // Ensure start_central is not greater than end_central if totalPages is very small (e.g. 3,4)
+                    if ($start_central > $end_central) {
+                        $start_central = $end_central; // Can lead to a single page in center or empty if totalPages is 2
+                    }
+
+                    // Show page 1
+                    echo '<a href="' . $baseQueryForPagination . '&page=1" class="' . (1 == $page ? 'current-page' : '') . '">1</a>';
+
+                    // Show ellipsis after page 1 if the central block doesn't start immediately after page 1
+                    if ($start_central > 2) {
+                        echo '<span class="ellipsis">...</span>';
+                    }
+
+                    // Show central pages
+                    for ($i = $start_central; $i <= $end_central; $i++) {
+                         echo '<a href="' . $baseQueryForPagination . '&page=' . $i . '" class="' . ($i == $page ? 'current-page' : '') . '">' . $i . '</a>';
+                    }
+
+                    // Show ellipsis before the last page if the central block doesn't end immediately before the last page
+                    if ($end_central < $totalPages - 1) {
+                        echo '<span class="ellipsis">...</span>';
+                    }
+
+                    // Show the last page (if totalPages > 1)
+                    // The central loop never prints totalPages, so we always print it here if totalPages > 1
+                    if ($totalPages > 1) {
+                         echo '<a href="' . $baseQueryForPagination . '&page=' . $totalPages . '" class="' . ($totalPages == $page ? 'current-page' : '') . '">' . $totalPages . '</a>';
+                    }
+                }
+            ?>
+
+        </div>
+
+        <?php
+        // Next Page Link
+        if ($page < $totalPages) {
+            echo '<a href="' . $baseQueryForPagination . '&page=' . ($page + 1) . '" class="nav-arrow next-arrow"><span class="long-text">Next </span><span class="short-text">»</span></a>';
+        } else {
+            echo '<a href="#" class="nav-arrow next-arrow disabled"><span class="long-text">Next </span><span class="short-text">»</span></a>';
+        }
+
+        // Last Page Link
+        if ($page < $totalPages) {
+            echo '<a href="' . $baseQueryForPagination . '&page=' . $totalPages . '" class="nav-arrow last-arrow"><span class="long-text">Last </span><span class="short-text">»»</span></a>';
+        } else {
+            echo '<a href="#" class="nav-arrow last-arrow disabled"><span class="long-text">Last </span><span class="short-text">»»</span></a>';
+        }
+        ?>
+    </div> <!-- closes pagination-container -->
+    <?php endif; ?> <!-- closes if (!$singleJobView && $totalPages > 1) -->
 <?php
     return ob_get_clean(); 
 }
 
 $isAjaxRequest = isset($_GET['ajax']) && $_GET['ajax'] === '1';
 error_log("[REQUEST_INFO] URL: " . $_SERVER['REQUEST_URI'] . " | Is AJAX: " . ($isAjaxRequest ? "Yes" : "No"));
-error_log("[REQUEST_INFO] Effective Filter Params for this request: type='{$jobType}', search='{$search}', filter='{$filter}', page='{$page}'");
+error_log("[REQUEST_INFO] Effective Filter Params for this request: type='{$jobType}', search='{$search}', filter='{$filter}', page='{$page}', recommendations='".($isRecommendationsView ? '1':'0')."'");
 error_log("[REQUEST_INFO] Total filtered jobs (before pagination): " . count($filteredJobs) . ". Total pages: " . $totalPages);
 error_log("[REQUEST_INFO] Jobs for paged view (before AJAX check): " . count($pagedJobs) . " jobs. SingleView: " . ($singleJobView ? 'Yes':'No'));
 
 if ($isAjaxRequest) {
     error_log("[AJAX_RESPONSE] Preparing AJAX response. Paged jobs: " . count($pagedJobs) . ". TotalPages: " . $totalPages . ". Current Page: " . $page . ". First job (if any): " . ($pagedJobs[0]['title'] ?? 'N/A'));
-    echo render_job_listings_and_pagination($pagedJobs, $singleJobView, $totalPages, $search, $filter, $jobType, $page);
+    echo render_job_listings_and_pagination($pagedJobs, $singleJobView, $totalPages, $search, $filter, $jobType, $page, $isRecommendationsView);
     exit; 
 }
 ?>
@@ -605,12 +741,28 @@ if ($isAjaxRequest) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         * { box-sizing: border-box; }
-        body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f7faff; color:#333; }
+        body { font-family: Arial, sans-serif; margin:0; padding:0; background:var(--body-bg); color:#333; }
         .container { width:100%; }
+        .job-card.job-card-active {
+    box-shadow: 0 0 25px rgba(0, 0, 0, 0.15);  /* Secondary shadow for depth */
+    transform: scale(1.01) translateY(-3px) translateZ(10px); 
+    background: linear-gradient(to bottom, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 30%), #fff; /* Brighter gloss when active */
+    border-left-color: #005fa3; /* Highlight color */
+}
+
+        /* Styles for different bold job titles */
+        .job-title-bold-style-1 {
+            font-weight: 700; /* Standard bold */
+        }
+        .job-title-bold-style-2 {
+            font-weight: 800; /* Extra bold - might need a font that supports this weight */
+            /* Or, for more distinctness if font weights are limited: */
+            /* font-family: 'Impact', Haettenschweiler, 'Arial Narrow Bold', sans-serif; */
+        }
 
         .title-card {
             background: #ffffff; /* White background */
-            background-color: #f7faff; /* New: Very light cool blue/off-white */
+            background-color: var(--body-bg); /* New: Very light cool blue/off-white */
             color: #2c3e50;
             padding: 60px 20px; /* Increased padding */
             margin-bottom: 20px; /* Increased margin */
@@ -619,6 +771,9 @@ if ($isAjaxRequest) {
             width: 100%;
             position: relative; /* For potential pseudo-elements or overlays */
             overflow: hidden;
+            z-index: 1; /* Lower z-index than main content */
+            transition: opacity 0.3s ease-out, transform 0.3s ease-out; /* Add transform to transition */
+            transform-origin: center bottom; /* Set transform origin for potential rotation */
             border-radius: 12px; /* Add some rounded corners for a softer look */
         }
         .title-card h1 {
@@ -681,7 +836,7 @@ if ($isAjaxRequest) {
         }
         .animated-icon {
             position: absolute;
-            font-size: 28px; /* Adjust size of icons */
+            font-size: 20px; /* Adjust size of icons */
             color: #005fa3; /* Primary blue for icons */
             opacity: 0.12; /* Default opacity slightly reduced for subtlety with new bg */
             animation: float 15s infinite ease-in-out alternate;
@@ -707,7 +862,7 @@ if ($isAjaxRequest) {
 
         .content-wrapper { display:flex; gap:20px; padding:0 20px; }
 
-        .sidebar { width:220px; background:#fff; padding:20px; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,0.05); flex-shrink:0; }
+        .sidebar { width:220px; background:var(--body-bg); padding:20px; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,0.05); flex-shrink:0; }
         .sidebar h4 {
             margin-top: 20px;
             margin-bottom: 15px;
@@ -759,6 +914,9 @@ if ($isAjaxRequest) {
         main {
             flex: 1;
             min-width: 0;
+            background-color: var(--body-bg); /* Ensure main content has a background */
+            position: relative; /* Needed for z-index stacking */
+            z-index: 2;
         }
 
         /* Mobile Filters Specific Styles */
@@ -809,6 +967,24 @@ if ($isAjaxRequest) {
             .sidebar {
                 display: none; /* Hide sidebar on mobile */
             }
+            .pagination-container {
+                display: flex; /* Ensure it's a flex container */
+                justify-content: flex-start; /* Align items to the start for horizontal scrolling */
+                flex-wrap: nowrap;       /* Prevent wrapping to multiple lines */
+                overflow-x: auto;        /* Allow horizontal scrolling if content overflows */
+                padding-bottom: 8px;     /* Add some space for the scrollbar if it appears */
+                align-items: center; /* Vertically align all direct children */
+            }
+            .pagination-container .page-numbers {
+                margin: 0 5px; /* Less margin for numbers on mobile */
+            }
+            .pagination-container a { /* Affects page numbers and arrows on mobile */
+                padding: 5px 10px; /* Reduce horizontal padding */
+                margin: 0 2px;     /* Reduce horizontal margin */
+                flex-shrink: 0;    /* Prevent links themselves from shrinking */
+                white-space: nowrap; /* Ensure text within links doesn't wrap */
+
+            }
             .search-bar {
                  margin-top: 15px; /* Adjust margin */
                  margin-bottom: 15px;
@@ -824,13 +1000,32 @@ if ($isAjaxRequest) {
                 background-position: right 10px center; /* Adjust icon position for mobile */
                 padding-right: 35px; /* Adjust padding for icon on mobile */
             }
-            .search-bar form { gap: 5px; } /* Reduce gap in search bar */
-            .job-card { padding: 10px; /* Adjust job card padding */ }
+            .search-bar form { gap: 5px; }
+            .job-card {
+                padding: 10px; /* Adjust job card padding */
+                box-shadow: 0 0 18px rgba(0, 0, 0, 0.10); /* More projected shadow for mobile */
+            }
             .site-footer .footer-container { padding: 0 10px; /* Adjust footer padding */ }
             .mobile-filters {
                 display: flex; /* Show and use flex for layout */
             }
              .title-card { padding: 20px 10px; /* Adjust title card padding */ }
+             .job-card .share-button-container {
+                margin-top: 15px;    /* Adjusted top margin for mobile */
+                margin-bottom: 15px; /* Adjusted bottom margin for mobile */
+            }
+            .share-button {
+                display: block;         /* Change to block to take full width */
+                width: 100%;            /* Occupy full width of its container */
+                box-sizing: border-box; /* Ensures padding is included within the 100% width */
+                padding: 14px 15px;     /* Adjusted padding for mobile: more vertical, balanced horizontal */
+                font-size: 1rem;        /* Slightly larger font for better readability and tap target on mobile */
+                /* The text inside the button will naturally center. Explicit text-align: center; can be added if needed. */
+            }
+            .job-card.job-card-active {
+                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.20); /* Enhanced shadow for active mobile highlight */
+                transform: translateY(-4px); /* Slightly more lift for active mobile card */
+            }
         }
 
         @media(max-width:600px){
@@ -844,16 +1039,21 @@ if ($isAjaxRequest) {
         /* --- End Responsive Styles --- */
 
         .job-card {
-            background: #ffffff;
+            background: var(--body-bg);
             padding: 15px;
-            border-radius: 8px;
+            border-radius: 10px;
             margin-bottom: 20px; /* Existing margin */
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Softer, slightly more pronounced shadow */
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out;
+            position: relative; /* Needed for absolute positioning of animated icons */
+            border-left: 4px solid transparent;
         }
-        .job-card:hover {
-            background-color: #f9f9f9;
+        .job-card:hover { /* Slightly less Z lift for a more subtle hover */
+            /* Slightly less Z lift for a more subtle hover */
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.12); /* Enhanced uniform shadow on hover */
+            background: linear-gradient(to bottom, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 40%), 
+                        #fcfdff;
         }
         .job-card p {
             margin: 5px 0;
@@ -917,18 +1117,33 @@ if ($isAjaxRequest) {
         .footer-column input::placeholder, .footer-column textarea::placeholder { color:#95a5a6; }
         .footer-bottom { text-align:center; padding-top:25px; border-top:1px solid #4a5a6a; margin-top:25px; font-size:0.85em; color: #95a5a6; }
 
+            .job-card .share-button-container { /* New container for centering */
+            text-align: center;
+            width: 100%;
+            margin-top: 20px; /* Increased space above the button */
+            margin-bottom: 10px; /* Space below the button */
+        }
+
         .share-button {
-            background-color: #007bff;
+            background-color: #005fa3; /* Primary theme blue, corrected hex */
             color: #fff;
             border: none;
-            padding: 8px 12px;
-            border-radius: 4px;
+            padding: 12px 28px;
+            border-radius: 6px;
             cursor: pointer;
-            margin-top: 5px;
             display: inline-block;
+            font-size: 0.95rem; /* Slightly larger font */
+            font-weight: 500; /* Medium font weight */
+            text-transform: uppercase; /* Makes it look more like a button */
+            letter-spacing: 0.5px; /* Adds a bit of spacing between letters */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Enhanced shadow for a more projected look */
+            transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
         }
-        .share-button:hover {
-            background-color: #0056b3;
+        .share-button:hover, .share-button:focus {
+            background-color: #004a80; /* Darker shade on hover/focus */
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25); /* Further enhanced shadow on hover/focus */
+            transform: translateY(-3px); /* Slightly more pronounced lift effect */
+            outline: none;
         }
 
         /* Cookie Consent Banner Styles */
@@ -972,10 +1187,14 @@ if ($isAjaxRequest) {
         */
         /* Pagination Styles */
         .pagination-container {
-            text-align: center;
+            display: flex; /* Use flexbox for alignment */
+            justify-content: center; /* Default to center alignment */
+            align-items: center;
             margin: 20px 0; /* As per your example's container style */
             /* font-size will be inherited or can be set if needed, example uses default */
-        }
+            flex-wrap: wrap; /* Spread out on mobile */
+            }
+
         .pagination-container a {
             display: inline-block;
             padding: 5px 15px; /* As per your example */
@@ -1011,6 +1230,63 @@ if ($isAjaxRequest) {
             background-color: #005fa3; /* As per your example for current page */
             color: white;
             /* border-color will be inherited from .current-page */
+        }
+        .pagination-container .first-arrow { order: 1; }
+        .pagination-container .prev-arrow { order: 2; }
+        .pagination-container .page-numbers { order: 3; }
+        .pagination-container .next-arrow { order: 4; }
+        .pagination-container .last-arrow { order: 5; }
+
+        .pagination-container a.nav-arrow {
+            font-weight: bold;
+            padding: 5px 10px; /* Slightly less horizontal padding for arrows */
+        }
+        .pagination-container a.disabled { /* Style for disabled Prev/Next links */
+            color: #aaa;
+            background-color: #eee;
+            cursor: default;
+            pointer-events: none; /* Make them unclickable */
+        }
+        .pagination-container .page-numbers { /* Container for just the page numbers */
+            margin: 0 10px; /* Space around the number block */
+             order: 2; /* Explicitly set order for mobile */
+             }
+            /* Mobile specific display for pagination numbers and ellipses */
+            .page-link-desktop-only, .ellipsis-desktop-only {
+                display: none !important; /* Hide desktop specific elements */
+            }
+            .page-link-mobile-only, .ellipsis-mobile-only {
+                display: inline-block !important; /* Show mobile specific elements */
+            }
+
+            .pagination-container a.nav-arrow .long-text { display: none; } /* Hide long text on mobile */
+            .pagination-container a.nav-arrow .short-text { display: inline; } /* Show short text on mobile */
+             /* Classes for responsive pagination numbers */
+        /* Removed old mobile/desktop specific page number display logic */
+        .page-link-desktop-only, .ellipsis-desktop-only {
+            /* display: inline-block; */ /* No longer used by PHP logic */
+        }
+        .page-link-mobile-only, .ellipsis-mobile-only {
+            /* display: none; */ /* No longer used by PHP logic */
+        }
+        /* Style for "Page X of Y" display */
+        .page-numbers .current-page-display {
+            display: inline-block; /* Align better with sibling <a> tags */
+            margin-left: 15px;     /* Space it from the last page number or ellipsis */
+            padding: 5px 0;        /* Match vertical padding of <a> tags for alignment */
+            color: #333;           /* Match general text color */
+            font-size: 0.95em;     /* Slightly smaller but readable */
+            white-space: nowrap;   /* Prevent "Page X of Y" from wrapping itself */
+        }
+        /* Style for ellipsis */
+        .pagination-container .page-numbers .ellipsis {
+            display: inline-block;
+            padding: 5px 4px; /* Less padding than numbers */
+            margin: 0 4px;    /* Match link margin */
+            color: #555;       /* A neutral color */
+        }
+            .pagination-container a.nav-arrow {
+                padding: 5px 8px;
         }
 
         /* Professional Share Modal Styles */
@@ -1179,7 +1455,7 @@ if ($isAjaxRequest) {
         <div class="content-wrapper">
             <aside class="sidebar">
                 <h4>Job Filters</h4>
-                <a href="?type=all&filter=<?= urlencode($filter) ?>&search=<?= urlencode($search) ?>">📋 All Jobs (<span data-count-id="countAll">0</span>)</a>
+                <a href="?type=&filter=all&search=">📋 All Jobs (<span data-count-id="countAll">0</span>)</a>
                 <a href="?type=remote&filter=<?= urlencode($filter) ?>&search=<?= urlencode($search) ?>">💻 Remote (<span data-count-id="countRemote">0</span>)</a>
                 <a href="?type=onsite&filter=<?= urlencode($filter) ?>&search=<?= urlencode($search) ?>">🏢 Onsite (<span data-count-id="countOnsite">0</span>)</a>
                 <a href="?type=hybrid&filter=<?= urlencode($filter) ?>&search=<?= urlencode($search) ?>">🌐 Hybrid (<span data-count-id="countHybrid">0</span>)</a>
@@ -1189,7 +1465,7 @@ if ($isAjaxRequest) {
                 <a href="?type=internship&filter=<?= urlencode($filter) ?>&search=<?= urlencode($search) ?>">🎓 Internships (<span data-count-id="countInternship">0</span>)</a>
                 <a href="?type=developer&filter=<?= urlencode($filter) ?>&search=<?= urlencode($search) ?>">👨‍💻 Developer (<span data-count-id="countDeveloper">0</span>)</a>
                 <h4>Date Posted</h4>
-                <a href="?filter=all&type=<?= urlencode($jobType) ?>&search=<?= urlencode($search) ?>">All Time (<span data-count-id="countAllTime">0</span>)</a>
+                <a href="?filter=all&type=&search=">All Time (<span data-count-id="countAllTime">0</span>)</a>
                 <a href="?filter=30&type=<?= urlencode($jobType) ?>&search=<?= urlencode($search) ?>">Past 30 Days (<span data-count-id="count30">0</span>)</a>
                 <a href="?filter=7&type=<?= urlencode($jobType) ?>&search=<?= urlencode($search) ?>">Past 7 Days (<span data-count-id="count7">0</span>)</a>
                 <a href="?filter=1&type=<?= urlencode($jobType) ?>&search=<?= urlencode($search) ?>">Past 24 Hours (<span data-count-id="count1">0</span>)</a>
@@ -1220,12 +1496,12 @@ if ($isAjaxRequest) {
                 
                 <!-- Mobile Filters - Hidden on desktop, shown on mobile -->
                 <div class="mobile-filters">
-                    <a href="?type=all&filter=all&search=">🌟 Recommendations</a>
-                    <a href="?type=all&filter=<?= urlencode($filter) ?>&search=<?= urlencode($search) ?>">All Jobs (<span data-count-id="countAll">0</span>)</a>
+                    <a href="?recommendations=1&type=&filter=all&search=">🌟 Recommendations</a>
+                    <a href="?type=&filter=all&search=">All Jobs (<span data-count-id="countAll">0</span>)</a>
                     <a href="?filter=1&type=<?= urlencode($jobType) ?>&search=<?= urlencode($search) ?>">Past 24 Hours (<span data-count-id="count1">0</span>)</a>
                     <a href="?filter=7&type=<?= urlencode($jobType) ?>&search=<?= urlencode($search) ?>">Past 7 Days (<span data-count-id="count7">0</span>)</a>
                     <a href="?filter=30&type=<?= urlencode($jobType) ?>&search=<?= urlencode($search) ?>">Past 30 Days (<span data-count-id="count30">0</span>)</a>
-                    <a href="?filter=all&type=<?= urlencode($jobType) ?>&search=<?= urlencode($search) ?>">All Time (<span data-count-id="countAllTime">0</span>)</a>
+                    <a href="?filter=all&type=&search=">All Time (<span data-count-id="countAllTime">0</span>)</a>
                     <a href="?type=remote&filter=<?= urlencode($filter) ?>&search=<?= urlencode($search) ?>">Remote (<span data-count-id="countRemote">0</span>)</a>
                     <a href="?type=onsite&filter=<?= urlencode($filter) ?>&search=<?= urlencode($search) ?>">Onsite (<span data-count-id="countOnsite">0</span>)</a>
                     <a href="?type=hybrid&filter=<?= urlencode($filter) ?>&search=<?= urlencode($search) ?>">Hybrid (<span data-count-id="countHybrid">0</span>)</a>
@@ -1238,7 +1514,7 @@ if ($isAjaxRequest) {
                 <div id="job-listings-container">
                     <?php 
                         // For non-AJAX requests, render the initial content
-                        echo render_job_listings_and_pagination($pagedJobs, $singleJobView, $totalPages, $search, $filter, $jobType, $page);
+                        echo render_job_listings_and_pagination($pagedJobs, $singleJobView, $totalPages, $search, $filter, $jobType, $page, $isRecommendationsView);
                     ?>
                 </div>
             </main>
@@ -1307,6 +1583,7 @@ if ($isAjaxRequest) {
                 <button id="copyJobLinkButton" class="share-option-button copy-link">
                     <span class="share-icon">🔗</span> Copy Link
                 </button>
+                <div id="copyLinkFeedback" style="text-align: center; margin-top: 10px; font-size: 0.9em; min-height: 1.2em;"></div> <!-- Feedback area -->
                 <a id="shareViaWhatsApp" href="#" target="_blank" class="share-option-button whatsapp">
                     <span class="share-icon">📱</span> WhatsApp
                 </a>
@@ -1363,23 +1640,44 @@ if ($isAjaxRequest) {
 
         // --- Professional Share Modal Logic ---
         const shareModalElement = document.getElementById('jobShareModal');
-        const shareModalJobTitleElement = shareModalElement.querySelector('.share-modal-job-title');
-        const shareModalCloseButton = shareModalElement.querySelector('.share-modal-close-button');
+        let shareModalJobTitleElement = null; // Initialize to null
+        let shareModalCloseButton = null; // Initialize to null
+        let copyFeedbackElement = null;
 
+        if (shareModalElement) { // Only try to query children if the parent exists
+            shareModalJobTitleElement = shareModalElement.querySelector('.share-modal-job-title');
+            shareModalCloseButton = shareModalElement.querySelector('.share-modal-close-button');
+            copyFeedbackElement = shareModalElement.querySelector('#copyLinkFeedback'); // Get the feedback element
+        } else {
+            console.error("Share Modal Element with ID 'jobShareModal' not found in the DOM!");
+        }
+        
         let currentJobUrlForModal = '';
         let currentJobTitleForModal = '';
         let currentJobCompanyForModal = '';
 
         function openProfessionalShareModal() {
             if (shareModalElement) {
-                shareModalJobTitleElement.textContent = `${currentJobTitleForModal} at ${currentJobCompanyForModal}`;
+                if (shareModalJobTitleElement) {
+                    shareModalJobTitleElement.textContent = `${currentJobTitleForModal} at ${currentJobCompanyForModal}`;
+                } else {
+                    console.error("Share modal job title element (.share-modal-job-title) not found inside the modal!");
+                }
+                if (copyFeedbackElement) { // Clear previous feedback when modal opens
+                    copyFeedbackElement.innerHTML = '';
+                    copyFeedbackElement.style.color = ''; // Reset color
+                }
                 shareModalElement.style.display = 'flex';
+            } else {
+                console.error("Cannot open share modal: The main modal element ('jobShareModal') was not found.");
             }
         }
-
         function closeProfessionalShareModal() {
             if (shareModalElement) {
                 shareModalElement.style.display = 'none';
+                if (copyFeedbackElement) { // Clear feedback when modal closes
+                    copyFeedbackElement.innerHTML = '';
+                }
             }
         }
 
@@ -1396,26 +1694,85 @@ if ($isAjaxRequest) {
         }
 
         function shareJob(jobId, title, company) {
+            // console.log(`shareJob called - ID: ${jobId}, Title: ${title}, Company: ${company}`);
+            // Ensure title and company are strings, even if passed as null/undefined from PHP (though ?? '' should prevent this)
+            const jobTitleStr = String(title || ''); 
+            const jobCompanyStr = String(company || '');
+
+            console.log(`shareJob called - ID: ${jobId}, Title: ${jobTitleStr}, Company: ${jobCompanyStr}`);
+
+            if (!jobId || String(jobId).trim() === '') { // Check if jobId is null, undefined, or an empty/whitespace string
+                const errorMsgBase = `Sorry, this job cannot be shared as its ID is missing.`;
+                const jobIdentifierForMsg = jobTitleStr ? ` (Job: '${jobTitleStr}')` : '';
+                console.error(`ShareJob Error: Job ID is missing or empty. Cannot generate share link for job titled: '${jobTitleStr}'. Please ensure all jobs in your data source (e.g., jobs.json) have a valid 'id'.`);
+                alert(`${errorMsgBase}${jobIdentifierForMsg}. Please check the job data.`);
+                return; // Stop further execution for this share attempt
+            }
             const baseUrl = window.location.origin + window.location.pathname;
             currentJobUrlForModal = `${baseUrl}?job_id=${encodeURIComponent(jobId)}`;
-            currentJobTitleForModal = title;
-            currentJobCompanyForModal = company;
+            // currentJobTitleForModal = title;
+            // currentJobCompanyForModal = company;
+            currentJobTitleForModal = jobTitleStr; // Use the processed string
+            currentJobCompanyForModal = jobCompanyStr; // Use the processed string
             
             const shareText = `Check out this job: ${currentJobTitleForModal} at ${currentJobCompanyForModal}`;
-            const encodedUrl = encodeURIComponent(currentJobUrlForModal);
+            const encodedMainUrlForSharingPlatforms = encodeURIComponent(currentJobUrlForModal); // Renamed for clarity
             const encodedShareText = encodeURIComponent(shareText);
             const encodedJobTitle = encodeURIComponent(`${currentJobTitleForModal} at ${currentJobCompanyForModal}`);
 
-            document.getElementById('copyJobLinkButton').onclick = function() {
-                navigator.clipboard.writeText(currentJobUrlForModal).then(() => {
-                    alert('Job link copied to clipboard!');
-                    closeProfessionalShareModal();
-                }).catch(err => alert('Failed to copy link.'));
+            const copyButton = document.getElementById('copyJobLinkButton');
+            if (copyButton && copyFeedbackElement) { // Ensure elements exist
+                copyButton.onclick = function() {
+                    // Check if the clipboard API and the writeText method are available
+                    if (!navigator.clipboard || typeof navigator.clipboard.writeText !== 'function') {
+                        let initialErrorMsg = 'Clipboard API is not fully available. ';
+                        if (window.location.protocol !== 'https:') {
+                            initialErrorMsg += 'This site is not on HTTPS, which is often required for clipboard access. ';
+                        }
+                        initialErrorMsg += 'Please copy manually:';
+                        copyFeedbackElement.innerHTML = `${initialErrorMsg}<br><input type="text" value="${currentJobUrlForModal}" readonly onclick="this.select();" style="width:100%; margin-top:5px; padding: 5px; border: 1px solid #ccc; box-sizing: border-box;">`;
+                        copyFeedbackElement.style.color = 'red';
+                        console.error('Clipboard API (navigator.clipboard.writeText) not available or not a function. Protocol: ' + window.location.protocol);
+                        return;
+                    }
+
+                    navigator.clipboard.writeText(currentJobUrlForModal).then(() => {
+                        copyFeedbackElement.textContent = 'Link copied to clipboard!';
+                        copyFeedbackElement.style.color = 'green';
+                        console.log('Job link copied to clipboard.');
+                        // Optionally close modal after a short delay
+                        setTimeout(() => {
+                            closeProfessionalShareModal();
+                        }, 1500);
+                    }).catch(err => {
+                        console.error('Failed to copy link:', err);
+                        let errorMessage = 'Failed to copy link. ';
+                        if (window.location.protocol !== 'https:') {
+                            errorMessage += 'This often happens on non-HTTPS sites. ';
+                        }
+                        errorMessage += 'Please copy manually:';
+                        copyFeedbackElement.innerHTML = `${errorMessage}<br><input type="text" value="${currentJobUrlForModal}" readonly onclick="this.select();" style="width:100%; margin-top:5px; padding: 5px; border: 1px solid #ccc; box-sizing: border-box;">`;
+                        copyFeedbackElement.style.color = 'red';
+                    });
+                };
+            } else {
+                // Fallback if copyButton or copyFeedbackElement is not found (should not happen with correct HTML)
+                if (copyButton) {
+                    copyButton.onclick = function() {
+                        alert("Copy button setup error. Please try copying the link from your browser's address bar after opening the job.");
+                    };
+                }
+                console.error("Could not set up copy button listener. copyButton or copyFeedbackElement not found.");
             };
-            document.getElementById('shareViaWhatsApp').href = `https://wa.me/?text=${encodedShareText}%20${encodedUrl}`;
-            document.getElementById('shareViaLinkedIn').href = `https://www.linkedin.com/shareArticle?mini=true&url=${encodedUrl}&title=${encodedJobTitle}&summary=${encodedShareText}`;
-            document.getElementById('shareViaEmail').href = `mailto:?subject=${encodedJobTitle}&body=${encodedShareText}%0A%0A${currentJobUrlForModal}`;
+
+
+            document.getElementById('shareViaWhatsApp').href = `https://wa.me/?text=${encodedShareText}%20${encodedMainUrlForSharingPlatforms}`;
+            document.getElementById('shareViaLinkedIn').href = `https://www.linkedin.com/shareArticle?mini=true&url=${encodedMainUrlForSharingPlatforms}&title=${encodedJobTitle}&summary=${encodedShareText}`;
             
+            // For email, ensure the URL itself is also encoded for the body part
+            const encodedUrlForEmailBody = encodeURIComponent(currentJobUrlForModal);
+            console.log(`[Share Email] currentJobUrlForModal: ${currentJobUrlForModal}, encoded for email body: ${encodedUrlForEmailBody}`); // DEBUG
+            document.getElementById('shareViaEmail').href = `mailto:?subject=${encodedJobTitle}&body=${encodedShareText}%0A%0A${encodedUrlForEmailBody}`;
             openProfessionalShareModal();
         }
 
@@ -1753,8 +2110,9 @@ if ($isAjaxRequest) {
                     console.log("Listings container updated."); // DEBUG: Confirm update attempt
                     // Update browser history and URL bar
                     // The 'url' parameter is either an absolute URL from a link's href
-                    // or a root-relative path (e.g., /index.php?search=...) from the search form. Both are fine.
-                    history.pushState({}, '', url);
+                    // or a root-relative path (e.g., /index.php?search=...) from the search form.
+                    // Commented out to prevent URL change as per user request:
+                    // history.pushState({}, '', url);
                     
                     // Re-attach event listeners to new pagination links if any
                     attachAjaxToPagination();
@@ -1952,6 +2310,42 @@ if ($isAjaxRequest) {
             initThreeJS();
         });
 
+        // --- Title Card Fade Out on Scroll ---
+        const titleCard = document.querySelector('.title-card');
+        const mainContentStart = document.querySelector('main'); // Or a more specific element marking start of main content
+
+        if (titleCard && mainContentStart) {
+            window.addEventListener('scroll', function() {
+                const titleCardHeight = titleCard.offsetHeight;
+                // Get the top position of the main content area relative to the viewport
+                const mainContentTop = mainContentStart.getBoundingClientRect().top;
+                
+                // Start fading when the top of main content is about to overlap the title card
+                // Let's say we start fading when main content is 100px above the bottom of the title card
+                // and fully faded when main content top is at the title card's top.
+                // This means the fade happens over the height of the title card.
+
+                // Calculate how much of the title card is "covered" by the scroll
+                // A simpler approach: start fading when main content is near the top of the viewport
+                // and fully fade out as it scrolls further up.
+                
+                let opacity = 1;
+                // Start fading when the top of the title card is about to go off-screen
+                // and be fully faded when, say, half of it is off-screen.
+                const titleCardTop = titleCard.getBoundingClientRect().top;
+                const fadeStartOffset = 0; // Start fading immediately as it scrolls up
+                const fadeDistance = titleCardHeight * 0.7; // Fade out over 70% of its height (adjust as needed)
+                const maxTranslateY = 50; // Max vertical movement in pixels (adjust as needed)
+                // const maxRotateX = 5; // Max tilt in degrees (adjust as needed, requires perspective on parent)
+
+                if (titleCardTop < fadeStartOffset) {
+                    opacity = Math.max(0, 1 - (Math.abs(titleCardTop - fadeStartOffset) / fadeDistance));
+                    const translateY = Math.min(maxTranslateY, (Math.abs(titleCardTop - fadeStartOffset) / fadeDistance) * maxTranslateY);
+                    titleCard.style.transform = `translateY(${translateY}px)`;
+                }
+                titleCard.style.opacity = opacity;
+            });
+        }
     </script>
 </body>
 </html>

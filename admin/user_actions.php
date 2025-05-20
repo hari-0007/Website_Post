@@ -36,15 +36,17 @@ $action = $_POST['action'] ?? $_GET['action'] ?? null;
 
 // --- Handle Create User Action ---
 if ($action === 'create_user' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = trim($_POST['username'] ?? '');
+    $emailAsUsername = trim($_POST['username'] ?? ''); // This is now an email
     $password = $_POST['password'] ?? '';
     $confirmPassword = $_POST['confirm_password'] ?? '';
     $displayName = trim($_POST['display_name'] ?? '');
     $role = $_POST['role'] ?? 'user'; // Default new user role to 'user'
 
     // Basic validation
-    if (empty($username) || empty($password) || empty($confirmPassword) || empty($displayName) || empty($role)) {
+    if (empty($emailAsUsername) || empty($password) || empty($confirmPassword) || empty($displayName) || empty($role)) {
         $_SESSION['admin_status'] = ['message' => 'Error: Please fill in all fields.', 'type' => 'error'];
+    } elseif (!filter_var($emailAsUsername, FILTER_VALIDATE_EMAIL)) {
+        $_SESSION['admin_status'] = ['message' => 'Error: Invalid email format for username.', 'type' => 'error'];
     } elseif ($password !== $confirmPassword) {
         $_SESSION['admin_status'] = ['message' => 'Error: Passwords do not match.', 'type' => 'error'];
     } else {
@@ -70,25 +72,16 @@ if ($action === 'create_user' && $_SERVER['REQUEST_METHOD'] === 'POST') {
             error_log("Admin User Action Error: User '" . $loggedInUsername . "' attempted to create user with unauthorized role '" . $role . "'.");
         } else {
             // Attempt to create the user using the helper function
-            $newUser = createUser($username, $password, $displayName, $role, $usersFilename);
+            // createUser in user_manager_helpers.php already sets status to 'pending_approval'
+            $newUser = createUser($emailAsUsername, $password, $displayName, $role, $usersFilename);
 
             if ($newUser) {
-                $_SESSION['admin_status'] = ['message' => 'Success: User "' . htmlspecialchars($username) . '" created successfully!', 'type' => 'success'];
-            } elseif ($newUser === false) {
-                 // createUser returns false if username exists or save fails
-                 $users = loadUsers($usersFilename); // Reload users to check for existence
-                 $usernameExists = false;
-                 foreach ($users as $user) {
-                     if (isset($user['username']) && $user['username'] === $username) {
-                         $usernameExists = true;
-                         break;
-                     }
-                 }
-                 if ($usernameExists) {
-                      $_SESSION['admin_status'] = ['message' => 'Error: Username "' . htmlspecialchars($username) . '" already exists.', 'type' => 'error'];
-                 } else {
-                      $_SESSION['admin_status'] = ['message' => 'Error: Could not create user. Check logs.', 'type' => 'error'];
-                 }
+                // The message here is for the admin performing the action
+                $_SESSION['admin_status'] = ['message' => 'Success: User "' . htmlspecialchars($emailAsUsername) . '" created. They are pending approval.', 'type' => 'success'];
+            } elseif ($newUser === false && findUserByUsername($emailAsUsername, $usersFilename)) {
+                 $_SESSION['admin_status'] = ['message' => 'Error: A user with email "' . htmlspecialchars($emailAsUsername) . '" already exists.', 'type' => 'error'];
+            } else {
+                 $_SESSION['admin_status'] = ['message' => 'Error: Could not create user. Check logs.', 'type' => 'error'];
             }
         }
     }
@@ -109,35 +102,30 @@ if ($action === 'delete_user' && $_SERVER['REQUEST_METHOD'] === 'GET') { // Trig
     } else {
         // Authorization check: Can the logged-in user delete this user?
         $canDelete = false;
-        $users = loadUsers($usersFilename); // Load users to check the role of the user to delete
-        $userToDelete = null;
-        foreach ($users as $user) {
-             if (isset($user['username']) && $user['username'] === $usernameToDelete) {
-                 $userToDelete = $user;
-                 break;
-             }
-        }
+        $userToDeleteData = findUserByUsername($usernameToDelete, $usersFilename); // Use helper
 
-        if ($userToDelete) {
-            $roleToDelete = $userToDelete['role'] ?? 'user';
+        if ($userToDeleteData) {
+            $roleToDelete = $userToDeleteData['role'] ?? 'user';
 
             if ($loggedInUserRole === 'super_admin') {
                 // Super Admin can delete any role except themselves (already checked)
                 $canDelete = true;
             } elseif ($loggedInUserRole === 'admin') {
                 // Admin can delete 'user_group_manager' or 'user'
+                // Admins cannot delete other admins or super_admins
                 if (in_array($roleToDelete, ['user_group_manager', 'user'])) {
-                    $canDelete = true;
+                    $canDelete = true; 
                 }
             }
             // User Group Managers and Users cannot delete anyone (implicitly handled as canDelete remains false)
 
             if (!$canDelete) {
                 $_SESSION['admin_status'] = ['message' => 'Error: You do not have permission to delete this user.', 'type' => 'error'];
-                 error_log("Admin User Action Error: User '" . $loggedInUsername . "' attempted to delete user '" . $usernameToDelete . "' with unauthorized role '" . $roleToDelete . "'.");
+                 error_log("Admin User Action Error: User '" . $loggedInUsername . "' (role: ".$loggedInUserRole.") attempted to delete user '" . $usernameToDelete . "' (role: " . $roleToDelete . ") - DENIED.");
             } else {
-                // Attempt to delete the user using the helper function
-                if (deleteUser($usernameToDelete, $usersFilename)) {
+                // The deleteUser helper itself doesn't need role checks if we do them here.
+                // The last two params to deleteUser in context were $loggedInUserRole, $loggedInUsername, but the helper only takes 2.
+                if (deleteUser($usernameToDelete, $usersFilename)) { 
                     $_SESSION['admin_status'] = ['message' => 'Success: User "' . htmlspecialchars($usernameToDelete) . '" deleted successfully!', 'type' => 'success'];
                 } else {
                     $_SESSION['admin_status'] = ['message' => 'Error: Could not delete user. Check logs.', 'type' => 'error'];
@@ -145,7 +133,7 @@ if ($action === 'delete_user' && $_SERVER['REQUEST_METHOD'] === 'GET') { // Trig
             }
         } else {
              $_SESSION['admin_status'] = ['message' => 'Error: User with specified username not found for deletion.', 'type' => 'error'];
-             error_log("Admin User Action Error: User ID not found for deletion: " . $usernameToDelete);
+             error_log("Admin User Action Error: User not found for deletion: " . $usernameToDelete);
         }
     }
 
@@ -155,48 +143,240 @@ if ($action === 'delete_user' && $_SERVER['REQUEST_METHOD'] === 'GET') { // Trig
 }
 
 
-// --- Handle Edit User Action (Placeholder - requires an edit view) ---
-// If you implement an edit user view (e.g., dashboard.php?view=edit_user&username=...),
-// you would add a POST handler here for the form submission.
-/*
+// --- Handle Update User Action ---
 if ($action === 'update_user' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $usernameToUpdate = $_POST['username_to_update'] ?? null;
-    $updateData = $_POST; // Get all post data
+    $newDisplayName = trim($_POST['display_name'] ?? '');
+    $newPassword = $_POST['password'] ?? ''; // Optional
+    $confirmPassword = $_POST['confirm_password'] ?? ''; // Optional
+    $newRole = $_POST['role'] ?? null; // Optional, might not be submitted if not changeable
 
-    // Remove action and username_to_update from updateData
-    unset($updateData['action']);
-    unset($updateData['username_to_update']);
-
-    // Basic validation (add more checks as needed)
     if (empty($usernameToUpdate)) {
-         $_SESSION['admin_status'] = ['message' => 'Error: No username specified for update.', 'type' => 'error'];
+        $_SESSION['admin_status'] = ['message' => 'Error: Username to update is missing.', 'type' => 'error'];
+    } elseif (empty($newDisplayName)) {
+        $_SESSION['admin_status'] = ['message' => 'Error: Display name cannot be empty.', 'type' => 'error'];
+    } elseif (!empty($newPassword) && $newPassword !== $confirmPassword) {
+        $_SESSION['admin_status'] = ['message' => 'Error: New passwords do not match.', 'type' => 'error'];
     } else {
-        // Authorization check: Can the logged-in user update this user?
-        // This would involve checking the role of the user being updated
-        // and comparing it to the logged-in user's role and permissions.
-        // (Similar logic to delete_user authorization)
+        $userToUpdateData = findUserByUsername($usernameToUpdate, $usersFilename);
+        if (!$userToUpdateData) {
+            $_SESSION['admin_status'] = ['message' => 'Error: User to update not found.', 'type' => 'error'];
+        } else {
+            $targetUserCurrentRole = $userToUpdateData['role'] ?? 'user';
+            $updatePayload = ['display_name' => $newDisplayName]; // Changed variable name for clarity
 
-        // if (authorized to update) {
-             // Attempt to update the user using the helper function
-             if (updateUser($usernameToUpdate, $updateData, $usersFilename)) {
-                 $_SESSION['admin_status'] = ['message' => 'Success: User "' . htmlspecialchars($usernameToUpdate) . '" updated successfully!', 'type' => 'success'];
-             } else {
-                 // updateUser returns false if user not found or save fails
-                 $_SESSION['admin_status'] = ['message' => 'Error: Could not update user or user not found. Check logs.', 'type' => 'error'];
-             }
-        // } else {
-        //      $_SESSION['admin_status'] = ['message' => 'Error: You do not have permission to update this user.', 'type' => 'error'];
-        // }
+            if (!empty($newPassword)) {
+                $updatePayload['password'] = $newPassword;
+            }
+
+            // Authorization for role change
+            $canChangeRole = false;
+            if ($newRole !== null && $newRole !== $targetUserCurrentRole) {
+                if ($usernameToUpdate === $loggedInUsername) {
+                    $_SESSION['admin_status'] = ['message' => 'Error: You cannot change your own role.', 'type' => 'error'];
+                    header('Location: dashboard.php?view=manage_users'); // Or profile view
+                    exit;
+                }
+
+                if ($loggedInUserRole === 'super_admin') {
+                    $canChangeRole = true;
+                } elseif ($loggedInUserRole === 'admin') {
+                    if ($targetUserCurrentRole !== 'super_admin' && $newRole !== 'super_admin') {
+                        if (in_array($newRole, ['admin', 'user_group_manager', 'user'])) {
+                            $canChangeRole = true;
+                        }
+                    }
+                } elseif ($loggedInUserRole === 'user_group_manager') {
+                    if ($targetUserCurrentRole === 'user' && $newRole === 'user') { // UGM can only manage 'user' roles
+                        $canChangeRole = true;
+                    }
+                }
+
+                if ($canChangeRole) {
+                    $updatePayload['role'] = $newRole;
+                } elseif ($newRole !== $targetUserCurrentRole) { 
+                    $_SESSION['admin_status'] = ['message' => 'Error: You do not have permission to assign the selected role or change this user\'s role.', 'type' => 'error'];
+                    error_log("Admin User Action (Update): User '" . $loggedInUsername . "' (role: " . $loggedInUserRole . ") attempted to change role of '" . $usernameToUpdate . "' from '" . $targetUserCurrentRole . "' to '" . $newRole . "' - DENIED.");
+                    header('Location: dashboard.php?view=edit_user&username=' . urlencode($usernameToUpdate));
+                    exit;
+                }
+            }
+            
+            $canEditThisUser = false;
+            if ($loggedInUserRole === 'super_admin') $canEditThisUser = true;
+            else if ($loggedInUserRole === 'admin' && $targetUserCurrentRole !== 'super_admin') $canEditThisUser = true;
+            else if ($loggedInUserRole === 'user_group_manager' && $targetUserCurrentRole === 'user') $canEditThisUser = true;
+            else if ($usernameToUpdate === $loggedInUsername) $canEditThisUser = true; 
+
+            if (!$canEditThisUser) {
+                 $_SESSION['admin_status'] = ['message' => 'Error: You do not have permission to edit this user.', 'type' => 'error'];
+            } else {
+                $updatedUser = updateUser($usernameToUpdate, $updatePayload, $usersFilename);
+                if ($updatedUser) {
+                    $_SESSION['admin_status'] = ['message' => 'Success: User "' . htmlspecialchars($usernameToUpdate) . '" updated successfully!', 'type' => 'success'];
+                    if ($usernameToUpdate === $loggedInUsername && isset($updatePayload['display_name'])) {
+                        $_SESSION['admin_display_name'] = $updatePayload['display_name'];
+                    }
+                } else {
+                    $_SESSION['admin_status'] = ['message' => 'Error: Could not update user. User might not exist or save failed. Check logs.', 'type' => 'error'];
+                }
+            }
+        }
     }
-    // Redirect back to the user manager view (or edit view on error)
     header('Location: dashboard.php?view=manage_users');
     exit;
 }
-*/
+
+// --- Handle Approve User Action ---
+if ($action === 'approve_user' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $usernameToApprove = $_POST['username_to_action'] ?? null;
+
+    if (!in_array($loggedInUserRole, ['admin', 'super_admin'])) {
+        $_SESSION['admin_status'] = ['message' => 'Error: You do not have permission to approve users.', 'type' => 'error'];
+        error_log("Admin User Action (Approve): User '" . $loggedInUsername . "' (role: " . $loggedInUserRole . ") attempted to approve user - DENIED.");
+    } elseif (empty($usernameToApprove)) {
+        $_SESSION['admin_status'] = ['message' => 'Error: Username to approve is missing.', 'type' => 'error'];
+    } else {
+        $userToApproveData = findUserByUsername($usernameToApprove, $usersFilename);
+        if ($userToApproveData && ($userToApproveData['status'] ?? '') === 'pending_approval') {
+            // The updateUser function is used here, it's defined in user_manager_helpers.php
+            if (updateUser($usernameToApprove, ['status' => 'active'], $usersFilename)) {
+                $_SESSION['admin_status'] = ['message' => 'Success: User "' . htmlspecialchars($usernameToApprove) . '" has been approved and is now active.', 'type' => 'success'];
+            } else {
+                $_SESSION['admin_status'] = ['message' => 'Error: Could not approve user. Save error occurred.', 'type' => 'error'];
+            }
+        } else {
+             $_SESSION['admin_status'] = ['message' => 'Error: User cannot be approved. They may not exist or are not pending approval.', 'type' => 'error'];
+        }
+    }
+    header('Location: dashboard.php?view=manage_users');
+    exit;
+}
+
+// --- Handle Reject User Action ---
+if ($action === 'reject_user' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $usernameToReject = $_POST['username_to_action'] ?? null;
+    $userToRejectData = findUserByUsername($usernameToReject, $usersFilename);
+
+    if (!in_array($loggedInUserRole, ['admin', 'super_admin'])) {
+        $_SESSION['admin_status'] = ['message' => 'Error: You do not have permission to reject users.', 'type' => 'error'];
+        error_log("Admin User Action (Reject): User '" . $loggedInUsername . "' (role: " . $loggedInUserRole . ") attempted to reject user - DENIED.");
+    } elseif (empty($usernameToReject)) {
+        $_SESSION['admin_status'] = ['message' => 'Error: Username to reject is missing.', 'type' => 'error'];
+    } elseif (!$userToRejectData || ($userToRejectData['status'] ?? '') !== 'pending_approval') {
+        $_SESSION['admin_status'] = ['message' => 'Error: User cannot be rejected. They may not exist or are not pending approval.', 'type' => 'error'];
+    } else {
+        // The deleteUser helper function takes 2 arguments as per user_manager_helpers.php
+        if (deleteUser($usernameToReject, $usersFilename)) {
+            $_SESSION['admin_status'] = ['message' => 'Success: User "' . htmlspecialchars($usernameToReject) . '" has been rejected and their registration data removed.', 'type' => 'success'];
+        } else {
+            $_SESSION['admin_status'] = ['message' => 'Error: Could not reject user. An error occurred during deletion.', 'type' => 'error'];
+        }
+    }
+    header('Location: dashboard.php?view=manage_users');
+    exit;
+}
+
+// --- Handle Disable User Action ---
+if ($action === 'disable_user' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $usernameToDisable = $_POST['username_to_action'] ?? null;
+    $userToDisableData = findUserByUsername($usernameToDisable, $usersFilename);
+
+    if (!in_array($loggedInUserRole, ['admin', 'super_admin'])) {
+        $_SESSION['admin_status'] = ['message' => 'Error: You do not have permission to disable users.', 'type' => 'error'];
+    } elseif (empty($usernameToDisable)) {
+        $_SESSION['admin_status'] = ['message' => 'Error: Username to disable is missing.', 'type' => 'error'];
+    } elseif ($usernameToDisable === $loggedInUsername) {
+        $_SESSION['admin_status'] = ['message' => 'Error: You cannot disable your own account.', 'type' => 'error'];
+    } elseif ($userToDisableData && $userToDisableData['role'] === 'super_admin' && $loggedInUserRole !== 'super_admin') {
+        $_SESSION['admin_status'] = ['message' => 'Error: Admins cannot disable Super Admin accounts.', 'type' => 'error'];
+    } elseif ($userToDisableData && ($userToDisableData['status'] ?? '') === 'active') {
+        if (updateUser($usernameToDisable, ['status' => 'disabled'], $usersFilename)) {
+            $_SESSION['admin_status'] = ['message' => 'Success: User "' . htmlspecialchars($usernameToDisable) . '" has been disabled.', 'type' => 'success'];
+        } else {
+            $_SESSION['admin_status'] = ['message' => 'Error: Could not disable user. Save error occurred.', 'type' => 'error'];
+        }
+    } else {
+        $_SESSION['admin_status'] = ['message' => 'Error: User is not active or does not exist.', 'type' => 'error'];
+    }
+    header('Location: dashboard.php?view=manage_users');
+    exit;
+}
+
+// --- Handle Enable User Action ---
+if ($action === 'enable_user' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $usernameToEnable = $_POST['username_to_action'] ?? null;
+    $userToEnableData = findUserByUsername($usernameToEnable, $usersFilename);
+
+    if (!in_array($loggedInUserRole, ['admin', 'super_admin'])) {
+        $_SESSION['admin_status'] = ['message' => 'Error: You do not have permission to enable users.', 'type' => 'error'];
+    } elseif (empty($usernameToEnable)) {
+        $_SESSION['admin_status'] = ['message' => 'Error: Username to enable is missing.', 'type' => 'error'];
+    } elseif ($userToEnableData && ($userToEnableData['status'] ?? '') === 'disabled') {
+        if (updateUser($usernameToEnable, ['status' => 'active'], $usersFilename)) {
+            $_SESSION['admin_status'] = ['message' => 'Success: User "' . htmlspecialchars($usernameToEnable) . '" has been enabled.', 'type' => 'success'];
+        } else {
+            $_SESSION['admin_status'] = ['message' => 'Error: Could not enable user. Save error occurred.', 'type' => 'error'];
+        }
+    } else {
+        $_SESSION['admin_status'] = ['message' => 'Error: User is not disabled or does not exist.', 'type' => 'error'];
+    }
+    header('Location: dashboard.php?view=manage_users');
+    exit;
+}
+
+// --- Handle Activate/Deactivate User from Edit Page ---
+if (($action === 'activate_user_from_edit' || $action === 'deactivate_user_from_edit') && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $usernameToToggle = $_POST['username_to_toggle'] ?? null;
+    $userToToggleData = findUserByUsername($usernameToToggle, $usersFilename);
+    $redirectToEdit = isset($_POST['redirect_to_edit']) && $_POST['redirect_to_edit'] === 'true';
+
+    $newStatus = ($action === 'activate_user_from_edit') ? 'active' : 'disabled';
+    $currentStatusActionWord = ($action === 'activate_user_from_edit') ? 'disabled' : 'active'; // For error messages
+
+    // Authorization checks
+    if (!in_array($loggedInUserRole, ['admin', 'super_admin'])) {
+        $_SESSION['admin_status'] = ['message' => 'Error: You do not have permission to change user status.', 'type' => 'error'];
+    } elseif (empty($usernameToToggle)) {
+        $_SESSION['admin_status'] = ['message' => 'Error: Username to toggle status is missing.', 'type' => 'error'];
+    } elseif ($usernameToToggle === $loggedInUsername) {
+        $_SESSION['admin_status'] = ['message' => 'Error: You cannot change your own account status.', 'type' => 'error'];
+    } elseif (!$userToToggleData) {
+        $_SESSION['admin_status'] = ['message' => 'Error: User not found.', 'type' => 'error'];
+    } elseif ($userToToggleData['role'] === 'super_admin' && $loggedInUserRole !== 'super_admin') {
+        $_SESSION['admin_status'] = ['message' => 'Error: Admins cannot change the status of Super Admin accounts.', 'type' => 'error'];
+    } elseif (($userToToggleData['status'] ?? 'unknown') !== $currentStatusActionWord && ($userToToggleData['status'] ?? 'unknown') !== 'inactive' && $action === 'activate_user_from_edit') {
+        // Special handling for 'inactive' if it exists, allowing activation
+        // If trying to activate, current status must be 'disabled' or 'inactive'
+        $_SESSION['admin_status'] = ['message' => 'Error: User is not currently ' . $currentStatusActionWord . ' or inactive.', 'type' => 'error'];
+    } elseif (($userToToggleData['status'] ?? 'unknown') !== $currentStatusActionWord && $action === 'deactivate_user_from_edit') {
+        // If trying to deactivate, current status must be 'active'
+        $_SESSION['admin_status'] = ['message' => 'Error: User is not currently ' . $currentStatusActionWord . '.', 'type' => 'error'];
+    }
+    else {
+        if (updateUser($usernameToToggle, ['status' => $newStatus], $usersFilename)) {
+            $_SESSION['admin_status'] = ['message' => 'Success: User "' . htmlspecialchars($usernameToToggle) . '" status changed to ' . $newStatus . '.', 'type' => 'success'];
+        } else {
+            $_SESSION['admin_status'] = ['message' => 'Error: Could not change user status. Save error occurred.', 'type' => 'error'];
+        }
+    }
+
+    if ($redirectToEdit && !empty($usernameToToggle)) {
+        header('Location: dashboard.php?view=edit_user&username=' . urlencode($usernameToToggle));
+    } else {
+        header('Location: dashboard.php?view=manage_users');
+    }
+    exit;
+}
 
 
 // If no valid action was provided, redirect to the user manager view
-if (!in_array($action, ['create_user', 'delete_user'])) { // Add 'update_user' here when implemented
+if (!in_array($action, [
+    'create_user', 'delete_user', 'update_user', 
+    'approve_user', 'reject_user', 
+    'disable_user', 'enable_user', // These are from manage_users_view.php buttons
+    'activate_user_from_edit', 'deactivate_user_from_edit' // New actions from edit_user_view.php
+    ])) {
      $_SESSION['admin_status'] = ['message' => 'Invalid user action.', 'type' => 'warning'];
 }
 

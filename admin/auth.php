@@ -31,17 +31,37 @@ $action = $_REQUEST['action'] ?? null; // Use $_REQUEST to get from GET or POST
 
 // Handle Login Attempt
 if ($action === 'login' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = $_POST['username'] ?? '';
+    $loginInput = trim($_POST['username'] ?? '');
     $password = $_POST['password'] ?? '';
+    $processedUsername = $loginInput;
+
+    // If login input doesn't contain "@", assume it's a username part for "@jobhunt.top"
+    if (strpos($loginInput, '@') === false) {
+        $processedUsername = $loginInput . '@jobhunt.top';
+    }
+    error_log("[AUTH_DEBUG] Login attempt. Input: '$loginInput', Processed: '$processedUsername'");
 
     $users = loadUsers($usersFilename);
     $authenticatedUser = null;
-
     foreach ($users as $user) {
-        if (isset($user['username']) && $user['username'] === $username) {
+        if (isset($user['username']) && strtolower($user['username']) === strtolower($processedUsername)) {
             if (isset($user['password_hash']) && password_verify($password, $user['password_hash'])) {
-                $authenticatedUser = $user;
-                break;
+                // Check if user status is active
+                if (isset($user['status']) && $user['status'] === 'active') {
+                    $authenticatedUser = $user;
+                    break;
+                } elseif (isset($user['status']) && $user['status'] === 'pending_approval') {
+                    $_SESSION['admin_status'] = ['message' => 'Your account is pending administrator approval.', 'type' => 'warning'];
+                    header('Location: dashboard.php'); exit;
+                } elseif (isset($user['status']) && $user['status'] === 'disabled') {
+                    $_SESSION['admin_status'] = ['message' => 'Your account has been disabled. Please contact an administrator.', 'type' => 'error'];
+                    header('Location: dashboard.php'); exit;
+                } else {
+                    // This case handles if password is correct but status is unrecognized or missing
+                    $_SESSION['admin_status'] = ['message' => 'Account status is unrecognized. Please contact an administrator.', 'type' => 'error'];
+                    header('Location: dashboard.php'); 
+                    exit;
+                }
             }
         }
     }
@@ -57,8 +77,10 @@ if ($action === 'login' && $_SERVER['REQUEST_METHOD'] === 'POST') {
         header('Location: dashboard.php');
         exit;
     } else {
-        // Store error message in session and redirect back to dashboard (login view)
-        $_SESSION['admin_status'] = ['message' => 'Invalid username or password.', 'type' => 'error'];
+        // This 'else' is reached if no user matched the username, or if a user matched but password was incorrect.
+        // The cases for correct password but wrong status are handled inside the loop with an exit.
+        $_SESSION['admin_status'] = ['message' => 'Invalid email/username or password.', 'type' => 'error'];
+        error_log("[AUTH_DEBUG] Login failed for processed username: '$processedUsername'");
         header('Location: dashboard.php'); // Redirect back to the main dashboard page
         exit;
     }
@@ -66,48 +88,52 @@ if ($action === 'login' && $_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // Handle Registration Attempt
 if ($action === 'register' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-    $newUsername = trim($_POST['new_username'] ?? '');
+    $emailAsUsername = trim($_POST['username'] ?? ''); // Changed from new_username
     $newPassword = $_POST['new_password'] ?? '';
     $confirmPassword = $_POST['confirm_password'] ?? '';
     $newDisplayName = trim($_POST['new_display_name'] ?? '');
 
     // Basic validation (can add more checks if needed)
-    if (empty($newUsername) || empty($newPassword) || empty($confirmPassword) || empty($newDisplayName)) {
+    if (empty($emailAsUsername) || empty($newPassword) || empty($confirmPassword) || empty($newDisplayName)) {
         $_SESSION['admin_status'] = ['message' => 'Please fill in all fields.', 'type' => 'error'];
     } elseif ($newPassword !== $confirmPassword) {
         $_SESSION['admin_status'] = ['message' => 'Passwords do not match.', 'type' => 'error'];
+    } elseif (!filter_var($emailAsUsername, FILTER_VALIDATE_EMAIL)) {
+        $_SESSION['admin_status'] = ['message' => 'Invalid email format for username.', 'type' => 'error'];
     } else {
         $users = loadUsers($usersFilename);
         $usernameExists = false;
         foreach ($users as $user) {
-            if (isset($user['username']) && $user['username'] === $newUsername) {
+            // Case-insensitive check for email
+            if (isset($user['username']) && strtolower($user['username']) === strtolower($emailAsUsername)) {
                 $usernameExists = true;
                 break;
             }
         }
 
         if ($usernameExists) {
-            $_SESSION['admin_status'] = ['message' => 'Username already exists.', 'type' => 'error'];
+            $_SESSION['admin_status'] = ['message' => 'An account with this email already exists.', 'type' => 'error'];
         } else {
-            $hashedPassword = password_hash($newPassword, PASSWORD_BCRYPT);
-            if ($hashedPassword === false) {
-                $_SESSION['admin_status'] = ['message' => 'Error creating password hash.', 'type' => 'error'];
-                error_log("Admin Registration Error: password_hash failed.");
-            } else {
-                $newUser = [
-                    "username" => $newUsername,
-                    "password_hash" => $hashedPassword,
-                    "display_name" => $newDisplayName,
-                    "role" => "user" // Default role for newly registered users
+            // Use the createUser function from user_manager_helpers.php
+            // Ensure user_manager_helpers.php is included if createUser is defined there.
+            // For now, assuming createUser is available or we replicate its core logic.
+            // The createUser function in user_manager_helpers.php already sets status to 'pending_approval'.
+            
+            // We need to include user_manager_helpers.php to use createUser
+            require_once __DIR__ . '/includes/user_manager_helpers.php'; 
+
+            $newUser = createUser($emailAsUsername, $newPassword, $newDisplayName, "user", $usersFilename);
+
+            if ($newUser) {
+                 $_SESSION['admin_status'] = [
+                    'message' => 'Registration successful! Your account is now pending administrator approval.',
+                    'type' => 'success'
                 ];
-
-                $users[] = $newUser;
-
-                if (saveUsers($users, $usersFilename)) {
-                    $_SESSION['admin_status'] = ['message' => 'Registration successful! You can now log in.', 'type' => 'success'];
-                } else {
-                    $_SESSION['admin_status'] = ['message' => 'Error saving user data.', 'type' => 'error'];
-                }
+            } elseif ($newUser === false && findUserByUsername($emailAsUsername, $usersFilename)) {
+                // This condition might be redundant if createUser handles existing username check robustly
+                $_SESSION['admin_status'] = ['message' => 'An account with this email already exists.', 'type' => 'error'];
+            } else {
+                $_SESSION['admin_status'] = ['message' => 'Error during registration. Could not save user data.', 'type' => 'error'];
             }
         }
     }

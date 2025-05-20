@@ -27,12 +27,12 @@ $canCreateUser = ($loggedInUserRole === 'super_admin' || $loggedInUserRole === '
         <form method="POST" action="user_actions.php">
             <input type="hidden" name="action" value="create_user">
 
-            <label for="new_username">Username:</label>
-            <input type="text" id="new_username" name="username" value="<?= htmlspecialchars($_POST['username'] ?? '') ?>" required>
-
             <label for="new_display_name">Display Name:</label>
             <input type="text" id="new_display_name" name="display_name" value="<?= htmlspecialchars($_POST['display_name'] ?? '') ?>" required>
 
+             <label for="create_user_email_username">Email ID (this will be the username):</label>
+            <input type="email" id="create_user_email_username" name="username" class="form-control" placeholder="user@example.com" value="<?= htmlspecialchars($_POST['username'] ?? '') ?>" required>
+        
             <label for="new_password">Password:</label>
             <input type="password" id="new_password" name="password" required>
 
@@ -56,7 +56,7 @@ $canCreateUser = ($loggedInUserRole === 'super_admin' || $loggedInUserRole === '
 
             <button type="submit" class="button">Create User</button>
         </form>
-    </div>
+    </div></div>
 <?php endif; ?>
 
 <div class="user-list-section">
@@ -67,9 +67,10 @@ $canCreateUser = ($loggedInUserRole === 'super_admin' || $loggedInUserRole === '
         <table class="user-table">
             <thead>
                 <tr>
-                    <th>Username</th>
+                    <th>Email (Username)</th>
                     <th>Display Name</th>
                     <th>Role</th>
+                    <th>Status</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -79,53 +80,98 @@ $canCreateUser = ($loggedInUserRole === 'super_admin' || $loggedInUserRole === '
                     $userUsername = htmlspecialchars($user['username'] ?? 'N/A');
                     $userDisplayName = htmlspecialchars($user['display_name'] ?? 'N/A');
                     $userRole = htmlspecialchars($user['role'] ?? 'user');
+                    $userStatus = htmlspecialchars($user['status'] ?? 'unknown');
                     ?>
                     <tr>
                         <td><?= $userUsername ?></td>
                         <td><?= $userDisplayName ?></td>
                         <td><?= ucwords(str_replace('_', ' ', $userRole)) ?></td>
+                        <td>
+                            <span class="status-badge status-<?= strtolower($userStatus) ?>">
+                                <?= ucwords(str_replace('_', ' ', $userStatus)) ?>
+                            </span>
+                        </td>
                         <td class="actions">
                             <?php
-                            // Determine if the logged-in user can edit/delete this user
-                            $canEdit = false;
-                            $canDelete = false;
+                            $targetUsername = $user['username'] ?? '';
+                            $targetUserRole = $user['role'] ?? 'user';
+                            $targetUserStatus = $user['status'] ?? 'unknown';
+                            $isSelf = ($loggedInUsername === $targetUsername);
 
-                            // Super Admin can edit/delete anyone except themselves
-                            if ($loggedInUserRole === 'super_admin' && $loggedInUsername !== $user['username']) {
-                                $canEdit = true;
-                                $canDelete = true;
-                            }
-                            // Admin can edit/delete User Group Managers and Users (but not Super Admins or other Admins)
-                            elseif ($loggedInUserRole === 'admin' && ($user['role'] === 'user_group_manager' || $user['role'] === 'user')) {
-                                $canEdit = true;
-                                $canDelete = true;
-                            }
-                            // User Group Manager can view Users (but not edit/delete them - this requires group logic)
-                            // For now, they can only view, cannot edit/delete other roles.
-                             elseif ($loggedInUserRole === 'user_group_manager' && $user['role'] === 'user') {
-                                 // Can view, but edit/delete links are not shown below
-                             }
-                            // Users cannot edit/delete anyone.
+                            // --- Actions for Admin/Super Admin ---
+                            if (in_array($loggedInUserRole, ['admin', 'super_admin'])) {
+                                // Approve/Reject for pending users
+                                if ($targetUserStatus === 'pending_approval') {
+                                    echo '<form action="user_actions.php" method="POST" style="display:inline-block; margin-right: 5px;">';
+                                    echo '<input type="hidden" name="action" value="approve_user">';
+                                    echo '<input type="hidden" name="username_to_action" value="' . $targetUsername . '">';
+                                    echo '<button type="submit" class="button success small">Approve</button>';
+                                    echo '</form>';
 
-                            // Prevent deleting the currently logged-in user
-                            if ($loggedInUsername === $user['username']) {
-                                $canDelete = false;
+                                    echo '<form action="user_actions.php" method="POST" style="display:inline-block;">';
+                                    echo '<input type="hidden" name="action" value="reject_user">';
+                                    echo '<input type="hidden" name="username_to_action" value="' . $targetUsername . '">';
+                                    echo '<button type="submit" class="button danger small" onclick="return confirm(\'Are you sure you want to reject this user registration: ' . addslashes($userDisplayName) . '?\');">Reject</button>';
+                                    echo '</form>';
+                                }
+                                // Disable for active users
+                                elseif ($targetUserStatus === 'active') {
+                                    if (!$isSelf && !($targetUserRole === 'super_admin' && $loggedInUserRole !== 'super_admin')) {
+                                        echo '<form action="user_actions.php" method="POST" style="display:inline-block; margin-right: 5px;">';
+                                        echo '<input type="hidden" name="action" value="disable_user">';
+                                        echo '<input type="hidden" name="username_to_action" value="' . $targetUsername . '">';
+                                        echo '<button type="submit" class="button warning small">Disable</button>';
+                                        echo '</form>';
+                                    }
+                                }
+                                // Enable for disabled users
+                                elseif ($targetUserStatus === 'disabled') {
+                                    if (!($targetUserRole === 'super_admin' && $loggedInUserRole !== 'super_admin')) { // Super admin check is mostly for consistency
+                                        echo '<form action="user_actions.php" method="POST" style="display:inline-block; margin-right: 5px;">';
+                                        echo '<input type="hidden" name="action" value="enable_user">';
+                                        echo '<input type="hidden" name="username_to_action" value="' . $targetUsername . '">';
+                                        echo '<button type="submit" class="button success small">Enable</button>';
+                                        echo '</form>';
+                                    }
+                                }
+                            }
+
+                            // --- Edit and Delete Permissions (General Management) ---
+                            $canEditThisUser = false;
+                            $canDeleteThisUser = false;
+
+                            if ($loggedInUserRole === 'super_admin') {
+                                $canEditThisUser = true;
+                                if (!$isSelf) $canDeleteThisUser = true;
+                            } elseif ($loggedInUserRole === 'admin') {
+                                if ($targetUserRole !== 'super_admin') {
+                                    $canEditThisUser = true;
+                                    if (!$isSelf && $targetUserRole !== 'admin') { // Admins cannot delete other admins
+                                        $canDeleteThisUser = true;
+                                    }
+                                }
+                            } elseif ($loggedInUserRole === 'user_group_manager') {
+                                if ($targetUserRole === 'user') {
+                                    $canEditThisUser = true; // UGM can edit users
+                                    // $canDeleteThisUser = true; // Decide if UGM can delete users
+                                }
+                            }
+                            // Allow self-edit (profile page is better, but for consistency)
+                            if ($isSelf) $canEditThisUser = true;
+
+
+                            // Display Edit button
+                            if ($canEditThisUser) {
+                                echo '<a href="dashboard.php?view=edit_user&username=' . urlencode($targetUsername) . '" class="button edit small" style="margin-right:5px;">Edit</a>';
+                            }
+
+                            // Display Delete button (for active or disabled users, not pending)
+                            if ($canDeleteThisUser && ($targetUserStatus === 'active' || $targetUserStatus === 'disabled')) {
+                                echo '<a href="user_actions.php?action=delete_user&username=' . urlencode($targetUsername) . '"
+                                   onclick="return confirm(\'Are you sure you want to permanently delete user: ' . addslashes($userDisplayName) . '?\');"
+                                   class="button delete small">Delete</a>';
                             }
                             ?>
-
-                            <?php if ($canEdit): ?>
-                                <a href="dashboard.php?view=edit_user&username=<?= urlencode($user['username'] ?? '') ?>" class="button" style="background-color: #ffc107; color: #212529;">Edit</a>
-                            <?php endif; ?>
-
-                            <?php if ($canDelete): ?>
-                                <a href="user_actions.php?action=delete_user&username=<?= urlencode($user['username'] ?? '') ?>"
-                                   onclick="return confirm('Are you sure you want to delete user: <?= addslashes($userUsername) ?>?');"
-                                   class="button delete">Delete</a>
-                            <?php endif; ?>
-
-                            <?php if (!$canEdit && !$canDelete && $loggedInUsername !== $user['username']): ?>
-                                <span style="color: #666; font-size: 0.9em;">Cannot manage</span>
-                            <?php endif; ?>
                              <?php if ($loggedInUsername === $user['username']): ?>
                                  <span style="color: #666; font-size: 0.9em;">(Your account)</span>
                              <?php endif; ?>
@@ -186,6 +232,11 @@ $canCreateUser = ($loggedInUserRole === 'super_admin' || $loggedInUserRole === '
         font-size: 0.9em; /* Adjust font size */
     }
 
+    .user-table td.actions .button.small {
+        padding: 3px 8px;
+        font-size: 0.85em;
+    }
+
     .user-table td.actions a.edit {
          background-color: #ffc107;
          color: #212529;
@@ -199,6 +250,24 @@ $canCreateUser = ($loggedInUserRole === 'super_admin' || $loggedInUserRole === '
      }
      .user-table td.actions a.delete:hover {
          background-color: #c82333;
+     }
+    .user-table td.actions .button.success {
+        background-color: #28a745; color: white;
+    }
+    .user-table td.actions .button.success:hover {
+        background-color: #218838;
+    }
+    .user-table td.actions .button.warning {
+        background-color: #ffc107; color: #212529;
+    }
+    .user-table td.actions .button.warning:hover {
+        background-color: #e0a800;
+    }
+    .user-table td.actions .button.danger { /* For reject button */
+        background-color: #dc3545; color: white;
+    }
+    .user-table td.actions .button.danger:hover {
+        background-color: #c82333;
      }
 
     .user-form-section label {
@@ -230,5 +299,29 @@ $canCreateUser = ($loggedInUserRole === 'super_admin' || $loggedInUserRole === '
     }
     .user-form-section button.button:hover {
         background-color: #004577;
+    }
+
+    /* Status Badges */
+    .status-badge {
+        padding: 0.25em 0.6em;
+        border-radius: 0.25em;
+        font-size: 0.8em;
+        font-weight: bold;
+        color: #fff;
+        text-transform: capitalize;
+        display: inline-block;
+    }
+    .status-active {
+        background-color: #28a745; /* Green */
+    }
+    .status-pending_approval {
+        background-color: #ffc107; /* Yellow */
+        color: #212529; /* Dark text for yellow */
+    }
+    .status-disabled {
+        background-color: #6c757d; /* Grey/Muted Red */
+    }
+    .status-unknown {
+        background-color: #343a40; /* Dark Grey */
     }
 </style>

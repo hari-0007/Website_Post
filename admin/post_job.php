@@ -121,7 +121,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if (!empty($salary) && $salary !== '0') $prompt .= "- Salary: $salary\n";
                 if ($vacant_positions > 1) $prompt .= "- Number of Vacancies: $vacant_positions\n";
                 $prompt .= "- Key Responsibilities/Details: $description\n\n";
-                // $prompt .= "The summary should be attractive to potential candidates and provide a clear overview of the role. Focus on the most important information. Do not include contact information like emails or phone numbers in this summary.";
+                $prompt .= "The summary should be attractive to potential candidates and provide a clear overview of the role. Focus on the most important information. Do not include contact information like emails or phone numbers, summary, job title and location in this summary.";
                 error_log("[AI_SUMMARY_DEBUG] Prompt being sent to API: " . $prompt);
 
                 $data = ['contents' => [['parts' => [['text' => $prompt]]]]];

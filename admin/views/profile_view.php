@@ -10,9 +10,9 @@
 <h3>Manage Your Profile</h3>
 <div class="profile-forms">
      <div class="profile-form-section">
-         <h3>User Information</h3>
-         <p><strong>Username:</strong> <?= htmlspecialchars($_SESSION['admin_username'] ?? 'N/A') ?></p>
-         <p>Username cannot be changed.</p>
+         <h3>Account Information</h3>
+         <p><strong>Login Email:</strong> <?= htmlspecialchars($_SESSION['admin_username'] ?? 'N/A') ?></p>
+         <p>Login email cannot be changed here.</p>
      </div>
 
      <div class="profile-form-section">

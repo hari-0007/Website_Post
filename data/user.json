@@ -1,20 +1,30 @@
 [
     {
-        "username": "hari",
+        "username": "hari@jobhunt.top",
         "password_hash": "$2y$12$c\/gTyiJgFZmsYXUOkuV7BuULQczrJDaODQh2.qLeRVkEc.AeSSa6W",
         "display_name": "Hari",
-        "role": "admin"
+        "role": "admin",
+        "status": "active"
     },
     {
-        "username": "suthan",
+        "username": "suthan@jobhunt.top",
         "password_hash": "$2y$12$enSXKPC\/ZqOsKijxK2RtwuIwbQ0Rzv9PZWXm21cQWu3owl\/oI4Ahe",
-        "display_name": "Suthan",
-        "role": "super_admin"
+        "display_name": "Arihara Suthan",
+        "role": "super_admin",
+        "status": "active"
     },
     {
-        "username": "admin",
+        "username": "admin@jobhunt.top",
         "password_hash": "$2y$12$mHwLhoYKbL3YCy\/nnU4AKOWtDU6sSkzBdFhI3fouOn5faK1CjfVEO",
         "display_name": "admin",
-        "role": "user_group_manager"
+        "role": "user_group_manager",
+        "status": "active"
+    },
+    {
+        "username": "shaji@jobhunt.top",
+        "password_hash": "$2y$12$zuSTSX5tnvt4kU5FOTMcqOwEijl\/0KS8uDRRAdlNrUM0lmTlhfyoW",
+        "display_name": "Shaji",
+        "role": "user",
+        "status": "disabled"
     }
 ]

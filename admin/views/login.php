@@ -99,8 +99,8 @@
             <?php endif; ?>
             <form method="POST" action="auth.php">
                 <input type="hidden" name="action" value="register">
-                <label for="new_username">Username:</label>
-                <input type="text" id="new_username" name="new_username" value="<?= htmlspecialchars($_POST['new_username'] ?? '') ?>" required autofocus>
+                <label for="username">Email (this will be your username):</label>
+                <input type="email" id="username" name="username" placeholder="user@example.com" value="<?= htmlspecialchars($_POST['username'] ?? '') ?>" required autofocus>
 
                 <label for="new_display_name">Display Name:</label>
                 <input type="text" id="new_display_name" name="new_display_name" value="<?= htmlspecialchars($_POST['new_display_name'] ?? '') ?>" required>
@@ -145,8 +145,8 @@
                 <p class="login-error"><?= htmlspecialchars($loginError) ?></p>
             <?php endif; ?>
             <form method="POST" action="auth.php?action=login">
-                <label for="username">Username:</label>
-                <input type="text" id="username" name="username" required>
+                <label for="username">Email or Username:</label>
+                <input type="text" id="username" name="username" placeholder="user or user@jobhunt.top" required>
                 
                 <label for="password">Password:</label>
                 <input type="password" id="password" name="password" required>

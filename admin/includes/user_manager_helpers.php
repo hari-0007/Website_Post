@@ -13,14 +13,14 @@ require_once __DIR__ . '/user_helpers.php'; // Include general user helpers (loa
  * @param string $displayName
  * @param string $role
  * @param string $usersFilename
- * @return array|false The new user array on success, false on failure (e.g., username exists).
+ * @return array|false The new user array if successful, false otherwise (e.g., email exists, save fails).
  */
 function createUser($username, $password, $displayName, $role, $usersFilename) {
     $users = loadUsers($usersFilename);
 
-    // Check if username already exists
+    // Check if username already exists (case-insensitive for email)
     foreach ($users as $user) {
-        if (isset($user['username']) && $user['username'] === $username) {
+        if (isset($user['username']) && strtolower($user['username']) === strtolower($username)) {
             return false; // Username already exists
         }
     }
@@ -34,10 +34,11 @@ function createUser($username, $password, $displayName, $role, $usersFilename) {
 
     // Create new user object
     $newUser = [
-        "username" => $username,
+        "username" => $username, // Store as provided (original case)
         "password_hash" => $hashedPassword,
         "display_name" => $displayName,
-        "role" => $role // Assign the specified role
+        "role" => $role, // Assign the specified role
+        "status" => "pending_approval" // New users default to pending
     ];
 
     // Add the new user
@@ -53,10 +54,10 @@ function createUser($username, $password, $displayName, $role, $usersFilename) {
 }
 
 /**
- * Updates an existing user's details (display name, password, role).
+ * Updates an existing user's details (display name, password, role, status).
  *
  * @param string $usernameToUpdate The username of the user to update.
- * @param array $updateData An associative array of fields to update (e.g., ['display_name' => 'New Name', 'password' => 'newpass', 'role' => 'admin']).
+ * @param array $updateData An associative array of fields to update (e.g., ['display_name' => 'New Name', 'password' => 'newpass', 'role' => 'admin', 'status' => 'active']).
  * @param string $usersFilename
  * @return array|false The updated user array on success, false on failure (e.g., user not found, save failed).
  */
@@ -66,12 +67,13 @@ function updateUser($usernameToUpdate, $updateData, $usersFilename) {
     $updatedUser = null;
 
     foreach ($users as &$user) { // Pass by reference to modify the original array
-        if (isset($user['username']) && $user['username'] === $usernameToUpdate) {
+        // Case-insensitive comparison for username
+        if (isset($user['username']) && strtolower($user['username']) === strtolower($usernameToUpdate)) {
             // Update display name if provided
             if (isset($updateData['display_name'])) {
                 $user['display_name'] = $updateData['display_name'];
             }
-            // Update password if provided
+            // Update password if provided and not empty
             if (isset($updateData['password']) && !empty($updateData['password'])) {
                  $hashedPassword = password_hash($updateData['password'], PASSWORD_BCRYPT);
                  if ($hashedPassword === false) {
@@ -83,6 +85,10 @@ function updateUser($usernameToUpdate, $updateData, $usersFilename) {
             // Update role if provided
             if (isset($updateData['role'])) {
                 $user['role'] = $updateData['role'];
+            }
+            // Update status if provided
+            if (isset($updateData['status'])) {
+                $user['status'] = $updateData['status'];
             }
 
             $updatedUser = $user; // Capture the updated user data
@@ -100,6 +106,7 @@ function updateUser($usernameToUpdate, $updateData, $usersFilename) {
             return false; // Save failed
         }
     } else {
+        error_log("Admin User Manager Error: User not found for update: " . $usernameToUpdate);
         return false; // User not found
     }
 }
@@ -115,9 +122,9 @@ function deleteUser($usernameToDelete, $usersFilename) {
     $users = loadUsers($usersFilename);
     $initialCount = count($users);
 
-    // Filter out the user with the matching username
+    // Filter out the user with the matching username (case-insensitive)
     $updatedUsers = array_filter($users, function($user) use ($usernameToDelete) {
-        return !isset($user['username']) || $user['username'] !== $usernameToDelete;
+        return !isset($user['username']) || strtolower($user['username']) !== strtolower($usernameToDelete);
     });
 
     if (count($updatedUsers) < $initialCount) {
@@ -132,8 +139,31 @@ function deleteUser($usernameToDelete, $usersFilename) {
             return false; // Save failed
         }
     } else {
+        error_log("Admin User Manager Error: User not found for deletion: " . $usernameToDelete);
         return false; // User not found
     }
 }
+
+/**
+ * Finds a user by their username from the users data file.
+ *
+ * @param string $username The username to search for.
+ * @param string $usersFilename The path to the users JSON file.
+ * @return array|null The user array if found, null otherwise.
+ */
+function findUserByUsername($username, $usersFilename) {
+    $users = loadUsers($usersFilename); 
+
+    if (is_array($users)) {
+        foreach ($users as $user) {
+            // Case-insensitive comparison for username
+            if (isset($user['username']) && strtolower($user['username']) === strtolower($username)) {
+                return $user; // User found
+            }
+        }
+    }
+    return null; // User not found or error loading users
+}
+
 
 ?>

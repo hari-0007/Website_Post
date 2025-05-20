@@ -34,10 +34,40 @@ $loggedIn = isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] 
 $loggedInUserRole = $_SESSION['admin_role'] ?? 'user'; // Default role if not set
 $loggedInUsername = $_SESSION['admin_username'] ?? '';
 
+error_log("--- [CRITICAL_DEBUG] dashboard.php: Top of script. Raw GET: " . print_r($_GET, true)); // Log raw GET
 
-// Calculate unread messages count if logged in
+// Determine the requested view
+$requestedView = $_GET['view'] ?? ($loggedIn ? 'dashboard' : 'login'); // Default to dashboard if logged in, login if not
+$requestedAction = $_GET['action'] ?? null; // For handling specific actions routed through dashboard.php (like register_form)
+error_log("--- [DEBUG] dashboard.php: Page Load Start ---");
+error_log("[DEBUG] dashboard.php: Raw GET parameters: " . print_r($_GET, true));
+error_log("[DEBUG] dashboard.php: Initial \$loggedIn state: " . ($loggedIn ? 'true' : 'false'));
+error_log("[DEBUG] dashboard.php: Initial \$requestedView (from \$_GET['view'] or default) = '" . $requestedView . "'");
+
+// Validate requested view if logged in
+// 'post_job' view is removed from allowed views as its navigation link is removed, but fetchable via AJAX
+$allowedViews = ['dashboard', 'manage_jobs', 'edit_job', 'edit_user', 'profile', 'messages', 'generate_message', 'manage_users', 'post_job'];
+error_log("[CRITICAL_DEBUG] dashboard.php: Just before \$allowedViews check. \$requestedView = '" . $requestedView . "'. \$loggedIn = " . ($loggedIn ? 'true' : 'false'));
+
+if ($loggedIn && $requestedView !== 'login') { // Ensure we don't try to validate 'login' if somehow requested while logged in
+    if (!in_array($requestedView, $allowedViews)) {
+            error_log("[ERROR_DEBUG] dashboard.php: Invalid view '" . $requestedView . "' requested for logged-in user. Allowed views: " . implode(', ', $allowedViews) . ". Defaulting to dashboard.");
+        // If view is invalid for logged-in user, default to dashboard without an error
+        $requestedView = 'dashboard';
+            // It's possible the "invalid view specified" message comes from a part of your code that *displays* this error
+            // if a certain condition isn't met, rather than this specific fallback.
+    }
+    // Authorization check for manage_users view
+    if ($requestedView === 'manage_users' && !in_array($loggedInUserRole, ['super_admin', 'admin', 'user_group_manager'])) {
+        $_SESSION['admin_status'] = ['message' => 'Access Denied: You do not have permission to manage users.', 'type' => 'error'];
+        header('Location: dashboard.php?view=dashboard'); // Redirect to a safe page
+        exit;
+    }
+}
+
+// Calculate unread messages count if logged in (moved after $requestedView is determined and validated)
 $unreadMessagesCount = 0;
-if ($loggedIn) {
+if ($loggedIn && $requestedView !== 'login') { // Use the now defined $requestedView
     $messagesFilePath = __DIR__ . '/../data/feedback.json';
     $messages = file_exists($messagesFilePath) ? json_decode(file_get_contents($messagesFilePath), true) : [];
     if (!is_array($messages)) $messages = []; // Ensure it's an array
@@ -46,26 +76,6 @@ if ($loggedIn) {
         if (isset($message['read']) && $message['read'] === false) {
             $unreadMessagesCount++;
         }
-    }
-}
-
-// Determine the requested view
-$requestedView = $_GET['view'] ?? ($loggedIn ? 'dashboard' : 'login'); // Default to dashboard if logged in, login if not
-$requestedAction = $_GET['action'] ?? null; // For handling specific actions routed through dashboard.php (like register_form)
-
-// Validate requested view if logged in
-// 'post_job' view is removed from allowed views as its navigation link is removed, but fetchable via AJAX
-$allowedViews = ['dashboard', 'manage_jobs', 'edit_job', 'profile', 'messages', 'generate_message', 'manage_users', 'post_job'];
-if ($loggedIn) {
-    if (!in_array($requestedView, $allowedViews)) {
-        // If view is invalid for logged-in user, default to dashboard without an error
-        $requestedView = 'dashboard';
-    }
-    // Authorization check for manage_users view
-    if ($requestedView === 'manage_users' && !in_array($loggedInUserRole, ['super_admin', 'admin', 'user_group_manager'])) {
-        $_SESSION['admin_status'] = ['message' => 'Access Denied: You do not have permission to manage users.', 'type' => 'error'];
-        header('Location: dashboard.php?view=dashboard'); // Redirect to a safe page
-        exit;
     }
 }
 
@@ -95,137 +105,19 @@ $allJobs = [];
 $feedbackMessages = [];
 $users = [];
 $jobToEdit = null;
+$userToEdit = null; // Initialize for edit_user view
 $jobId = null; // Initialize jobId for edit_job view
-$whatsappMessage = null; // Initialize for generate_message view
+// $whatsappMessage = null; // Initialize for generate_message view
+// $telegramMessage = null; // Initialize for generate_message view
+// This data loading is now handled by fetch_content.php
 
-if ($loggedIn) {
-    // Load data needed for multiple views
-    $allJobs = loadJobs($jobsFilename); // Needed for manage_jobs, dashboard stats, generate_message
-    $feedbackMessages = loadFeedbackMessages($feedbackFilename); // Needed for messages view
-    $users = loadUsers($usersFilename); // Needed for manage_users view
-
-    // Load data specific to the current view
-    switch ($requestedView) {
-        case 'dashboard':
-            // Calculate dashboard stats (total views, jobs today/month, graph data)
-            // $totalViews = (int)file_get_contents($viewCounterFile);
-            $today = date('Y-m-d');
-            $thisMonth = date('Y-m');
-
-            $jobsTodayCount = 0;
-            $jobsMonthlyCount = 0;
-            $dailyJobCounts = array_fill(0, 30, 0); // Initialize counts for last 30 days
-            $graphLabels = []; // Dates for the graph
-
-            $now = time();
-            $oneDay = 24 * 60 * 60; // Seconds in a day
-
-            // Populate labels for the last 30 days
-            for ($i = 29; $i >= 0; $i--) {
-                $graphLabels[] = date('Y-m-d', $now - $i * $oneDay);
-            }
-
-            foreach ($allJobs as $job) {
-                $postedDate = date('Y-m-d', $job['posted_on_unix_ts'] ?? strtotime($job['posted_on'] ?? ''));
-
-                if ($postedDate === $today) {
-                    $jobsTodayCount++;
-                }
-                if (strpos($postedDate, $thisMonth) === 0) {
-                    $jobsMonthlyCount++;
-                }
-
-                // Increment daily counts for the graph
-                $dateIndex = array_search($postedDate, $graphLabels);
-                if ($dateIndex !== false) {
-                    $dailyJobCounts[$dateIndex]++;
-                }
-            }
-            $graphData = $dailyJobCounts; // Data points for the graph
-
-            break;
-        case 'edit_job':
-            $jobId = $_GET['id'] ?? null; // Retrieve the job ID from the URL
-            if ($jobId) {
-                $jobToEdit = null;
-                // Find the job to edit in the $allJobs array
-                foreach ($allJobs as $job) {
-                    if (isset($job['id']) && (string)$job['id'] === (string)$jobId) {
-                        $jobToEdit = $job;
-                        break;
-                    }
-                }
-                // If job not found, redirect to manage jobs with an error
-                if (!$jobToEdit) {
-                    $_SESSION['admin_status'] = [
-                        'message' => 'Error: Job not found.',
-                        'type' => 'error'
-                    ];
-                    header('Location: dashboard.php?view=manage_jobs');
-                    exit;
-                }
-            } else {
-                // If no job ID provided, redirect to manage jobs with a warning
-                $_SESSION['admin_status'] = [
-                    'message' => 'Warning: No job ID specified for editing.',
-                    'type' => 'warning'
-                ];
-                header('Location: dashboard.php?view=manage_jobs');
-                exit;
-            }
-            break;
-        case 'generate_message':
-            // This section attempts to include the message generation logic.
-            ob_start(); // Start output buffering
-            // Include the script that generates the WhatsApp message content
-            // Ensure generate_whatsapp_message.php is correctly located or adjust path
-            if (file_exists(__DIR__ . '/generate_whatsapp_message.php')) {
-                 require __DIR__ . '/generate_whatsapp_message.php'; 
-            } else {
-                 error_log("Error: generate_whatsapp_message.php not found in " . __DIR__);
-                 echo "Error: Message generation script not found."; // Fallback message
-            }
-            $whatsappMessage = ob_get_clean(); // Capture the output
-
-             // Check if the included script outputted an error indicating data file not found
-             if (empty($whatsappMessage) || trim($whatsappMessage) === "Error: Job data file not found.\n" || trim($whatsappMessage) === "Could not generate message. Job data is empty or missing.") {
-                  $whatsappMessage = "Could not generate message. Check job data file or logs."; // More informative default message on failure
-             }
-
-            break;
-        case 'manage_jobs':
-            // Pagination logic
-            $jobsPerPage = 20; // Number of jobs per page
-            $currentPage = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
-
-            // Apply search filter
-            $search = $_GET['search'] ?? '';
-            $startDate = $_GET['start_date'] ?? '';
-            $endDate = $_GET['end_date'] ?? '';
-
-            $filteredJobs = array_filter($allJobs, function ($job) use ($search, $startDate, $endDate) {
-                $matchesSearch = empty($search) || stripos($job['title'] ?? '', $search) !== false || stripos($job['company'] ?? '', $search) !== false || stripos($job['location'] ?? '', $search) !== false;
-
-                $matchesDate = true;
-                if (!empty($startDate)) {
-                    $matchesDate = $matchesDate && (strtotime($job['posted_on'] ?? '') >= strtotime($startDate));
-                }
-                if (!empty($endDate)) {
-                    $matchesDate = $matchesDate && (strtotime($job['posted_on'] ?? '') <= strtotime($endDate));
-                }
-
-                return $matchesSearch && $matchesDate;
-            });
-
-            // Pagination logic
-            $totalJobs = count($filteredJobs);
-            $totalPages = ceil($totalJobs / $jobsPerPage);
-            $startIndex = ($currentPage - 1) * $jobsPerPage;
-            $pagedJobs = array_slice($filteredJobs, $startIndex, $jobsPerPage);
-            break;
-        // No extra data loading needed for 'post_job', 'profile', 'messages', 'manage_users' views
-    }
-}
+// The following variables are still needed for the header and navigation logic in dashboard.php
+// $loggedIn (already set)
+// $requestedView (already set)
+// $unreadMessagesCount (already set)
+// $loggedInUserRole (already set)
+// $_SESSION['admin_display_name'] / $_SESSION['admin_username'] (used in nav)
+// $statusMessage, $statusClass (used for displaying status)
 
 // Include header (contains opening HTML, head, and navigation)
 // Pass $unreadMessagesCount and $loggedInUserRole to header.php
@@ -332,8 +224,8 @@ require_once __DIR__ . '/partials/header.php';
                  // Not an AJAX request, load content directly
                  // fetch_content.php will output the HTML for the requested view
                  // Pass necessary variables to fetch_content.php via include scope
-                 // Note: Variables like $allJobs, $feedbackMessages, $users, $jobToEdit, $whatsappMessage
-                 // loaded above are available in the scope of fetch_content.php when included here.
+                 // Note: Variables like $allJobs, $feedbackMessages, $users, $jobToEdit, $whatsappMessage, $telegramMessage
+                 // loaded above (or rather, made available by fetch_content.php) are available in the scope of fetch_content.php when included here.
                  require_once __DIR__ . '/fetch_content.php';
                  // The output from fetch_content.php (which includes the view file)
                  // will go directly into this div on the initial page load.

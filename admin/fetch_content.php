@@ -12,14 +12,13 @@ if (session_status() === PHP_SESSION_NONE) {
 
 // Include configuration and helper functions
 require_once __DIR__ . '/includes/config.php';
-require_once __DIR__ . '/includes/user_helpers.php';
+require_once __DIR__ . '/includes/user_helpers.php'; // For loadUsers, saveUsers, findUserByUsername, getRoleParts
 require_once __DIR__ . '/includes/job_helpers.php';
 require_once __DIR__ . '/includes/feedback_helpers.php';
-require_once __DIR__ . '/includes/user_manager_helpers.php'; // Include new helper for user management
+require_once __DIR__ . '/includes/user_manager_helpers.php'; // For createUser, deleteUser, updateUser
 
 // Check if the user is logged in
 if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
-    // Set HTTP response code and redirect to login
     if (!headers_sent()) {
         http_response_code(401); // Unauthorized
         header('Location: dashboard.php?view=login');
@@ -27,11 +26,13 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
     exit;
 }
 
+// --- Role Definitions ---
+$allRegionalAdminRoles = ['India_Admin', 'Middle_East_Admin', 'USA_Admin', 'Europe_Admin'];
+$allRegionalManagerRoles = ['India_Manager', 'Middle_East_Manager', 'USA_Manager', 'Europe_Manager'];
+$allRegionalUserRoles = ['India_User', 'Middle_East_User', 'USA_User', 'Europe_User'];
+
 // Get the requested view from the GET parameters
 $requestedView = $_GET['view'] ?? 'dashboard'; // Default to dashboard view
-
-// Log the requested view for debugging
-// error_log("Admin Fetch: Requested view: " . $requestedView);
 
 // Initialize variables that might be needed by the views
 $allJobs = [];
@@ -39,141 +40,259 @@ $feedbackMessages = [];
 $totalViews = 0;
 $jobsTodayCount = 0;
 $jobsMonthlyCount = 0;
-$graphLabels = [];
-$graphData = [];
+$graphLabels = []; // For job posts chart
+$graphData = [];   // For job posts chart
 $users = [];
-$jobToEdit = null; // For edit_job view
-$userToEdit = null; // For edit_user view
-$whatsappMessage = null; // Initialize for generate_message view
-$telegramMessage = null; // Initialize for generate_message view
+$jobToEdit = null;
+$userToEdit = null;
+$whatsappMessage = null;
+$telegramMessage = null;
+$filteredUsersCountForManager = 0;
+
+// New variables for enhanced dashboard
+$userCountsByRole = [];
+$userCountsByStatus = [];
+$recentJobs = [];
+$recentMessages = [];
+$recentPendingUsers = [];
+
+// New variables for achievements view
+$achievementsChartData = [];
+$achievementsChartLabels = [];
+
+// New variables for user performance tracking
+$userPerformanceOverall = [];
+$userPerformanceLast30Days = [];
+$userPerformanceToday = [];
+$performanceLeaderboard = [];
+$mostViewedJobs = []; // New variable for most viewed jobs
+
+$loggedInUserRole = $_SESSION['admin_role'] ?? 'user';
+$loggedInUserId = $_SESSION['admin_username'] ?? null;
 
 // Filepath for the daily visitor counter
 $visitorCounterFile = __DIR__ . '/../data/daily_visitors.json';
 
-// Function to retrieve daily visitor data
 function getDailyVisitorData($filePath) {
-    if (!file_exists($filePath)) {
-        return [];
-    }
-
+    if (!file_exists($filePath)) return [];
     $visitorData = json_decode(file_get_contents($filePath), true);
-    if (!is_array($visitorData)) {
-        return [];
-    }
-
-    return $visitorData;
+    return is_array($visitorData) ? $visitorData : [];
 }
 
-// Get the daily visitor data
 $dailyVisitorData = getDailyVisitorData($visitorCounterFile);
 
-// Prepare data for the visitors graph (last 30 days)
 $visitorGraphLabels = [];
 $visitorGraphData = [];
 for ($i = 29; $i >= 0; $i--) {
     $date = date('Y-m-d', strtotime("-$i days"));
-    $visitorGraphLabels[] = date('M d', strtotime($date)); // Format as "Jan 01"
-    $visitorGraphData[] = $dailyVisitorData[$date] ?? 0; // Use 0 if no data for the date
+    $visitorGraphLabels[] = date('M d', strtotime($date));
+    $visitorGraphData[] = $dailyVisitorData[$date] ?? 0;
 }
-
-// Calculate total views (unique visitors)
 $totalViews = array_sum($dailyVisitorData);
-
-// Calculate monthly visitors (current month only)
 $currentMonth = date('Y-m');
 $monthlyVisitors = 0;
 foreach ($dailyVisitorData as $date => $count) {
-    if (strpos($date, $currentMonth) === 0) {
-        $monthlyVisitors += $count;
-    }
+    if (strpos($date, $currentMonth) === 0) $monthlyVisitors += $count;
 }
 
 // Load necessary data or perform actions based on the requested view
 switch ($requestedView) {
     case 'dashboard':
-        // Load data for dashboard view
-        $allJobs = loadJobs($jobsFilename); // Load jobs for calculating job counts
-        $feedbackMessages = loadFeedbackMessages($feedbackFilename); // Load messages for counts
-        $users = loadUsers($usersFilename); // Load users for counts (optional, but good to have data loaded consistently)
+        $allJobs = loadJobs($jobsFilename);
+        $feedbackMessages = loadFeedbackMessages($feedbackFilename);
+        $users = loadUsers($usersFilename);
+        $loggedInUserObject = findUserByUsername($loggedInUserId, $usersFilename);
 
-        // Calculate jobs posted today and this month
-        $jobsTodayCount = 0;
-        $jobsMonthlyCount = 0;
-        $now = time();
-        $startOfToday = strtotime('today midnight'); // Start of today's timestamp
-        $startOfMonth = strtotime('first day of this month midnight'); // Start of this month's timestamp
-
-        if (!empty($allJobs)) {
-            foreach ($allJobs as $job) {
-                // Use 'posted_on_unix_ts' if available, otherwise try to parse 'posted_on'
-                 $postedTimestamp = 0; // Default to 0 or a value that won't match the condition
-                 if (isset($job['posted_on_unix_ts']) && is_numeric($job['posted_on_unix_ts'])) {
-                      $postedTimestamp = (int)$job['posted_on_unix_ts'];
-                 } elseif (isset($job['posted_on']) && is_string($job['posted_on']) && !empty($job['posted_on'])) {
-                      $parsedTime = strtotime($job['posted_on']);
-                      if ($parsedTime !== false) {
-                          $postedTimestamp = $parsedTime;
-                      } else {
-                          // Log error if date parsing fails
-                          error_log("Admin Dashboard Error: Could not parse date for job ID " . ($job['id'] ?? 'N/A') . ": " . ($job['posted_on'] ?? 'N/A')); // Log job ID and posted_on if available
-                      }
-                 }
-
-                if ($postedTimestamp > 0 && $postedTimestamp >= $startOfToday) {
-                    $jobsTodayCount++;
-                }
-                if ($postedTimestamp > 0 && $postedTimestamp >= $startOfMonth) {
-                    $jobsMonthlyCount++;
+        if (in_array($loggedInUserRole, $allRegionalManagerRoles)) {
+            $managerRegion = $loggedInUserObject['region'] ?? null;
+            if ($managerRegion) {
+                foreach ($users as $user) {
+                    if (getRoleParts($user['role'] ?? '')['base_role'] === 'User' &&
+                        ($user['region'] ?? null) === $managerRegion &&
+                        ($user['reports_to_manager_username'] ?? null) === $loggedInUserId) {
+                        $filteredUsersCountForManager++;
+                    }
                 }
             }
         }
 
-         // Prepare data for the daily job posts chart (last 30 days)
-         $jobCountsByDay = array_fill(0, 30, 0); // Initialize counts for the last 30 days
-         $graphLabels = [];
+        foreach ($users as $user) {
+            $role = $user['role'] ?? 'unknown_role';
+            $status = $user['status'] ?? 'unknown_status';
+            $userCountsByRole[$role] = ($userCountsByRole[$role] ?? 0) + 1;
+            $userCountsByStatus[$status] = ($userCountsByStatus[$status] ?? 0) + 1;
+        }
+        arsort($userCountsByRole);
 
-         // Generate labels for the last 30 days (from 29 days ago to today)
+        $sortedJobs = $allJobs;
+        usort($sortedJobs, function ($a, $b) {
+            return ($b['posted_on_unix_ts'] ?? 0) - ($a['posted_on_unix_ts'] ?? 0);
+        });
+        $recentJobs = array_slice($sortedJobs, 0, 5);
+
+        if ($loggedInUserRole === 'super_admin' || in_array($loggedInUserRole, $allRegionalAdminRoles)) {
+            $unreadMessages = array_filter($feedbackMessages, function ($msg) {
+                return !($msg['read'] ?? true);
+            });
+            usort($unreadMessages, function ($a, $b) {
+                return ($b['timestamp'] ?? 0) - ($a['timestamp'] ?? 0);
+            });
+            $recentMessages = array_slice($unreadMessages, 0, 5);
+        }
+
+        $pendingUsers = array_filter($users, function ($user) {
+            return ($user['status'] ?? '') === 'pending_approval';
+        });
+        $recentPendingUsers = array_slice($pendingUsers, 0, 5);
+
+        $jobsToProcess = $allJobs;
+        if (!($loggedInUserRole === 'super_admin' || in_array($loggedInUserRole, $allRegionalAdminRoles))) {
+            $jobsToProcess = array_filter($allJobs, function ($job) use ($loggedInUserId) {
+                return isset($job['posted_by_user_id']) && $job['posted_by_user_id'] === $loggedInUserId;
+            });
+        }
+
+        $jobsTodayCount = 0;
+        $jobsMonthlyCount = 0;
+        $now = time();
+        $startOfToday = strtotime('today midnight');
+        $startOfMonth = strtotime('first day of this month midnight');
+
+        if (!empty($jobsToProcess)) {
+            foreach ($jobsToProcess as $job) {
+                 $postedTimestamp = $job['posted_on_unix_ts'] ?? (isset($job['posted_on']) ? strtotime($job['posted_on']) : 0);
+                 if ($postedTimestamp >= $startOfToday) $jobsTodayCount++;
+                 if ($postedTimestamp >= $startOfMonth) $jobsMonthlyCount++;
+            }
+        }
+
+         $jobCountsByDay = array_fill(0, 30, 0);
+         $graphLabels = [];
          for ($i = 29; $i >= 0; $i--) {
              $graphLabels[] = date('M d', strtotime("-$i days"));
          }
-
-         if (!empty($allJobs)) {
-             $now = time(); // Get current time once
-             foreach ($allJobs as $job) {
-                  $postedTimestamp = 0; // Default to 0 or a value that won't match the condition
-                  if (isset($job['posted_on_unix_ts']) && is_numeric($job['posted_on_unix_ts'])) {
-                       $postedTimestamp = (int)$job['posted_on_unix_ts'];
-                  } elseif (isset($job['posted_on']) && is_string($job['posted_on']) && !empty($job['posted_on'])) {
-                       $parsedTime = strtotime($job['posted_on']);
-                       if ($parsedTime !== false) {
-                           $postedTimestamp = $parsedTime;
-                       } else {
-                           // Log error if date parsing fails - already logged above, but can add here too if needed
-                       }
-                  }
-
-                  if ($postedTimestamp > 0) { // Ensure timestamp is valid and positive
-                      // Calculate the number of days ago the job was posted
+         if (!empty($jobsToProcess)) {
+             foreach ($jobsToProcess as $job) {
+                  $postedTimestamp = $job['posted_on_unix_ts'] ?? (isset($job['posted_on']) ? strtotime($job['posted_on']) : 0);
+                  if ($postedTimestamp > 0) {
                       $daysAgo = floor(($now - $postedTimestamp) / (24 * 60 * 60));
-
-                      // If posted within the last 30 days (0 to 29 days ago)
                       if ($daysAgo >= 0 && $daysAgo < 30) {
-                          // Increment the count for the corresponding day (index 0 is today, index 29 is 29 days ago)
                           $jobCountsByDay[29 - $daysAgo]++;
                       }
                   }
              }
          }
          $graphData = $jobCountsByDay;
+        // --- User Performance Tracking Data ---
+        // This block was previously outside the 'dashboard' case due to a misplaced 'break;'
+        // Initialize performance arrays with all users
+        foreach ($users as $user) {
+            $username = $user['username'];
+            $userPerformanceOverall[$username] = ['name' => $user['display_name'] ?? $username, 'count' => 0];
+            $userPerformanceLast30Days[$username] = ['name' => $user['display_name'] ?? $username, 'count' => 0];
+            $userPerformanceToday[$username] = ['name' => $user['display_name'] ?? $username, 'count' => 0];
+        }
 
-        break;
+        $thirtyDaysAgoTimestamp = strtotime('-30 days midnight');
+        $todayTimestamp = strtotime('today midnight');
+
+        foreach ($allJobs as $job) {
+            $postedBy = $job['posted_by_user_id'] ?? null;
+            if ($postedBy && isset($userPerformanceOverall[$postedBy])) {
+                // Overall count
+                $userPerformanceOverall[$postedBy]['count']++;
+
+                // Last 30 days count
+                $jobTimestamp = $job['posted_on_unix_ts'] ?? 0;
+                if ($jobTimestamp >= $thirtyDaysAgoTimestamp) {
+                    $userPerformanceLast30Days[$postedBy]['count']++;
+                }
+
+                // Today's count
+                if ($jobTimestamp >= $todayTimestamp) {
+                    $userPerformanceToday[$postedBy]['count']++;
+                }
+            }
+        }
+
+        // Sort for leaderboard (last 30 days)
+        $performanceLeaderboard = $userPerformanceLast30Days;
+        uasort($performanceLeaderboard, function ($a, $b) {
+            return $b['count'] - $a['count'];
+        });
+        $performanceLeaderboard = array_slice($performanceLeaderboard, 0, 5, true); // Top 5
+
+        // Filter out users with 0 posts for cleaner display in lists, or keep them to show all users
+        // For now, we'll keep all users in the main lists and let the view decide if it wants to filter.
+
+        // --- Most Viewed Jobs Data ---
+        $jobViewsFilename = __DIR__ . '/../data/job_views.json'; // Path relative to fetch_content.php
+        $jobViewsData = []; // Initialize
+        error_log("[FETCH_CONTENT_DEBUG] Attempting to load job views data from: " . $jobViewsFilename);
+
+        if (file_exists($jobViewsFilename)) {
+            $jobViewsJson = file_get_contents($jobViewsFilename);
+            if ($jobViewsJson !== false) {
+                $jobViewsData = json_decode($jobViewsJson, true);
+                if (!is_array($jobViewsData)) {
+                    error_log("[FETCH_CONTENT_ERROR] job_views.json was not a valid array after decoding. Content: " . $jobViewsJson);
+                    $jobViewsData = [];
+                }
+            } else {
+                error_log("[FETCH_CONTENT_ERROR] Could not read job_views.json, though it exists.");
+            }
+        } else {
+            error_log("[FETCH_CONTENT_INFO] job_views.json does not exist at " . $jobViewsFilename);
+        }
+        error_log("[FETCH_CONTENT_DEBUG] Loaded jobViewsData count: " . count($jobViewsData));
+        error_log("[FETCH_CONTENT_DEBUG] Loaded allJobs count: " . count($allJobs)); // $allJobs is loaded earlier in the dashboard case
+
+        if (!empty($jobViewsData) && !empty($allJobs)) {
+            arsort($jobViewsData); // Sort by view count descending
+            $topJobIdsAndCounts = array_slice($jobViewsData, 0, 5, true); // Get top 5 job IDs and their counts
+            error_log("[FETCH_CONTENT_DEBUG] Top Job IDs and Counts from job_views.json: " . print_r($topJobIdsAndCounts, true));
+            
+            $anyMatchFound = false; // Flag to check if at least one job ID matched
+            // Fetch job titles for these IDs
+            foreach ($topJobIdsAndCounts as $jobId => $viewCount) {
+                $foundJobInAllJobs = false;
+                foreach ($allJobs as $job) { // $allJobs should be available from the dashboard case
+                    if (($job['id'] ?? '') === $jobId) {
+                        $mostViewedJobs[] = ['title' => $job['title'] ?? 'Unknown Job', 'company' => $job['company'] ?? '', 'views' => $viewCount];
+                        $foundJobInAllJobs = true;
+                        $anyMatchFound = true; // A match was found
+                        break;
+                    }
+                }
+                if (!$foundJobInAllJobs) {
+                    error_log("[FETCH_CONTENT_WARNING] Job ID '" . $jobId . "' (views: " . $viewCount . ") from job_views.json was not found in allJobs list.");
+                }
+            }
+            if (!$anyMatchFound && !empty($topJobIdsAndCounts)) { // If we processed top IDs but found no matches at all
+                $sampleJobIdsFromAllJobs = [];
+                $limit = 0;
+                foreach($allJobs as $job) {
+                    if ($limit < 5) {
+                        $sampleJobIdsFromAllJobs[] = $job['id'] ?? 'NO_ID_FIELD_IN_JOBS_JSON';
+                        $limit++;
+                    } else {
+                        break;
+                    }
+                }
+                error_log("[FETCH_CONTENT_INFO] No matches found between job_views.json IDs and allJobs IDs. Sample IDs from job_views.json (top 5): " . print_r(array_keys($topJobIdsAndCounts), true) . " Sample IDs from allJobs (first 5): " . print_r($sampleJobIdsFromAllJobs, true));
+            }
+        } else {
+            if (empty($jobViewsData)) error_log("[FETCH_CONTENT_INFO] jobViewsData is empty. Cannot process most viewed jobs.");
+            if (empty($allJobs)) error_log("[FETCH_CONTENT_INFO] allJobs is empty. Cannot process most viewed jobs.");
+        }
+        error_log("[FETCH_CONTENT_DEBUG] Final mostViewedJobs count for dashboard: " . count($mostViewedJobs));
+        break; // Correct position for the break statement for case 'dashboard'
+
     case 'manage_jobs':
     case 'edit_job':
-        // Load all jobs for manage or specific job for edit
         $allJobs = loadJobs($jobsFilename);
         if ($requestedView === 'edit_job' && isset($_GET['id'])) {
             $jobId = $_GET['id'];
-            // Find the job to edit
             $jobToEdit = null;
             if (!empty($allJobs)) {
                 foreach ($allJobs as $job) {
@@ -183,7 +302,6 @@ switch ($requestedView) {
                     }
                 }
             }
-            // If job not found, set status message and exit
             if ($jobToEdit === null) {
                  echo '<p class="status-message error">Error: Job not found for editing.</p>';
                  error_log("Admin Edit Job Error: Job ID not found for editing via AJAX: " . ($jobId ?? 'N/A'));
@@ -191,36 +309,45 @@ switch ($requestedView) {
             }
         }
         break;
+
     case 'edit_user':
-        // Load user data for editing
         $usernameToEdit = $_GET['username'] ?? null;
         if ($usernameToEdit) {
             $userToEdit = findUserByUsername($usernameToEdit, $usersFilename);
             if (!$userToEdit) {
                 echo '<p class="status-message error">Error: User not found for editing.</p>';
-                error_log("Admin Fetch Content Error: User '" . $usernameToEdit . "' not found for editing via AJAX.");
+                error_log("Admin Fetch Content Error: User '" . htmlspecialchars($usernameToEdit) . "' not found for editing via AJAX.");
                 exit;
             }
-            $loggedInUserRole = $_SESSION['admin_role'] ?? 'user';
-            $loggedInUsername = $_SESSION['admin_username'] ?? '';
+
             $targetUserRole = $userToEdit['role'] ?? 'user';
+            $loggedInUserObject = findUserByUsername($loggedInUserId, $usersFilename);
+            $loggedInUserRegion = $loggedInUserObject['region'] ?? null;
+            $targetUserRegion = $userToEdit['region'] ?? null;
+            $targetUserBaseRole = getRoleParts($targetUserRole)['base_role'];
 
             $canAccessView = false;
             if ($loggedInUserRole === 'super_admin') {
                 $canAccessView = true;
-            } elseif ($loggedInUserRole === 'admin') {
-                if ($targetUserRole !== 'super_admin') {
+            } elseif (in_array($loggedInUserRole, $allRegionalAdminRoles)) {
+                if (in_array($userToEdit['role'], $allRegionalAdminRoles)) {
+                    $canAccessView = true;
+                } elseif ($targetUserRegion === $loggedInUserRegion && ($targetUserBaseRole === 'Manager' || $targetUserBaseRole === 'User') &&
+                           (($userToEdit['reports_to_admin_username'] ?? null) === $loggedInUserId ||
+                            ($userToEdit['reports_to_manager_username'] && (findUserByUsername($userToEdit['reports_to_manager_username'], $usersFilename)['reports_to_admin_username'] ?? null) === $loggedInUserId))) {
                     $canAccessView = true;
                 }
-            } elseif ($loggedInUserRole === 'user_group_manager') {
-                if ($targetUserRole === 'user') {
+            } elseif (in_array($loggedInUserRole, $allRegionalManagerRoles)) {
+                if ($targetUserBaseRole === 'User' &&
+                    ($userToEdit['reports_to_manager_username'] ?? null) === $loggedInUserId &&
+                    $targetUserRegion === $loggedInUserRegion) {
                     $canAccessView = true;
                 }
             }
 
             if (!$canAccessView) {
                 echo '<p class="status-message error">Access Denied: You do not have permission to view the edit page for this user.</p>';
-                error_log("Admin Fetch Content Access Denied: User '" . $loggedInUsername . "' (role: " . $loggedInUserRole . ") attempted to load edit page for user '" . ($userToEdit['username'] ?? 'N/A') . "' (role: " . $targetUserRole . ") via AJAX.");
+                error_log("Admin Fetch Content Access Denied: User '" . htmlspecialchars($loggedInUserId) . "' (role: " . htmlspecialchars($loggedInUserRole) . ") attempted to load edit page for user '" . htmlspecialchars($userToEdit['username'] ?? 'N/A') . "' (role: " . htmlspecialchars($targetUserRole) . ") via AJAX.");
                 exit;
             }
         } else {
@@ -228,120 +355,143 @@ switch ($requestedView) {
             exit;
         }
         break;
+
     case 'profile':
-         // User data is already in session, no extra loading needed here
+        $userToEdit = findUserByUsername($loggedInUserId, $usersFilename);
         break;
+
     case 'messages':
-        // Load feedback messages
+        if (!($loggedInUserRole === 'super_admin' || in_array($loggedInUserRole, $allRegionalAdminRoles))) {
+            echo '<p class="status-message error">Access Denied: You do not have permission to view messages.</p>';
+            error_log("Admin Fetch Content Access Denied: User '" . htmlspecialchars($loggedInUserId) . "' (role: " . htmlspecialchars($loggedInUserRole) . ") attempted to access 'messages' view via AJAX.");
+            exit;
+        }
         $feedbackMessages = loadFeedbackMessages($feedbackFilename);
         if (!empty($feedbackMessages)) {
             usort($feedbackMessages, function($a, $b) {
-                $ts_a = $a['timestamp'] ?? 0;
-                $ts_b = $b['timestamp'] ?? 0;
-                return $ts_b - $ts_a;
+                return ($b['timestamp'] ?? 0) - ($a['timestamp'] ?? 0);
             });
         }
         break;
 
     case 'generate_message':
-        // --- Generate WhatsApp Message ---
-        $whatsappMessage = null; // Ensure it's null before attempting generation
-        $whatsappLogMessage = "[WHATSAPP_GEN_DEBUG] Starting WhatsApp message generation.";
-        ob_start(); // Start output buffering for WhatsApp message
+        if (!($loggedInUserRole === 'super_admin' || in_array($loggedInUserRole, $allRegionalAdminRoles))) {
+            echo '<p class="status-message error">Access Denied: You do not have permission to generate posts.</p>';
+            error_log("Admin Fetch Content Access Denied: User '" . htmlspecialchars($loggedInUserId) . "' (role: " . htmlspecialchars($loggedInUserRole) . ") attempted to access 'generate_message' view via AJAX.");
+            exit;
+        }
+        
+        $whatsappMessage = null;
+        ob_start();
         if (file_exists(__DIR__ . '/generate_whatsapp_message.php')) {
-            $whatsappLogMessage .= " Found generate_whatsapp_message.php.";
             require __DIR__ . '/generate_whatsapp_message.php';
-        } else {
-            $whatsappLogMessage .= " generate_whatsapp_message.php NOT FOUND in " . __DIR__ . ".";
-            // echo "Error: WhatsApp message generation script not found."; // Optionally output error for view
         }
         $whatsappMessageContent = ob_get_clean();
-        $whatsappLogMessage .= " Raw output: '" . preg_replace('/\s+/', ' ', trim($whatsappMessageContent)) . "'."; // Log trimmed raw output
-
-        // Check if the script outputted a valid message (not an error string from the script itself)
-        if (empty(trim($whatsappMessageContent))) {
-            $whatsappLogMessage .= " Output is empty. \$whatsappMessage remains null.";
-        } elseif (strpos(strtolower($whatsappMessageContent), 'error') !== false || strpos(strtolower($whatsappMessageContent), 'could not generate') !== false) {
-            $whatsappLogMessage .= " Output contains error keywords. \$whatsappMessage remains null.";
-        } else {
+        if (!empty(trim($whatsappMessageContent)) && strpos(strtolower($whatsappMessageContent), 'error') === false && strpos(strtolower($whatsappMessageContent), 'could not generate') === false) {
             $whatsappMessage = $whatsappMessageContent;
-            $whatsappLogMessage .= " Output seems valid. \$whatsappMessage SET.";
         }
-        error_log($whatsappLogMessage);
 
-        // --- Generate Telegram Message ---
-        $telegramMessage = null; // Ensure it's null
-        $telegramLogMessage = "[TELEGRAM_GEN_DEBUG] Starting Telegram message generation.";
-        ob_start(); // Start output buffering for Telegram message
+        $telegramMessage = null;
+        ob_start();
         if (file_exists(__DIR__ . '/generate_telegram_message.php')) {
-            $telegramLogMessage .= " Found generate_telegram_message.php.";
             require __DIR__ . '/generate_telegram_message.php';
-        } else {
-            $telegramLogMessage .= " generate_telegram_message.php NOT FOUND in " . __DIR__ . ".";
-            // echo "Error: Telegram message generation script not found."; // Optionally output error for view
         }
         $telegramMessageContent = ob_get_clean();
-        $telegramLogMessage .= " Raw output: '" . preg_replace('/\s+/', ' ', trim($telegramMessageContent)) . "'."; // Log trimmed raw output
-
-        // Check if the script outputted a valid message
-        if (empty(trim($telegramMessageContent))) {
-            $telegramLogMessage .= " Output is empty. \$telegramMessage remains null.";
-        } elseif (strpos(strtolower($telegramMessageContent), 'error') !== false || strpos(strtolower($telegramMessageContent), 'could not generate') !== false) {
-            $telegramLogMessage .= " Output contains error keywords. \$telegramMessage remains null.";
-        } else {
+        if (!empty(trim($telegramMessageContent)) && strpos(strtolower($telegramMessageContent), 'error') === false && strpos(strtolower($telegramMessageContent), 'could not generate') === false) {
             $telegramMessage = $telegramMessageContent;
-            $telegramLogMessage .= " Output seems valid. \$telegramMessage SET.";
         }
-        error_log($telegramLogMessage);
         break;
 
     case 'manage_users':
+        if (!($loggedInUserRole === 'super_admin' || in_array($loggedInUserRole, $allRegionalAdminRoles) || in_array($loggedInUserRole, $allRegionalManagerRoles))) {
+            echo '<p class="status-message error">Access Denied: You do not have permission to manage users.</p>';
+            error_log("Admin Fetch Content Access Denied: User '" . htmlspecialchars($loggedInUserId) . "' (role: " . htmlspecialchars($loggedInUserRole) . ") attempted to access 'manage_users' view via AJAX.");
+            exit;
+        }
          $users = loadUsers($usersFilename);
          break;
 
     case 'post_job':
         break;
 
+    case 'achievements':
+        $allJobs = loadJobs($jobsFilename);
+        $allUsers = loadUsers($usersFilename);
+        $userJobCountsByDate = [];
+        $rupeesPerJob = 3;
+
+        for ($i = 29; $i >= 0; $i--) {
+            $achievementsChartLabels[] = date('M d', strtotime("-$i days"));
+        }
+
+        foreach ($allJobs as $job) {
+            $postedByUserId = $job['posted_by_user_id'] ?? null;
+            if (!$postedByUserId) continue;
+
+            $postedTimestamp = $job['posted_on_unix_ts'] ?? (isset($job['posted_on']) ? strtotime($job['posted_on']) : 0);
+            if ($postedTimestamp === 0) continue;
+
+            $jobDate = date('Y-m-d', $postedTimestamp);
+
+            if (!isset($userJobCountsByDate[$postedByUserId])) {
+                $userJobCountsByDate[$postedByUserId] = [];
+            }
+            if (!isset($userJobCountsByDate[$postedByUserId][$jobDate])) {
+                $userJobCountsByDate[$postedByUserId][$jobDate] = 0;
+            }
+            $userJobCountsByDate[$postedByUserId][$jobDate]++;
+        }
+
+        $userDisplayNames = array_column($allUsers, 'display_name', 'username');
+        $colorIndex = 0;
+        $baseColors = [
+            'rgba(255, 99, 132, 0.7)', 'rgba(54, 162, 235, 0.7)', 'rgba(255, 206, 86, 0.7)',
+            'rgba(75, 192, 192, 0.7)', 'rgba(153, 102, 255, 0.7)', 'rgba(255, 159, 64, 0.7)'
+        ];
+
+        foreach ($userJobCountsByDate as $userId => $dates) {
+            $userDisplayName = $userDisplayNames[$userId] ?? $userId;
+            $userDataPoints = [];
+            foreach ($achievementsChartLabels as $labelDate) {
+                $checkDate = date('Y-m-d', strtotime($labelDate . " " . date("Y"))); // Add current year for correct strtotime parsing
+                $jobsCount = $dates[$checkDate] ?? 0;
+                $userDataPoints[] = $jobsCount * $rupeesPerJob;
+            }
+            $achievementsChartData[] = [
+                'label' => $userDisplayName,
+                'data' => $userDataPoints,
+                'borderColor' => $baseColors[$colorIndex % count($baseColors)],
+                'backgroundColor' => $baseColors[$colorIndex % count($baseColors)],
+                'fill' => false,
+                'tension' => 0.1
+            ];
+            $colorIndex++;
+        }
+        break;
+
     default:
         echo '<p class="status-message error">Error: Invalid view specified.</p>';
-        error_log("Admin Error: Invalid view requested via AJAX: " . $requestedView);
+        error_log("Admin Error: Invalid view requested via AJAX: " . htmlspecialchars($requestedView));
         exit;
 }
-
-// Start output buffering again to capture the specific view's content
-// Note: ob_start() was called at the very top. If any of the cases above did an echo and exit,
-// this part won't be reached. The generate_message case was modified to not exit.
-// If ob_get_clean() was called in a case, we might need to ob_start() again if we want to capture the view.
-// However, the standard flow is: top ob_start, switch prepares vars, then view is included, then final ob_get_clean.
-// The ob_start/ob_get_clean within generate_message case is for capturing *those specific script outputs* into variables.
-
-// The main output buffer is still active from the top of the script.
-// We will now include the view file into this buffer.
 
 $viewFileSuffix = '_view.php';
 $viewFilePath = __DIR__ . '/views/' . $requestedView . $viewFileSuffix;
 
-$allowedFetchViews = ['dashboard', 'manage_jobs', 'edit_job', 'edit_user', 'profile', 'messages', 'generate_message', 'manage_users', 'post_job'];
+$allowedFetchViews = ['dashboard', 'manage_jobs', 'edit_job', 'edit_user', 'profile', 'messages', 'generate_message', 'manage_users', 'post_job', 'achievements'];
 
 if (!in_array($requestedView, $allowedFetchViews)) {
      echo '<p class="status-message error">Error: Access denied or view not available.</p>';
-     error_log("Admin Error: fetch_content.php - View '" . $requestedView . "' not in \$allowedFetchViews. Path attempted: " . $viewFilePath);
+     error_log("Admin Error: fetch_content.php - View '" . htmlspecialchars($requestedView) . "' not in \$allowedFetchViews. Path attempted: " . htmlspecialchars($viewFilePath));
 } elseif (file_exists($viewFilePath)) {
     require $viewFilePath;
 } else {
     echo '<p class="status-message error">Error: View file not found.</p>';
-    error_log("Admin Error: fetch_content.php - Requested view file NOT FOUND: " . $viewFilePath . " (Actual \$requestedView value: '" . $requestedView . "')");
+    error_log("Admin Error: fetch_content.php - Requested view file NOT FOUND: " . htmlspecialchars($viewFilePath) . " (Actual \$requestedView value: '" . htmlspecialchars($requestedView) . "')");
 }
 
-// Get the buffered output (which now includes the view's content) and clean the buffer
 $viewContent = ob_get_clean();
-
-// Output the captured content
 echo $viewContent;
-
-// Flush the output buffer (though ob_get_clean also does this)
-// ob_end_flush(); // Not strictly necessary after ob_get_clean if that's the last buffer op
-
 exit;
 
 ?>

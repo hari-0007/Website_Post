@@ -33,6 +33,9 @@ $forgotPasswordMessage = ''; // Specific variable for forgot password messages o
 $loggedIn = isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true;
 $loggedInUserRole = $_SESSION['admin_role'] ?? 'user'; // Default role if not set
 $loggedInUsername = $_SESSION['admin_username'] ?? '';
+$allRegionalAdminRoles = ['India_Admin', 'Middle_East_Admin', 'USA_Admin', 'Europe_Admin']; // Define regional admin roles
+$allRegionalManagerRoles = ['India_Manager', 'Middle_East_Manager', 'USA_Manager', 'Europe_Manager']; // Define regional manager roles
+
 
 error_log("--- [CRITICAL_DEBUG] dashboard.php: Top of script. Raw GET: " . print_r($_GET, true)); // Log raw GET
 
@@ -46,7 +49,7 @@ error_log("[DEBUG] dashboard.php: Initial \$requestedView (from \$_GET['view'] o
 
 // Validate requested view if logged in
 // 'post_job' view is removed from allowed views as its navigation link is removed, but fetchable via AJAX
-$allowedViews = ['dashboard', 'manage_jobs', 'edit_job', 'edit_user', 'profile', 'messages', 'generate_message', 'manage_users', 'post_job'];
+$allowedViews = ['dashboard', 'manage_jobs', 'edit_job', 'edit_user', 'profile', 'messages', 'generate_message', 'manage_users', 'post_job', 'achievements'];
 error_log("[CRITICAL_DEBUG] dashboard.php: Just before \$allowedViews check. \$requestedView = '" . $requestedView . "'. \$loggedIn = " . ($loggedIn ? 'true' : 'false'));
 
 if ($loggedIn && $requestedView !== 'login') { // Ensure we don't try to validate 'login' if somehow requested while logged in
@@ -58,11 +61,33 @@ if ($loggedIn && $requestedView !== 'login') { // Ensure we don't try to validat
             // if a certain condition isn't met, rather than this specific fallback.
     }
     // Authorization check for manage_users view
-    if ($requestedView === 'manage_users' && !in_array($loggedInUserRole, ['super_admin', 'admin', 'user_group_manager'])) {
+    // Super Admin, Regional Admins, and Regional Managers can access manage_users view
+    if ($requestedView === 'manage_users' && !($loggedInUserRole === 'super_admin' || in_array($loggedInUserRole, $allRegionalAdminRoles) || in_array($loggedInUserRole, $allRegionalManagerRoles))) {
         $_SESSION['admin_status'] = ['message' => 'Access Denied: You do not have permission to manage users.', 'type' => 'error'];
         header('Location: dashboard.php?view=dashboard'); // Redirect to a safe page
         exit;
     }
+    // Authorization check for messages view: Super Admin and Regional Admins
+    if ($requestedView === 'messages' && !($loggedInUserRole === 'super_admin' || in_array($loggedInUserRole, $allRegionalAdminRoles))) {
+        $_SESSION['admin_status'] = ['message' => 'Access Denied: You do not have permission to view messages.', 'type' => 'error'];
+        header('Location: dashboard.php?view=dashboard'); // Redirect to dashboard
+        exit;
+    }
+
+    // Authorization check for generate_message view: Super Admin and Regional Admins
+    if ($requestedView === 'generate_message' && !($loggedInUserRole === 'super_admin' || in_array($loggedInUserRole, $allRegionalAdminRoles))) {
+        $_SESSION['admin_status'] = ['message' => 'Access Denied: You do not have permission to generate posts.', 'type' => 'error']; // Message for unauthorized access
+        header('Location: dashboard.php?view=dashboard');
+        exit;
+    }
+    // Authorization check for achievements view: All logged-in users can see it for now.
+    // You might want to restrict this later based on roles if needed.
+    // if ($requestedView === 'achievements' && !($loggedInUserRole === 'super_admin' || in_array($loggedInUserRole, $allRegionalAdminRoles))) {
+    //     $_SESSION['admin_status'] = ['message' => 'Access Denied: You do not have permission to view achievements.', 'type' => 'error'];
+    //     header('Location: dashboard.php?view=dashboard');
+    //     exit;
+    // }
+
 }
 
 // Calculate unread messages count if logged in (moved after $requestedView is determined and validated)
@@ -183,21 +208,25 @@ require_once __DIR__ . '/partials/header.php';
             <a href="?view=dashboard" class="<?= $loggedIn && $requestedView === 'dashboard' ? 'active' : '' ?>">Dashboard</a>
             <?php /* Removed Post New Job Tab: <a href="dashboard.php?view=post_job" class="<?= $loggedIn && $requestedView === 'post_job' ? 'active' : '' ?>">Post New Job</a> */ ?>
             <a href="?view=manage_jobs" class="<?= $loggedIn && ($requestedView === 'manage_jobs' || $requestedView === 'edit_job') ? 'active' : '' ?>">Manage Jobs</a>
+            <?php if ($loggedInUserRole === 'super_admin' || in_array($loggedInUserRole, $allRegionalAdminRoles)): ?>
                             <a href="?view=messages">
                     Messages
                     <?php if (isset($unreadMessagesCount) && $unreadMessagesCount > 0): ?>
                         <span class="unread-badge"><?= htmlspecialchars($unreadMessagesCount) ?></span>
                     <?php endif; ?>
                 </a>
-             <a href="?view=generate_message" class="<?= $loggedIn && $requestedView === 'generate_message' ? 'active' : '' ?>">Generate Post</a>
+                <a href="?view=achievements" class="<?= $loggedIn && $requestedView === 'achievements' ? 'active' : '' ?>">Achievements</a>
+
+                <a href="?view=generate_message" class="<?= $loggedIn && $requestedView === 'generate_message' ? 'active' : '' ?>">Generate Post</a>
+            <?php endif; ?>
             <div class="profile-dropdown">
                 <a href="javascript:void(0);"><?= htmlspecialchars($displayName) ?> ▼</a>
                 <div class="profile-dropdown-content">
                     <a href="dashboard.php?view=profile" class="<?= $loggedIn && $requestedView === 'profile' ? 'active' : '' ?>">Manage Profile</a>
-                    <?php if ($loggedInUserRole === 'super_admin' || $loggedInUserRole === 'admin' || $loggedInUserRole === 'user_group_manager'): ?>
+                    <?php if ($loggedInUserRole === 'super_admin' || in_array($loggedInUserRole, $allRegionalAdminRoles) || in_array($loggedInUserRole, $allRegionalManagerRoles)): ?>
                          <a href="dashboard.php?view=manage_users" class="<?= $loggedIn && $requestedView === 'manage_users' ? 'active' : '' ?>">User Manager</a>
                     <?php endif; ?>
-                    <a href="auth.php?action=logout">Logout</a>
+                    <a href="auth.php?action=logout">Logout</a> <?php // Logout link ?>
                 </div>
             </div>
         </div>

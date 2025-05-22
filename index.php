@@ -1709,6 +1709,27 @@ if ($isAjaxRequest) {
                 return; // Stop further execution for this share attempt
             }
             const baseUrl = window.location.origin + window.location.pathname;
+
+            // Increment share count
+            fetch('increment_job_share.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ job_id: jobId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('Share count incremented for job ID:', jobId);
+                } else {
+                    console.error('Failed to increment share count:', data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error sending share increment request:', error);
+            });
+
             currentJobUrlForModal = `${baseUrl}?job_id=${encodeURIComponent(jobId)}`;
             // currentJobTitleForModal = title;
             // currentJobCompanyForModal = company;
@@ -1937,6 +1958,29 @@ if ($isAjaxRequest) {
                             }
                         }
                     }, 350); // Adjust timeout if needed, depends on scrollIntoView's 'smooth' duration
+                    // Increment view count if expanding
+                    const jobId = jobCard.dataset.jobId;
+                    if (jobId) {
+                        fetch('increment_job_view.php', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ job_id: jobId })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                console.log('View count incremented for job ID:', jobId);
+                            } else {
+                                console.error('Failed to increment view count:', data.message);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error sending view increment request:', error);
+                        });
+                    }
+                    
                 } else {
                     details.style.display = 'none';
                     summary.style.display = 'block'; // Or 'flex', 'grid' etc.

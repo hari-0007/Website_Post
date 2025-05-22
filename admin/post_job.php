@@ -8,6 +8,9 @@ session_start(); // Start the session to access session variables
 require_once __DIR__ . '/includes/config.php';
 require_once __DIR__ . '/includes/job_helpers.php';
 
+$loggedInUsernameForLog = $_SESSION['admin_username'] ?? 'UnknownAdmin'; // For logging
+
+
 // Check if the form was submitted via POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? 'initial_post'; // New: Differentiate actions
@@ -42,12 +45,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (empty($title)) {
             $_SESSION['admin_status'] = ['message' => 'Job title is required.', 'type' => 'error'];
             $_SESSION['form_data'] = $_POST;
+            log_app_activity("Job post attempt by '$loggedInUsernameForLog' failed: Title missing.", "JOB_POST_VALIDATION_ERROR");
             header('Location: dashboard.php?view=post_job');
             exit();
         }
         if (empty($phones) && empty($emails)) {
             $_SESSION['admin_status'] = ['message' => 'At least one contact method (phone or email) is required.', 'type' => 'error'];
             $_SESSION['form_data'] = $_POST;
+            log_app_activity("Job post attempt by '$loggedInUsernameForLog' (Title: '$title') failed: Contact info missing.", "JOB_POST_VALIDATION_ERROR");
             header('Location: dashboard.php?view=post_job');
             exit();
         }
@@ -84,6 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($isDuplicateInRecent) {
             $_SESSION['admin_status'] = ['message' => 'Error: This job (based on title and contact info) seems to be a duplicate of one posted in the last 7 days.', 'type' => 'error'];
+            log_app_activity("Duplicate job post attempt by '$loggedInUsernameForLog'. Title: '$title'. Contacts: P-$phones E-$emails.", "JOB_POST_DUPLICATE");
             $_SESSION['form_data'] = $_POST; 
             header('Location: dashboard.php?view=post_job');
             exit();
@@ -102,6 +108,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if ($apiKey === 'AIzaSyCWoj7th8DArYw7PGf83JAVcYsXBJHFjAk' || 
                     $apiKey === 'AIzaSyCWoj7th8DArYw7PGf83JAVcYsXBJHFjAk' || // Old placeholder check
                     empty($apiKey)) {
+                    log_app_activity("AI Summary generation skipped for job '$title': API Key is placeholder or empty.", "AI_SUMMARY_SKIP");
                     error_log("[AI_SUMMARY_ERROR] API Key is a placeholder or potentially invalid. Please set a valid API key.");
                     // Optionally, you could set $generatedAiSummary to an error message here or skip the API call.
                 }
@@ -121,7 +128,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if (!empty($salary) && $salary !== '0') $prompt .= "- Salary: $salary\n";
                 if ($vacant_positions > 1) $prompt .= "- Number of Vacancies: $vacant_positions\n";
                 $prompt .= "- Key Responsibilities/Details: $description\n\n";
-                $prompt .= "The summary should be attractive to potential candidates and provide a clear overview of the role. Focus on the most important information. Do not include contact information like emails or phone numbers, summary, job title and location in this summary.";
+                // $prompt .= "The summary should be attractive to potential candidates and provide a clear overview of the role. Focus on the most important information. Do not include contact information like emails or phone numbers, summary, job title and location in this summary.";
                 error_log("[AI_SUMMARY_DEBUG] Prompt being sent to API: " . $prompt);
 
                 $data = ['contents' => [['parts' => [['text' => $prompt]]]]];
@@ -154,14 +161,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $responseData = json_decode($response, true);
                     if (isset($responseData['candidates'][0]['content']['parts'][0]['text'])) {
                         $generatedAiSummary = $responseData['candidates'][0]['content']['parts'][0]['text'];
+                        log_app_activity("AI summary generated successfully for job '$title'.", "AI_SUMMARY_SUCCESS");
                         error_log("[AI_SUMMARY_SUCCESS] Successfully extracted summary. Length: " . strlen($generatedAiSummary) . ". Start: " . substr($generatedAiSummary, 0, 100) . "...");
                     } elseif (isset($responseData['error'])) {
+                        log_app_activity("AI summary generation FAILED for job '$title'. API Error: " . print_r($responseData['error'], true), "AI_SUMMARY_ERROR");
                         error_log('[AI_SUMMARY_ERROR] API returned an error: ' . print_r($responseData['error'], true));
                     } else { 
+                        log_app_activity("AI summary generation FAILED for job '$title'. Unexpected API response structure.", "AI_SUMMARY_ERROR");
                         error_log('[AI_SUMMARY_ERROR] AI summary not found in expected path in API response. Is the response structure correct? Full response: ' . print_r($responseData, true)); 
                     }
                 } else { 
-                    // Log the response body even for non-200, as it often contains useful error details from the API
+                    log_app_activity("AI summary generation FAILED for job '$title'. API HTTP Code: $httpCode. Response: $response", "AI_SUMMARY_ERROR");
                     error_log("[AI_SUMMARY_ERROR] Gemini AI API error: HTTP Code $httpCode. Response: $response. cURL Error: $curlError"); 
                 }
             } catch (Exception $e) { 
@@ -182,6 +192,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ];
 
         // Redirect to the post_job view, which will now be in "review mode"
+        log_app_activity("Job post by '$loggedInUsernameForLog' (Title: '$title') ready for review. AI Summary generated (length: " . strlen(trim($generatedAiSummary)) . ").", "JOB_POST_REVIEW_READY");
         header('Location: dashboard.php?view=post_job&step=review');
         exit();
 
@@ -193,6 +204,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Basic validation for final post (though most fields should be pre-filled and non-empty)
         if (empty($title) || (empty($phones) && empty($emails))) {
             $_SESSION['admin_status'] = ['message' => 'Error: Required fields are missing for final submission.', 'type' => 'error'];
+            log_app_activity("Final job post by '$loggedInUsernameForLog' (Title: '$title') failed: Required fields missing.", "JOB_POST_FINAL_VALIDATION_ERROR");
             // Re-populate form data for review again if something went wrong
             $_SESSION['review_job_data'] = $_POST; // Use current POST data
             header('Location: dashboard.php?view=post_job&step=review');
@@ -203,7 +215,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // If a strict check is needed again, it could be added, but might be redundant.
 
         // Prepare job data for saving
-        $jobData = [
+        $jobIdForLog = time() . '_' . rand(1000, 9999); // Generate ID before creating array to log it
+        $jobData = [ // Keep this structure
             'id' => time() . '_' . rand(1000, 9999),
             'title' => $title, 'company' => $company, 'location' => $location,
             'description' => $description, // Original description
@@ -211,7 +224,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'experience' => $experience, 'type' => $type, 'salary' => $salary,
             'phones' => $phones, 'emails' => $emails, 'vacant_positions' => $vacant_positions,
             'posted_on' => date('Y-m-d H:i:s'),
-            'posted_on_unix_ts' => time()
+            'posted_on_unix_ts' => time(),
+            // Add the logged-in user's ID
+            'posted_by_user_id' => $_SESSION['admin_username'] ?? null 
         ];
 
         $jobsFile = __DIR__ . '/../data/jobs.json';
@@ -222,11 +237,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         file_put_contents($jobsFile, json_encode($allExistingJobs, JSON_PRETTY_PRINT));
 
         unset($_SESSION['review_job_data']); // Clear review data from session
+        log_app_activity("Job ID '{$jobData['id']}' (Title: '$title') posted successfully by '$loggedInUsernameForLog'.", "JOB_POST_SUCCESS");
         $_SESSION['admin_status'] = ['message' => 'Job posted successfully!', 'type' => 'success'];
         header('Location: dashboard.php?view=manage_jobs');
         exit();
     } else {
         // Invalid action
+        log_app_activity("Invalid job posting action '$action' attempted by '$loggedInUsernameForLog'.", "JOB_POST_INVALID_ACTION");
         $_SESSION['admin_status'] = ['message' => 'Invalid job posting action.', 'type' => 'error'];
         header('Location: dashboard.php?view=post_job');
         exit();
@@ -238,6 +255,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // This also handles clearing any stale review data if the user navigates away and back
     if (isset($_GET['view']) && $_GET['view'] === 'post_job' && (!isset($_GET['step']) || $_GET['step'] !== 'review')) {
         unset($_SESSION['review_job_data']); // Clear review data for a fresh form
+        log_app_activity("Job post form accessed directly by '$loggedInUsernameForLog', review data cleared.", "JOB_POST_FORM_ACCESS");
     }
     header('Location: dashboard.php?view=post_job');
     exit();

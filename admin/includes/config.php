@@ -4,6 +4,7 @@
 
 // Set timezone
 date_default_timezone_set('Asia/Kolkata');
+require_once __DIR__ . '/log_helpers.php';
 
 // File Paths (relative to the root of your application, assuming admin/ is a subdirectory)
 $usersFilename = __DIR__ . '/../../data/user.json'; // Path to data/user.json
@@ -13,6 +14,6 @@ $feedbackFilename = __DIR__ . '/../../data/feedback.json'; // Path to data/feedb
 
 
 // Your website URL (used in generated message)
-$siteUrl = 'http://jobhunt.top/index.php'; // <--- REPLACE with your website URL
+$siteUrl = 'www.jobhunt.top'; // <--- REPLACE with your website URL
 
 ?>

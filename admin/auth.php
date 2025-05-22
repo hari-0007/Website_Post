@@ -18,6 +18,8 @@ $_SESSION['admin_status'] = ['message' => '', 'type' => ''];
 // Handle logout action
 if (isset($_GET['action']) && $_GET['action'] === 'logout') {
     // Destroy the session
+    $loggedOutUser = $_SESSION['admin_username'] ?? 'UnknownUser';
+    log_app_activity("User '$loggedOutUser' logged out.", "AUTH_INFO");
     session_unset();
     session_destroy();
 
@@ -49,15 +51,20 @@ if ($action === 'login' && $_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Check if user status is active
                 if (isset($user['status']) && $user['status'] === 'active') {
                     $authenticatedUser = $user;
+                    // Log successful authentication attempt before setting session variables
+                    // log_app_activity("Successful authentication attempt for '$processedUsername'. Pending session setup.", "AUTH_SUCCESS_ATTEMPT");
                     break;
                 } elseif (isset($user['status']) && $user['status'] === 'pending_approval') {
+                    log_app_activity("Login attempt for pending account: '$processedUsername'", "AUTH_INFO");
                     $_SESSION['admin_status'] = ['message' => 'Your account is pending administrator approval.', 'type' => 'warning'];
-                    header('Location: dashboard.php'); exit;
+                    header('Location: dashboard.php?view=login'); exit; // Redirect to login
                 } elseif (isset($user['status']) && $user['status'] === 'disabled') {
+                    log_app_activity("Login attempt for disabled account: '$processedUsername'", "AUTH_WARNING");
                     $_SESSION['admin_status'] = ['message' => 'Your account has been disabled. Please contact an administrator.', 'type' => 'error'];
-                    header('Location: dashboard.php'); exit;
+                    header('Location: dashboard.php?view=login'); exit; // Redirect to login
                 } else {
                     // This case handles if password is correct but status is unrecognized or missing
+                    log_app_activity("Login attempt for account with unrecognized status: '$processedUsername', Status: '" . ($user['status'] ?? 'UNKNOWN') . "'", "AUTH_ERROR");
                     $_SESSION['admin_status'] = ['message' => 'Account status is unrecognized. Please contact an administrator.', 'type' => 'error'];
                     header('Location: dashboard.php'); 
                     exit;
@@ -72,6 +79,7 @@ if ($action === 'login' && $_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['admin_display_name'] = $authenticatedUser['display_name'] ?? $authenticatedUser['username'];
         // Store the user's role in the session
         $_SESSION['admin_role'] = $authenticatedUser['role'] ?? 'user'; // Default to 'user' if role is missing
+        log_app_activity("User '$processedUsername' logged in successfully. Role: '" . $_SESSION['admin_role'] . "'.", "AUTH_SUCCESS");
 
         // Redirect to dashboard on success
         header('Location: dashboard.php');
@@ -79,7 +87,8 @@ if ($action === 'login' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         // This 'else' is reached if no user matched the username, or if a user matched but password was incorrect.
         // The cases for correct password but wrong status are handled inside the loop with an exit.
-        $_SESSION['admin_status'] = ['message' => 'Invalid email/username or password.', 'type' => 'error'];
+        log_app_activity("Failed login attempt for username/email: '$processedUsername'", "AUTH_FAILURE");
+        $_SESSION['admin_status'] = ['message' => 'Invalid email/username or password.', 'type' => 'error']; // This message is for the user
         error_log("[AUTH_DEBUG] Login failed for processed username: '$processedUsername'");
         header('Location: dashboard.php'); // Redirect back to the main dashboard page
         exit;
@@ -113,6 +122,7 @@ if ($action === 'register' && $_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($usernameExists) {
             $_SESSION['admin_status'] = ['message' => 'An account with this email already exists.', 'type' => 'error'];
+            log_app_activity("Registration attempt failed: Email '$emailAsUsername' already exists.", "REG_FAILURE");
         } else {
             // Use the createUser function from user_manager_helpers.php
             // Ensure user_manager_helpers.php is included if createUser is defined there.
@@ -129,11 +139,14 @@ if ($action === 'register' && $_SERVER['REQUEST_METHOD'] === 'POST') {
                     'message' => 'Registration successful! Your account is now pending administrator approval.',
                     'type' => 'success'
                 ];
+                log_app_activity("New user registration: '$emailAsUsername'. Status: pending_approval.", "REG_SUCCESS");
             } elseif ($newUser === false && findUserByUsername($emailAsUsername, $usersFilename)) {
                 // This condition might be redundant if createUser handles existing username check robustly
                 $_SESSION['admin_status'] = ['message' => 'An account with this email already exists.', 'type' => 'error'];
+                log_app_activity("Registration attempt failed (race condition?): Email '$emailAsUsername' already exists.", "REG_WARNING");
             } else {
                 $_SESSION['admin_status'] = ['message' => 'Error during registration. Could not save user data.', 'type' => 'error'];
+                log_app_activity("Registration failed for '$emailAsUsername': Could not save user data.", "REG_ERROR");
             }
         }
     }
@@ -149,6 +162,7 @@ if ($action === 'forgot_password' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($email)) {
         $_SESSION['admin_status'] = ['message' => 'Please enter your email address.', 'type' => 'error'];
     } else {
+        log_app_activity("Forgot password attempt for email: '$email'. (Placeholder action)", "AUTH_INFO");
         // PLACEHOLDER: Implement secure forgot password logic here
         $_SESSION['admin_status'] = ['message' => 'Forgot password feature is a placeholder. Sending reset emails and processing tokens require further implementation.', 'type' => 'info']; // Changed type to info
     }
@@ -161,6 +175,7 @@ if ($action === 'forgot_password' && $_SERVER['REQUEST_METHOD'] === 'POST') {
 // If no valid action was provided, redirect to the dashboard
 // This ensures if auth.php is accessed directly without a valid action, it redirects.
 if ($action !== 'login' && $action !== 'register' && $action !== 'forgot_password' && $action !== 'logout') {
+    log_app_activity("Invalid authentication action attempted: '$action'", "AUTH_WARNING");
     $_SESSION['admin_status'] = ['message' => 'Invalid authentication action.', 'type' => 'error'];
 }
 

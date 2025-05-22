@@ -1,6 +1,8 @@
 <?php
 
 // admin/includes/job_helpers.php
+define('JOB_VIEWS_INIT_PATH', __DIR__ . '/../../data/job_views.json'); // Path from admin/includes
+define('JOB_SHARES_INIT_PATH', __DIR__ . '/../../data/job_shares.json'); // Path for shares
 
 /**
  * Loads job data from the JSON file.
@@ -64,9 +66,66 @@ function saveJobs($jobs, $filename) {
          error_log("Admin Error: Wrote to job data file, but it appears empty: " . $filename); // Log empty file after write
          return false; // Consider it a failure if data should have been written
     }
-
-
     return true; // Save successful
+}
+
+/**
+ * Adds a new job post to the jobs data file and initializes its view/share counts.
+ *
+ * @param array $newJob The new job data.
+ * @param string $jobsFilename Path to the main jobs.json file.
+ * @return bool True on success, false on failure.
+ */
+function addJobPost(array $newJob, string $jobsFilename): bool {
+    $allJobs = loadJobs($jobsFilename);
+    array_unshift($allJobs, $newJob); // Add new job to the beginning
+
+    if (!saveJobs($allJobs, $jobsFilename)) {
+        error_log("Failed to save jobs after adding new job ID: " . ($newJob['id'] ?? 'N/A'));
+        return false;
+    }
+
+    // Initialize view count for the new job
+    if (!file_exists(JOB_VIEWS_INIT_PATH)) {
+        if (!is_dir(dirname(JOB_VIEWS_INIT_PATH))) {
+            mkdir(dirname(JOB_VIEWS_INIT_PATH), 0777, true);
+        }
+        file_put_contents(JOB_VIEWS_INIT_PATH, json_encode([], JSON_PRETTY_PRINT));
+    }
+
+    $jobViewsJson = file_get_contents(JOB_VIEWS_INIT_PATH);
+    $jobViews = $jobViewsJson ? json_decode($jobViewsJson, true) : [];
+    if (!is_array($jobViews)) $jobViews = [];
+
+    if (!isset($jobViews[$newJob['id']])) {
+        $jobViews[$newJob['id']] = 0;
+        if (file_put_contents(JOB_VIEWS_INIT_PATH, json_encode($jobViews, JSON_PRETTY_PRINT), LOCK_EX) === false) {
+            error_log("Failed to initialize view count for new job ID: " . ($newJob['id'] ?? 'N/A'));
+            // Optionally, decide if this failure should be critical
+        }
+    }
+
+    // Initialize share count for the new job
+    if (!file_exists(JOB_SHARES_INIT_PATH)) {
+        if (!is_dir(dirname(JOB_SHARES_INIT_PATH))) {
+            mkdir(dirname(JOB_SHARES_INIT_PATH), 0777, true);
+        }
+        file_put_contents(JOB_SHARES_INIT_PATH, json_encode([], JSON_PRETTY_PRINT));
+    }
+
+    $jobSharesJson = file_get_contents(JOB_SHARES_INIT_PATH);
+    $jobShares = $jobSharesJson ? json_decode($jobSharesJson, true) : [];
+    if (!is_array($jobShares)) $jobShares = [];
+
+    if (!isset($jobShares[$newJob['id']])) {
+        $jobShares[$newJob['id']] = 0;
+        if (file_put_contents(JOB_SHARES_INIT_PATH, json_encode($jobShares, JSON_PRETTY_PRINT), LOCK_EX) === false) {
+            error_log("Failed to initialize share count for new job ID: " . ($newJob['id'] ?? 'N/A'));
+            // Optionally, decide if this failure should be critical
+        }
+    }
+
+    return true;
 }
 
 ?>

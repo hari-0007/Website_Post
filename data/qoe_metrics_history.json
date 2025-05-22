@@ -1,0 +1,12 @@
+{
+    "dns_resolution_time_ms": [
+        {"timestamp": 1672531200, "value": 50},
+        {"timestamp": 1672534800, "value": 45},
+        {"timestamp": 1672617600, "value": 55}
+    ],
+    "server_response_time_ms": [
+        {"timestamp": 1672531200, "value": 200},
+        {"timestamp": 1672534800, "value": 180},
+        {"timestamp": 1672617600, "value": 210}
+    ]
+}

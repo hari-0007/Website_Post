@@ -45,18 +45,17 @@ $requestedAction = $_GET['action'] ?? null; // For handling specific actions rou
 error_log("--- [DEBUG] dashboard.php: Page Load Start ---");
 error_log("[DEBUG] dashboard.php: Raw GET parameters: " . print_r($_GET, true));
 error_log("[DEBUG] dashboard.php: Initial \$loggedIn state: " . ($loggedIn ? 'true' : 'false'));
-error_log("[DEBUG] dashboard.php: Initial \$requestedView (from \$_GET['view'] or default) = '" . $requestedView . "'");
+error_log("[DEBUG] dashboard.php: Initial \$requestedView (from \$_GET['view'] or default based on login) = '" . $requestedView . "'");
 
 // Validate requested view if logged in
-// 'post_job' view is removed from allowed views as its navigation link is removed, but fetchable via AJAX
-$allowedViews = ['dashboard', 'manage_jobs', 'edit_job', 'edit_user', 'profile', 'messages', 'generate_message', 'manage_users', 'post_job', 'achievements'];
+$allowedViews = ['dashboard_overview', 'dashboard_service_one', 'dashboard_user_info', 'dashboard_job_stats', 'dashboard_service_two', 'dashboard_visitors_info', 'dashboard_qoe', 'manage_jobs', 'edit_job', 'edit_user', 'profile', 'messages', 'generate_message', 'manage_users', 'post_job', 'achievements', 'server_management', 'logs'];
 error_log("[CRITICAL_DEBUG] dashboard.php: Just before \$allowedViews check. \$requestedView = '" . $requestedView . "'. \$loggedIn = " . ($loggedIn ? 'true' : 'false'));
 
 if ($loggedIn && $requestedView !== 'login') { // Ensure we don't try to validate 'login' if somehow requested while logged in
     if (!in_array($requestedView, $allowedViews)) {
             error_log("[ERROR_DEBUG] dashboard.php: Invalid view '" . $requestedView . "' requested for logged-in user. Allowed views: " . implode(', ', $allowedViews) . ". Defaulting to dashboard.");
         // If view is invalid for logged-in user, default to dashboard without an error
-        $requestedView = 'dashboard';
+        $requestedView = 'dashboard_overview';
             // It's possible the "invalid view specified" message comes from a part of your code that *displays* this error
             // if a certain condition isn't met, rather than this specific fallback.
     }
@@ -64,29 +63,41 @@ if ($loggedIn && $requestedView !== 'login') { // Ensure we don't try to validat
     // Super Admin, Regional Admins, and Regional Managers can access manage_users view
     if ($requestedView === 'manage_users' && !($loggedInUserRole === 'super_admin' || in_array($loggedInUserRole, $allRegionalAdminRoles) || in_array($loggedInUserRole, $allRegionalManagerRoles))) {
         $_SESSION['admin_status'] = ['message' => 'Access Denied: You do not have permission to manage users.', 'type' => 'error'];
-        header('Location: dashboard.php?view=dashboard'); // Redirect to a safe page
+        header('Location: dashboard.php?view=dashboard_overview'); // Redirect to a safe page
         exit;
     }
     // Authorization check for messages view: Super Admin and Regional Admins
     if ($requestedView === 'messages' && !($loggedInUserRole === 'super_admin' || in_array($loggedInUserRole, $allRegionalAdminRoles))) {
         $_SESSION['admin_status'] = ['message' => 'Access Denied: You do not have permission to view messages.', 'type' => 'error'];
-        header('Location: dashboard.php?view=dashboard'); // Redirect to dashboard
+        header('Location: dashboard.php?view=dashboard_overview'); // Redirect to dashboard overview
         exit;
     }
 
     // Authorization check for generate_message view: Super Admin and Regional Admins
     if ($requestedView === 'generate_message' && !($loggedInUserRole === 'super_admin' || in_array($loggedInUserRole, $allRegionalAdminRoles))) {
         $_SESSION['admin_status'] = ['message' => 'Access Denied: You do not have permission to generate posts.', 'type' => 'error']; // Message for unauthorized access
-        header('Location: dashboard.php?view=dashboard');
+        header('Location: dashboard.php?view=dashboard_overview');
         exit;
     }
     // Authorization check for achievements view: All logged-in users can see it for now.
     // You might want to restrict this later based on roles if needed.
     // if ($requestedView === 'achievements' && !($loggedInUserRole === 'super_admin' || in_array($loggedInUserRole, $allRegionalAdminRoles))) {
     //     $_SESSION['admin_status'] = ['message' => 'Access Denied: You do not have permission to view achievements.', 'type' => 'error'];
-    //     header('Location: dashboard.php?view=dashboard');
+    //     header('Location: dashboard.php?view=dashboard_overview');
     //     exit;
     // }
+    // Authorization check for server_management view: Super Admin and Regional Admins (example)
+    if ($requestedView === 'server_management' && !($loggedInUserRole === 'super_admin' || in_array($loggedInUserRole, $allRegionalAdminRoles))) {
+        $_SESSION['admin_status'] = ['message' => 'Access Denied: You do not have permission to view server management.', 'type' => 'error'];
+        header('Location: dashboard.php?view=dashboard_overview');
+        exit;
+    }
+    // Authorization check for logs view: Super Admin ONLY
+    if ($requestedView === 'logs' && $loggedInUserRole !== 'super_admin') {
+        $_SESSION['admin_status'] = ['message' => 'Access Denied: You do not have permission to view server logs.', 'type' => 'error'];
+        header('Location: dashboard.php?view=dashboard_overview');
+        exit;
+    }
 
 }
 
@@ -155,28 +166,29 @@ require_once __DIR__ . '/partials/header.php';
 
 <style>
     .stats-grid {
-        display: flex;
+        display: grid; /* Changed to grid for better control */
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Responsive columns */
         gap: 20px;
         margin-bottom: 20px;
     }
 
     .stat-card {
-        flex: 1;
         padding: 15px;
-        background-color: #f9f9f9;
-        border: 1px solid #ddd;
-        border-radius: 5px;
+        background-color: #ffffff; /* Cleaner background */
+        border: 1px solid #e0e0e0; /* Softer border */
+        border-radius: 6px; /* Slightly more rounded */
         text-align: center;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05); /* Subtle shadow */
     }
 
     .stat-card h4 {
         margin-bottom: 10px;
-        font-size: 1.2rem;
-        color: #333;
+        font-size: 1rem; /* Adjusted size */
+        color: #555; /* Softer color */
     }
 
     .stat-card p {
-        font-size: 1.5rem;
+        font-size: 1.8rem; /* Larger number */
         font-weight: bold;
         color: #007bff;
     }
@@ -184,9 +196,10 @@ require_once __DIR__ . '/partials/header.php';
     .chart-container {
         margin-top: 20px;
         padding: 15px;
-        background-color: #f9f9f9;
-        border: 1px solid #ddd;
-        border-radius: 5px;
+        background-color: #ffffff;
+        border: 1px solid #e0e0e0;
+        border-radius: 6px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     }
 
     .chart-container h3 {
@@ -199,13 +212,44 @@ require_once __DIR__ . '/partials/header.php';
         max-width: 100%;
         height: auto;
     }
+    /* In your admin_styles.css or embedded style tag */
+.sub-nav {
+    background-color: #f8f9fa; /* Lighter background */
+    padding: 10px 0;
+    margin-bottom: 20px;
+    text-align: center;
+    border-radius: 6px;
+    border: 1px solid #dee2e6;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+
+.sub-nav a {
+    color: #005fa3;
+    padding: 10px 15px;
+    text-decoration: none;
+    font-weight: 500; /* Medium weight */
+    transition: background-color 0.3s ease, color 0.3s ease;
+    border-radius: 4px; /* Add radius to individual links for hover effect */
+    margin: 0 3px; /* Spacing between links */
+}
+
+.sub-nav a:hover {
+    background-color: #e2e6ea;
+    color: #004a80;
+}
+
+.sub-nav a.active {
+    background-color: #005fa3; /* Primary color */
+    color: white;
+}
+
 </style>
 
     <div class="container">
         <h2>Admin Dashboard</h2>
         <div class="admin-nav">
-            <?php $displayName = $_SESSION['admin_display_name'] ?? $_SESSION['admin_username'] ?? 'Admin'; ?>
-            <a href="?view=dashboard" class="<?= $loggedIn && $requestedView === 'dashboard' ? 'active' : '' ?>">Dashboard</a>
+            <?php $displayName = $_SESSION['admin_display_name'] ?? ($_SESSION['admin_username'] ?? 'Admin'); ?>
+            <a href="?view=dashboard_overview" class="<?= $loggedIn && (strpos($requestedView, 'dashboard_') === 0 || $requestedView === 'dashboard') ? 'active' : '' ?>">Dashboard</a>
             <?php /* Removed Post New Job Tab: <a href="dashboard.php?view=post_job" class="<?= $loggedIn && $requestedView === 'post_job' ? 'active' : '' ?>">Post New Job</a> */ ?>
             <a href="?view=manage_jobs" class="<?= $loggedIn && ($requestedView === 'manage_jobs' || $requestedView === 'edit_job') ? 'active' : '' ?>">Manage Jobs</a>
             <?php if ($loggedInUserRole === 'super_admin' || in_array($loggedInUserRole, $allRegionalAdminRoles)): ?>
@@ -219,17 +263,44 @@ require_once __DIR__ . '/partials/header.php';
 
                 <a href="?view=generate_message" class="<?= $loggedIn && $requestedView === 'generate_message' ? 'active' : '' ?>">Generate Post</a>
             <?php endif; ?>
+            <?php if ($loggedInUserRole === 'super_admin'): // Logs tab for Super Admin only ?>
+                <a href="?view=logs" class="<?= $loggedIn && $requestedView === 'logs' ? 'active' : '' ?>">Logs</a>
+            <?php endif; ?>
+            
             <div class="profile-dropdown">
                 <a href="javascript:void(0);"><?= htmlspecialchars($displayName) ?> ▼</a>
                 <div class="profile-dropdown-content">
                     <a href="dashboard.php?view=profile" class="<?= $loggedIn && $requestedView === 'profile' ? 'active' : '' ?>">Manage Profile</a>
-                    <?php if ($loggedInUserRole === 'super_admin' || in_array($loggedInUserRole, $allRegionalAdminRoles) || in_array($loggedInUserRole, $allRegionalManagerRoles)): ?>
+                    <?php 
+                    // User Manager link
+                    if ($loggedInUserRole === 'super_admin' || in_array($loggedInUserRole, $allRegionalAdminRoles) || in_array($loggedInUserRole, $allRegionalManagerRoles)): 
+                    ?>
                          <a href="dashboard.php?view=manage_users" class="<?= $loggedIn && $requestedView === 'manage_users' ? 'active' : '' ?>">User Manager</a>
+                    <?php endif; ?>
+                    <?php if ($loggedInUserRole === 'super_admin' || in_array($loggedInUserRole, $allRegionalAdminRoles)): ?>
+                        <a href="?view=server_management" class="<?= $loggedIn && $requestedView === 'server_management' ? 'active' : '' ?>">Manage Server</a>
                     <?php endif; ?>
                     <a href="auth.php?action=logout">Logout</a> <?php // Logout link ?>
                 </div>
             </div>
         </div>
+
+        <?php
+        // Sub-navigation for Dashboard sections
+        if ($loggedIn && (strpos($requestedView, 'dashboard_') === 0 || $requestedView === 'dashboard')) :
+            // If main view is 'dashboard', default sub-view to 'dashboard_overview'
+            $currentDashboardSubView = ($requestedView === 'dashboard') ? 'dashboard_overview' : $requestedView;
+        ?>
+            <div class="sub-nav">
+                <a href="?view=dashboard_overview" class="<?= $currentDashboardSubView === 'dashboard_overview' ? 'active' : '' ?>">Overview</a>
+                <a href="?view=dashboard_service_one" class="<?= $currentDashboardSubView === 'dashboard_service_one' ? 'active' : '' ?>">Service Info</a>
+                <a href="?view=dashboard_user_info" class="<?= $currentDashboardSubView === 'dashboard_user_info' ? 'active' : '' ?>">User Stats</a>
+                <a href="?view=dashboard_job_stats" class="<?= $currentDashboardSubView === 'dashboard_job_stats' ? 'active' : '' ?>">Job Stats</a>
+                <a href="?view=dashboard_service_two" class="<?= $currentDashboardSubView === 'dashboard_service_two' ? 'active' : '' ?>">Server Metrics</a>
+                <a href="?view=dashboard_visitors_info" class="<?= $currentDashboardSubView === 'dashboard_visitors_info' ? 'active' : '' ?>">Visitors Info</a>
+                <a href="?view=dashboard_qoe" class="<?= $currentDashboardSubView === 'dashboard_qoe' ? 'active' : '' ?>">QOE</a>
+            </div>
+        <?php endif; ?>
 
         <?php
         // --- Status Message Area ---
@@ -279,7 +350,11 @@ require_once __DIR__ . '/partials/header.php';
 
 <?php
 // Pass variables to footer.php for JavaScript
-$currentViewForJS = $loggedIn ? $requestedView : ($requestedAction === 'register_form' ? 'register_form' : ($requestedAction === 'forgot_password_form' ? 'forgot_password_form' : 'login'));
+// If $requestedView is 'dashboard', it implies 'dashboard_overview' for JS content loading purposes
+$currentViewForJS = $loggedIn ? 
+    (($requestedView === 'dashboard') ? 'dashboard_overview' : $requestedView) : 
+    ($requestedAction === 'register_form' ? 'register_form' : ($requestedAction === 'forgot_password_form' ? 'forgot_password_form' : 'login'));
+
 $isLoggedInForJS = $loggedIn;
 $userRoleForJS = $_SESSION['admin_role'] ?? 'user'; // Pass user role to JS
 ?>

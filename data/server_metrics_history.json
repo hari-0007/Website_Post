@@ -1,0 +1,68 @@
+{
+    "cpu_usage": [
+        {
+            "timestamp": 1716278400,
+            "value": 15.5
+        },
+        {
+            "timestamp": 1716278700,
+            "value": 18.2
+        },
+        {
+            "timestamp": 1716279000,
+            "value": 16.0
+        },
+        {
+            "timestamp": 1716279300,
+            "value": 22.1
+        },
+        {
+            "timestamp": 1716279600,
+            "value": 20.5
+        }
+    ],
+    "memory_usage_percent": [
+        {
+            "timestamp": 1716278400,
+            "value": 45.2
+        },
+        {
+            "timestamp": 1716278700,
+            "value": 46.1
+        },
+        {
+            "timestamp": 1716279000,
+            "value": 45.8
+        },
+        {
+            "timestamp": 1716279300,
+            "value": 48.3
+        },
+        {
+            "timestamp": 1716279600,
+            "value": 47.5
+        }
+    ],
+    "disk_usage_percent": [
+        {
+            "timestamp": 1716278400,
+            "value": 65.0
+        },
+        {
+            "timestamp": 1716278700,
+            "value": 65.1
+        },
+        {
+            "timestamp": 1716279000,
+            "value": 65.1
+        },
+        {
+            "timestamp": 1716279300,
+            "value": 65.2
+        },
+        {
+            "timestamp": 1716279600,
+            "value": 65.2
+        }
+    ]
+}

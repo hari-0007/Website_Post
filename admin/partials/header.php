@@ -415,6 +415,123 @@
                display: inline-block;
                width: 120px; /* Fixed width for label */
            }
+           /* Add to your admin_styles.css or within <style> tags in dashboard.php */
+
+.most-viewed-jobs-table-section {
+    margin-top: 30px;
+}
+
+.table-responsive-wrapper {
+    overflow-x: auto; /* Allows table to be scrolled horizontally on small screens */
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    border: 1px solid #e0e0e0;
+}
+
+.professional-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    font-size: 0.9rem;
+    color: #333;
+}
+
+.professional-table th,
+.professional-table td {
+    text-align: left;
+    padding: 12px 15px; /* Increased padding for better spacing */
+    border-bottom: 1px solid #e0e0e0; /* Softer border */
+}
+
+.professional-table thead th {
+    background-color: #f8f9fa; /* Light grey background for header */
+    color: #005fa3; /* Primary color for header text */
+    font-weight: 600; /* Bolder header text */
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-top: 1px solid #e0e0e0;
+}
+
+.professional-table tbody tr:nth-of-type(even) {
+    background-color: #fdfdfd; /* Subtle striping for even rows */
+}
+
+.professional-table tbody tr:hover {
+    background-color: #f1f1f1; /* Hover effect for rows */
+}
+
+.professional-table td[data-label="Rank"],
+.professional-table td[data-label="Views"] {
+    text-align: center;
+    font-weight: 500;
+}
+
+.table-action-link {
+    color: #007bff;
+    text-decoration: none;
+    padding: 5px 8px;
+    border-radius: 4px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+.table-action-link:hover {
+    color: #fff;
+    background-color: #005fa3;
+    text-decoration: none;
+}
+
+.no-data-message {
+    color: #777;
+    font-style: italic;
+    padding: 15px;
+    text-align: center;
+    background-color: #f9f9f9;
+    border: 1px dashed #ddd;
+    border-radius: 4px;
+}
+
+/* Responsive table handling for smaller screens */
+@media screen and (max-width: 768px) {
+    .professional-table thead {
+        display: none; /* Hide table header on small screens */
+    }
+    .professional-table, .professional-table tbody, .professional-table tr, .professional-table td {
+        display: block;
+        width: 100%;
+    }
+    .professional-table tr {
+        margin-bottom: 15px;
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        padding: 10px;
+    }
+    .professional-table td {
+        text-align: right; /* Align content to the right */
+        padding-left: 50%; /* Create space for the label */
+        position: relative;
+        border-bottom: 1px dotted #eee; /* Lighter border for individual cells */
+    }
+    .professional-table td:last-child {
+        border-bottom: none;
+    }
+    .professional-table td::before {
+        content: attr(data-label); /* Use data-label for pseudo-element */
+        position: absolute;
+        left: 10px;
+        width: calc(50% - 20px); /* Adjust width considering padding */
+        padding-right: 10px;
+        font-weight: bold;
+        text-align: left;
+        white-space: nowrap;
+    }
+    .professional-table td[data-label="Rank"],
+    .professional-table td[data-label="Views"] {
+        text-align: right; /* Keep right alignment for data */
+    }
+}
+
+
     </style>
     <?php if (isset($loggedIn) && $loggedIn && isset($requestedView) && $requestedView === 'dashboard'): ?>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

@@ -29,9 +29,22 @@ $recentPendingUsers = $recentPendingUsers ?? [];
 $userPerformanceOverall = $userPerformanceOverall ?? [];
 $userPerformanceLast30Days = $userPerformanceLast30Days ?? [];
 $userPerformanceToday = $userPerformanceToday ?? [];
-$performanceLeaderboard = $performanceLeaderboard ?? []; // This might be shown on overview or user stats
-$mostViewedJobs = $mostViewedJobs ?? []; // For the "Most Viewed Jobs" card
-$mostSharedJobs = $mostSharedJobs ?? []; // Initialize for most shared jobs
+$performanceLeaderboard = $performanceLeaderboard ?? [];
+// $mostViewedJobs and $mostSharedJobs for 30-day stats are no longer used here.
+
+// Lifetime stats from jobs.json
+$totalLifetimeViews = $totalLifetimeViews ?? 0;
+$totalLifetimeShares = $totalLifetimeShares ?? 0;
+$allTimeTopViewedJobs = $allTimeTopViewedJobs ?? [];
+$allTimeTopSharedJobs = $allTimeTopSharedJobs ?? [];
+
+// Monthly views/shares for jobs posted this month
+$totalLifetimeViewsOfJobsPostedThisMonth = $totalLifetimeViewsOfJobsPostedThisMonth ?? 0;
+$totalLifetimeSharesOfJobsPostedThisMonth = $totalLifetimeSharesOfJobsPostedThisMonth ?? 0;
+
+// Total page loads (from daily_visitors.json, prepared in fetch_content.php)
+$totalPageRequestsAllTime = $totalPageRequestsAllTime ?? 0; // Already used for visitor stats, but good to ensure it's here
+$monthlyTotalPageRequests = $monthlyTotalPageRequests ?? 0;
 
 // Server info is now in its own tab, but keep placeholders if overview needs a summary
 $serverPhpVersion = $serverPhpVersion ?? 'N/A';
@@ -96,6 +109,28 @@ $displayTotalMessagesCount = count($feedbackMessages);
                                ?>
                 </h4>
                 <p><?= htmlspecialchars($displayTotalUsersCount) ?></p>
+            </div>
+        <?php endif; ?>
+        <?php if ($loggedInUserRole === 'super_admin' || in_array($loggedInUserRole, $allRegionalAdminRoles ?? [])): ?>
+            <div class="stat-card">
+                <h4>Total Lifetime Views (All Jobs)</h4>
+                <p><?= htmlspecialchars($totalLifetimeViews) ?></p>
+            </div>
+            <div class="stat-card">
+                <h4>Total Lifetime Shares (All Jobs)</h4>
+                <p><?= htmlspecialchars($totalLifetimeShares) ?></p>
+            </div>
+            <div class="stat-card">
+                <h4>Total Views This Month (Jobs Posted This Month)</h4>
+                <p><?= htmlspecialchars($totalLifetimeViewsOfJobsPostedThisMonth) ?></p>
+            </div>
+            <div class="stat-card">
+                <h4>Total Shares This Month (Jobs Posted This Month)</h4>
+                <p><?= htmlspecialchars($totalLifetimeSharesOfJobsPostedThisMonth) ?></p>
+            </div>
+            <div class="stat-card">
+                <h4>Total Page Loads This Month</h4>
+                <p><?= htmlspecialchars($monthlyTotalPageRequests) ?></p>
             </div>
         <?php endif; ?>
     </div>
@@ -205,11 +240,11 @@ $displayTotalMessagesCount = count($feedbackMessages);
     <?php if ($loggedInUserRole === 'super_admin' || in_array($loggedInUserRole, $allRegionalAdminRoles ?? [])): ?>
     <div class="stats-columns-container" style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 20px;">
         <div class="stats-column" style="width: 100%;">
-            <?php if (!empty($mostViewedJobs)): ?>
-            <div class="dashboard-section most-viewed-jobs-table-section">
-                <h4>Most Viewed Jobs (Top 5)</h4>
+            <?php if (!empty($allTimeTopViewedJobs)): ?>
+            <div class="dashboard-section alltime-most-viewed-jobs-section">
+                <h4>All-Time Top 5 Viewed Jobs</h4>
                     <ol class="leaderboard-list">
-                        <?php foreach (array_slice($mostViewedJobs, 0, 5) as $job): // Ensure only top 5 are shown here ?>
+                        <?php foreach ($allTimeTopViewedJobs as $job): ?>
                             <li>
                                 <div class="leaderboard-item-main-content">
                                     <span class="leaderboard-name">
@@ -218,7 +253,7 @@ $displayTotalMessagesCount = count($feedbackMessages);
                                             <small>at <?= htmlspecialchars($job['company']) ?></small>
                                         <?php endif; ?>
                                     </span>
-                                    <span class="leaderboard-count"><?= htmlspecialchars($job['views'] ?? 0) ?> views</span>
+                                    <span class="leaderboard-count"><?= htmlspecialchars($job['total_views_count'] ?? 0) ?> views</span>
                                 </div>
                                 <?php if (!empty($job['id'])): ?>
                                 <a href="../index.php?job_id=<?= htmlspecialchars($job['id']) ?>" target="_blank" class="leaderboard-action-button">View Job</a>
@@ -228,18 +263,16 @@ $displayTotalMessagesCount = count($feedbackMessages);
                     </ol>
             </div>
             <?php else: ?>
-            <div class="dashboard-section most-viewed-jobs-section">
-                <h4>Most Viewed Jobs</h4>
-                <p class="no-data-message">No job view data available yet.</p>
-            </div>
+            <div class="dashboard-section alltime-most-viewed-jobs-section">
+                <h4>All-Time Top 5 Viewed Jobs</h4><p class="no-data-message">No job view data available.</p></div>
             <?php endif; ?>
         </div>
         <div class="stats-column" style="width: 100%;">
-            <?php if (!empty($mostSharedJobs)): ?>
-            <div class="dashboard-section most-shared-jobs-section"> 
-                <h4>Top 5 Most Shared Jobs (Last 30 Days)</h4>
+            <?php if (!empty($allTimeTopSharedJobs)): ?>
+            <div class="dashboard-section alltime-most-shared-jobs-section">
+                <h4>All-Time Top 5 Shared Jobs</h4>
                     <ol class="leaderboard-list">
-                        <?php foreach (array_slice($mostSharedJobs, 0, 5) as $job): // Display top 5 ?>
+                        <?php foreach ($allTimeTopSharedJobs as $job): ?>
                             <li>
                                 <div class="leaderboard-item-main-content">
                                     <span class="leaderboard-name">
@@ -248,7 +281,7 @@ $displayTotalMessagesCount = count($feedbackMessages);
                                             <small>at <?= htmlspecialchars($job['company']) ?></small>
                                         <?php endif; ?>
                                     </span>
-                                    <span class="leaderboard-count"><?= htmlspecialchars($job['shares'] ?? 0) ?> shares</span>
+                                    <span class="leaderboard-count"><?= htmlspecialchars($job['total_shares_count'] ?? 0) ?> shares</span>
                                 </div>
                                 <?php if (!empty($job['id'])): ?>
                                 <a href="../index.php?job_id=<?= htmlspecialchars($job['id']) ?>" target="_blank" class="leaderboard-action-button">View Job</a>
@@ -258,17 +291,11 @@ $displayTotalMessagesCount = count($feedbackMessages);
                     </ol>
             </div>
             <?php else: ?>
-            <div class="dashboard-section most-shared-jobs-section">
-                <h4>Most Shared Jobs</h4>
-                <p class="no-data-message">No job share data available yet.</p>
-            </div>
+            <div class="dashboard-section alltime-most-shared-jobs-section">
+                <h4>All-Time Top 5 Shared Jobs</h4><p class="no-data-message">No job share data available.</p></div>
             <?php endif; ?>
         </div>
     </div>
-
-
-
-    
     <?php endif; ?>
     <?php /* User Performance, Server Info, and Server Monitoring Charts are now in their own tabs */ ?>
 

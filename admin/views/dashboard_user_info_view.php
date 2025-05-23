@@ -8,6 +8,7 @@ $userCountsByStatus = $userCountsByStatus ?? [];
 $userPerformanceOverall = $userPerformanceOverall ?? [];
 $userPerformanceLast30Days = $userPerformanceLast30Days ?? [];
 $userPerformanceToday = $userPerformanceToday ?? [];
+// $userPerformanceList is no longer used in this view.
 $performanceLeaderboard = $performanceLeaderboard ?? [];
 
 $loggedInUserRole = $_SESSION['admin_role'] ?? 'user'; // Needed for conditional display
@@ -19,13 +20,14 @@ $userRoleChartLabels = $userRoleChartLabels ?? [];
 $userRoleChartData = $userRoleChartData ?? [];
 $userStatusChartLabels = $userStatusChartLabels ?? [];
 $userStatusChartData = $userStatusChartData ?? [];
-$topPostersChartLabels = $topPostersChartLabels ?? [];
-$topPostersChartData = $topPostersChartData ?? [];
-$userAchievementsChartLabels = $userAchievementsChartLabels ?? []; // For new chart
-$userAchievementsChartData = $userAchievementsChartData ?? [];   // For new chart
+// $userAchievementsChartLabels and $userAchievementsChartData are no longer used for this view.
+// Variables for "Overall User Job Posting Performance Chart" are no longer used.
 
-$shouldLoadChartJsForUserInfo = !empty($userRoleChartData) || !empty($userStatusChartData) || !empty($topPostersChartData) || !empty($userAchievementsChartData); // Check data arrays
+// For NEW Quarterly User Earnings Chart
+$quarterlyUserEarningsLabels = $quarterlyUserEarningsLabels ?? [];
+$quarterlyUserEarningsData = $quarterlyUserEarningsData ?? [];
 
+$shouldLoadChartJsForUserInfo = !empty($userRoleChartData) || !empty($userStatusChartData) || !empty($topPostersChartData) || !empty($quarterlyUserEarningsData);
 ?>
 <div class="dashboard-content user-info-view-content">
     <h3>User Statistics Overview</h3>
@@ -73,62 +75,9 @@ $shouldLoadChartJsForUserInfo = !empty($userRoleChartData) || !empty($userStatus
     </div>
 
     <?php if ($loggedInUserRole === 'super_admin' || in_array($loggedInUserRole, $allRegionalAdminRoles)): ?>
-    <div class="dashboard-section user-performance-section">
-        <h4>User Job Posting Performance</h4>
-        <div class="performance-columns">
-            <div class="performance-column">
-                <h5>Today's Posts</h5>
-                <?php if (!empty($userPerformanceToday)): ?>
-                    <ul class="performance-list">
-                        <?php $usersWithPostsToday = array_filter($userPerformanceToday, function($data){ return $data['count'] > 0; }); ?>
-                        <?php if (!empty($usersWithPostsToday)): ?>
-                            <?php foreach ($usersWithPostsToday as $username => $data): ?>
-                                <li><?= htmlspecialchars($data['name']) ?>: <strong><?= htmlspecialchars($data['count']) ?></strong></li>
-                            <?php endforeach; ?>
-                        <?php else: ?>
-                            <li class="no-data-message">No jobs posted today.</li>
-                        <?php endif; ?>
-                    </ul>
-                <?php else: ?>
-                    <p class="no-data-message">No performance data for today.</p>
-                <?php endif; ?>
-            </div>
-            <div class="performance-column">
-                <h5>Last 30 Days</h5>
-                <?php if (!empty($userPerformanceLast30Days)): ?>
-                    <ul class="performance-list">
-                         <?php $usersWithPosts30Days = array_filter($userPerformanceLast30Days, function($data){ return $data['count'] > 0; }); ?>
-                        <?php if (!empty($usersWithPosts30Days)): ?>
-                            <?php foreach ($usersWithPosts30Days as $username => $data): ?>
-                                <li><?= htmlspecialchars($data['name']) ?>: <strong><?= htmlspecialchars($data['count']) ?></strong></li>
-                            <?php endforeach; ?>
-                        <?php else: ?>
-                            <li class="no-data-message">No jobs posted in the last 30 days.</li>
-                        <?php endif; ?>
-                    </ul>
-                <?php else: ?>
-                    <p class="no-data-message">No performance data for the last 30 days.</p>
-                <?php endif; ?>
-            </div>
-            <div class="performance-column">
-                <h5>Overall Posts</h5>
-                 <?php if (!empty($userPerformanceOverall)): ?>
-                    <ul class="performance-list">
-                        <?php $usersWithPostsOverall = array_filter($userPerformanceOverall, function($data){ return $data['count'] > 0; }); ?>
-                        <?php if (!empty($usersWithPostsOverall)): ?>
-                            <?php foreach ($usersWithPostsOverall as $username => $data): ?>
-                                <li><?= htmlspecialchars($data['name']) ?>: <strong><?= htmlspecialchars($data['count']) ?></strong></li>
-                            <?php endforeach; ?>
-                        <?php else: ?>
-                            <li class="no-data-message">No jobs posted overall.</li>
-                        <?php endif; ?>
-                    </ul>
-                <?php else: ?>
-                    <p class="no-data-message">No overall performance data.</p>
-                <?php endif; ?>
-            </div>
-        </div>
-    </div>
+    <!-- "User Job Posting Performance (Jobs Posted)" list removed -->
+    <!-- "Overall Job Posting Performance by User" chart removed -->
+    <?php endif; ?>
 
     <div class="dashboard-section leaderboard-section">
         <h4>Top Posters (Last 30 Days)</h4>
@@ -163,17 +112,16 @@ $shouldLoadChartJsForUserInfo = !empty($userRoleChartData) || !empty($userStatus
             <p class="no-data-message">No posting activity in the last 30 days to rank.</p>
         <?php endif; ?>
     </div>
-    <?php endif; ?>
 
     <?php if ($loggedInUserRole === 'super_admin' || in_array($loggedInUserRole, $allRegionalAdminRoles)): ?>
-    <div class="dashboard-section user-achievements-section">
-        <h4>User Achievements (Points/Earnings - Last 30 Days)</h4>
-        <?php if (!empty($userAchievementsChartData)): ?>
-            <div class="chart-container" style="height: 350px;">
-                <canvas id="userAchievementsChart"></canvas>
+    <div class="dashboard-section quarterly-user-earnings-section">
+        <h4>User Earnings (Last 3 Months)</h4>
+        <?php if (!empty($quarterlyUserEarningsData) && !empty($quarterlyUserEarningsLabels)): ?>
+            <div class="chart-container" style="height: 400px;"> <!-- Adjust height as needed -->
+                <canvas id="quarterlyUserEarningsChart"></canvas>
             </div>
         <?php else: ?>
-            <p class="no-data-message">No achievement data available to display.</p>
+            <p class="no-data-message">No user earnings data available for the last 3 months to display a chart.</p>
         <?php endif; ?>
     </div>
     <?php endif; ?>
@@ -204,6 +152,30 @@ $shouldLoadChartJsForUserInfo = !empty($userRoleChartData) || !empty($userStatus
         padding-bottom: 5px;
         border-bottom: 1px dashed #eee;
     }
+    .user-performance-horizontal-list {
+        list-style: none;
+        padding-left: 0;
+        margin-top: 10px;
+    }
+    .user-performance-horizontal-list li {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 5px;
+        border-bottom: 1px solid #f0f0f0;
+        font-size: 0.9rem;
+    }
+    .user-performance-horizontal-list li:last-child {
+        border-bottom: none;
+    }
+    .user-performance-horizontal-list li.header-row {
+        font-weight: bold;
+        background-color: #f8f9fa;
+        border-bottom: 2px solid #e0e0e0;
+        padding: 12px 5px;
+    }
+    .user-performance-horizontal-list .user-name-col { flex: 2; text-align: left; padding-right: 10px; }
+    .user-performance-horizontal-list .perf-col { flex: 1; text-align: center; min-width: 80px; }
+    .user-performance-horizontal-list li.no-data-message-row p { width: 100%; text-align: center; }
 
     .dashboard-columns {
         display: flex;
@@ -447,14 +419,14 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     <?php endif; ?>
 
-    <?php if (!empty($userAchievementsChartLabels) && !empty($userAchievementsChartData)): ?>
-    if (document.getElementById('userAchievementsChart')) {
-        const achievementsCtx = document.getElementById('userAchievementsChart').getContext('2d');
-        new Chart(achievementsCtx, {
-            type: 'line',
+    <?php if (!empty($quarterlyUserEarningsLabels) && !empty($quarterlyUserEarningsData)): ?>
+    if (document.getElementById('quarterlyUserEarningsChart')) {
+        const quarterlyEarningsCtx = document.getElementById('quarterlyUserEarningsChart').getContext('2d');
+        new Chart(quarterlyEarningsCtx, {
+            type: 'bar',
             data: {
-                labels: <?= json_encode($userAchievementsChartLabels) ?>,
-                datasets: <?= json_encode($userAchievementsChartData) ?>
+                labels: <?= json_encode($quarterlyUserEarningsLabels) ?>,
+                datasets: <?= json_encode($quarterlyUserEarningsData) ?>
             },
             options: {
                 responsive: true,
@@ -462,11 +434,18 @@ document.addEventListener('DOMContentLoaded', function () {
                 scales: {
                     y: {
                         beginAtZero: true,
-                        title: { display: true, text: 'Points / Earnings' }
+                        title: { display: true, text: 'Earnings (Points/Currency)' }
                     },
-                    x: { title: { display: true, text: 'Date' } }
+                    x: {
+                        title: { display: true, text: 'Month' }
+                    }
                 },
-                plugins: { legend: { position: 'top' } }
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: { display: false } // Title is in H4
+                }
             }
         });
     }

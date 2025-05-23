@@ -9,6 +9,10 @@ $graphLabels = $graphLabels ?? []; // For job posts chart
 $graphData = $graphData ?? [];   // For job posts chart
 $mostViewedJobs = $mostViewedJobs ?? [];
 
+// Lifetime stats from jobs.json (calculated in fetch_content.php)
+$totalLifetimeViews = $totalLifetimeViews ?? 0;
+$totalLifetimeShares = $totalLifetimeShares ?? 0;
+
 $displayTotalJobsCount = count($allJobs);
 $shouldLoadChartJsForJobStats = !empty($graphLabels) && !empty($graphData);
 ?>
@@ -27,6 +31,14 @@ $shouldLoadChartJsForJobStats = !empty($graphLabels) && !empty($graphData);
         <div class="stat-card">
             <h4>Jobs Posted This Month</h4>
             <p><?= htmlspecialchars($jobsMonthlyCount) ?></p>
+        </div>
+        <div class="stat-card">
+            <h4>Total Lifetime Views (All Jobs)</h4>
+            <p><?= htmlspecialchars($totalLifetimeViews) ?></p>
+        </div>
+        <div class="stat-card">
+            <h4>Total Lifetime Shares (All Jobs)</h4>
+            <p><?= htmlspecialchars($totalLifetimeShares) ?></p>
         </div>
     </div>
 

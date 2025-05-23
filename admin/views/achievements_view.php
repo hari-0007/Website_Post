@@ -1,37 +1,71 @@
 <?php
-// admin/views/achievements_view.php
+// admin/views/dashboard_achievements_view.php
 
-// Assumes $achievementsChartLabels and $achievementsChartData are available from fetch_content.php
-$achievementsChartLabels = $achievementsChartLabels ?? [];
-$achievementsChartData = $achievementsChartData ?? [];
+// Data for User Earnings (Last 3 Months) chart
+$quarterlyUserEarningsLabels = $quarterlyUserEarningsLabels ?? [];
+$quarterlyUserEarningsData = $quarterlyUserEarningsData ?? [];
+
+// Old achievements chart data is no longer used
+// $achievementsChartLabels = $achievementsChartLabels ?? [];
+// $achievementsChartData = $achievementsChartData ?? [];
+
+$shouldLoadChartJsForAchievements = !empty($quarterlyUserEarningsLabels) && !empty($quarterlyUserEarningsData);
 ?>
 
-<div class="dashboard-content achievements-content">
-    <h3>User Job Posting Achievements (Last 30 Days)</h3>
-    <!-- <p>Each job posted earns ₹3. This graph shows the daily earnings per user based on their job posts.</p> -->
+<div class="dashboard-content achievements-view-content">
+    <h3>User Achievements</h3>
 
-    <?php if (!empty($achievementsChartData)): ?>
-        <div class="chart-container" style="height: 500px;">
-            <canvas id="achievementsChart"></canvas>
-        </div>
-    <?php else: ?>
-        <p>No job posting data available to display achievements yet.</p>
-    <?php endif; ?>
+    <div class="dashboard-section quarterly-user-earnings-section">
+        <h4>User Earnings (Last 3 Months)</h4>
+        <?php if (!empty($quarterlyUserEarningsData) && !empty($quarterlyUserEarningsLabels)): ?>
+            <div class="chart-container" style="height: 400px;"> <!-- Adjust height as needed -->
+                <canvas id="achievementsQuarterlyUserEarningsChart"></canvas> <!-- Unique ID for this chart instance -->
+            </div>
+        <?php else: ?>
+            <p class="no-data-message">No user earnings data available for the last 3 months to display a chart.</p>
+        <?php endif; ?>
+    </div>
+
+    <!-- The old "User Job Posting Achievements (Last 30 Days)" chart section would be removed from here -->
+    <!-- Example of what to remove:
+    <div class="dashboard-section user-job-posting-achievements-section">
+        <h4>User Job Posting Achievements (Last 30 Days)</h4>
+        <?php // if (!empty($achievementsChartData)): ?>
+            <div class="chart-container" style="height: 350px;">
+                <canvas id="userJobPostingAchievementsChart"></canvas>
+            </div>
+        <?php // else: ?>
+            <p class="no-data-message">No achievement data available to display.</p>
+        <?php // endif; ?>
+    </div>
+    -->
+
 </div>
 
-<?php if (!empty($achievementsChartData)): ?>
+<style>
+    /* Add any specific styles for achievements-view-content if needed */
+    .achievements-view-content h3 {
+        color: #005fa3;
+        margin-top: 0;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #e0e0e0;
+    }
+    /* Assuming .dashboard-section, .chart-container, .no-data-message are globally styled */
+</style>
+
+<?php if ($shouldLoadChartJsForAchievements): ?>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const achievementsChartLabels = <?= json_encode($achievementsChartLabels) ?>;
-        const achievementsChartDatasets = <?= json_encode($achievementsChartData) ?>;
-
-        const achievementsCtx = document.getElementById('achievementsChart').getContext('2d');
-        new Chart(achievementsCtx, {
-            type: 'line',
+document.addEventListener('DOMContentLoaded', function () {
+    <?php if (!empty($quarterlyUserEarningsLabels) && !empty($quarterlyUserEarningsData)): ?>
+    if (document.getElementById('achievementsQuarterlyUserEarningsChart')) {
+        const quarterlyEarningsCtx = document.getElementById('achievementsQuarterlyUserEarningsChart').getContext('2d');
+        new Chart(quarterlyEarningsCtx, {
+            type: 'bar',
             data: {
-                labels: achievementsChartLabels,
-                datasets: achievementsChartDatasets
+                labels: <?= json_encode($quarterlyUserEarningsLabels) ?>,
+                datasets: <?= json_encode($quarterlyUserEarningsData) ?>
             },
             options: {
                 responsive: true,
@@ -39,71 +73,29 @@ $achievementsChartData = $achievementsChartData ?? [];
                 scales: {
                     y: {
                         beginAtZero: true,
-                        title: {
-                            display: true,
-                            text: 'Daily Earnings (₹)'
-                        },
-                        ticks: {
-                            // Format ticks as currency if desired, e.g., using Intl.NumberFormat
-                            callback: function(value, index, values) {
-                                return '₹' + value;
-                            }
-                        }
+                        title: { display: true, text: 'Earnings (Points/Currency)' }
                     },
                     x: {
-                        title: {
-                            display: true,
-                            text: 'Date'
-                        }
+                        title: { display: true, text: 'Month' }
                     }
                 },
                 plugins: {
                     legend: {
                         position: 'top',
                     },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                let label = context.dataset.label || '';
-                                if (label) {
-                                    label += ': ';
-                                }
-                                if (context.parsed.y !== null) {
-                                    label += '₹' + context.parsed.y;
-                                }
-                                return label;
-                            }
-                        }
-                    },
-                    title: {
-                        display: true,
-                        text: 'User Daily Job Post Earnings'
-                    }
+                    title: { display: false } // Title is in H4
                 }
             }
         });
-    });
+    }
+    <?php endif; ?>
+
+    <?php /* Remove the JS for the old chart:
+    if (!empty($achievementsChartLabels) && !empty($achievementsChartData)): ?>
+    if (document.getElementById('userJobPostingAchievementsChart')) {
+        // ... old chart initialization ...
+    }
+    <?php endif; */ ?>
+});
 </script>
 <?php endif; ?>
-
-<style>
-    .achievements-content h3 {
-        margin-top: 0;
-        margin-bottom: 10px;
-        color: #005fa3;
-    }
-    .achievements-content p {
-        margin-bottom: 20px;
-        font-size: 0.95em;
-        color: #555;
-    }
-    .chart-container {
-        margin-top: 20px;
-        padding: 15px;
-        background-color: #f9f9f9;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        position: relative; /* Needed for maintainAspectRatio: false */
-    }
-</style>

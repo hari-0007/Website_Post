@@ -3,6 +3,7 @@ session_start();
 
 define('COOKIE_CONSENT_STATUS_NAME', 'cookie_consent_status');
 define('USER_INTERESTS_COOKIE_NAME', 'user_job_interests');
+define('USER_VIEWED_JOB_IDS_COOKIE_NAME', 'user_viewed_job_ids'); // New cookie for viewed job IDs
 define('USER_UNIQUE_ID_COOKIE_NAME', 'user_unique_site_id'); // New cookie for unique user ID
 define('MAX_USER_INTERESTS', 5); // Store up to 5 recent interests
 
@@ -281,80 +282,155 @@ if (!$singleJobView &&
     isset($_COOKIE[COOKIE_CONSENT_STATUS_NAME]) && $_COOKIE[COOKIE_CONSENT_STATUS_NAME] === 'accepted') {
 
     error_log("[DEBUG] Applying interest-based filtering.");
-    $userInterestsCookieVal = isset($_COOKIE[USER_INTERESTS_COOKIE_NAME]) ? $_COOKIE[USER_INTERESTS_COOKIE_NAME] : '[]';
-    $userStoredInterests = json_decode($userInterestsCookieVal, true);
+      $userWeightedInterests = []; // Key: interest term (lowercase), Value: weight
 
-    if (is_array($userStoredInterests) && !empty($userStoredInterests)) {
-        $tempInterestJobs = [];
+    // 1. Primary Interests from USER_INTERESTS_COOKIE_NAME (search terms, type filters)
+    if (isset($_COOKIE[USER_INTERESTS_COOKIE_NAME])) {
+        $primaryInterestTerms = json_decode($_COOKIE[USER_INTERESTS_COOKIE_NAME], true);
+        if (is_array($primaryInterestTerms)) {
+            foreach ($primaryInterestTerms as $term) {
+                $processedTerm = strtolower(trim($term));
+                if (!empty($processedTerm)) {
+                    // Assign higher weight, ensure it takes precedence if term already exists with lower weight
+                    $userWeightedInterests[$processedTerm] = max($userWeightedInterests[$processedTerm] ?? 0, 3); 
+                }
+            }
+        }
+    }
+
+    // 2. Secondary Interests from USER_VIEWED_JOB_IDS_COOKIE
+    if (isset($_COOKIE[USER_VIEWED_JOB_IDS_COOKIE_NAME])) {
+        $viewedJobIds = json_decode($_COOKIE[USER_VIEWED_JOB_IDS_COOKIE_NAME], true);
+        if (is_array($viewedJobIds) && !empty($decodedJobs)) { // $decodedJobs has all job details
+            $jobsByIdLookup = [];
+            foreach($decodedJobs as $jobEntry) { // Build a quick lookup map
+                if (isset($jobEntry['id'])) {
+                    $jobsByIdLookup[$jobEntry['id']] = $jobEntry;
+                }
+            }
+
+            foreach (array_slice($viewedJobIds, 0, 5) as $jobId) { // Consider last 5 viewed jobs
+                if (isset($jobsByIdLookup[$jobId])) {
+                    $viewedJob = $jobsByIdLookup[$jobId];
+                    // Add job title as an interest term (can be split into words if needed, but full title is simpler)
+                    if (!empty($viewedJob['title'])) {
+                        $titleTerm = strtolower(trim($viewedJob['title']));
+                        if (!empty($titleTerm)) {
+                             // Assign lower weight, only if not already a primary interest or if current weight is lower
+                            $userWeightedInterests[$titleTerm] = max($userWeightedInterests[$titleTerm] ?? 0, 2);
+                        }
+                    }
+                    // Add job type as an interest term
+                    if (!empty($viewedJob['type'])) {
+                        $typeTerm = strtolower(trim($viewedJob['type']));
+                         if (!empty($typeTerm)) {
+                            $userWeightedInterests[$typeTerm] = max($userWeightedInterests[$typeTerm] ?? 0, 1);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    error_log("[DEBUG] User Weighted Interests: " . print_r($userWeightedInterests, true));
+
+    if (!empty($userWeightedInterests)) {
+        $recommendedJobsWithScores = [];
+       
         // IMPORTANT: Interest filter should operate on the *original full list* of jobs.
         $fullJobListForInterestFilter = $decodedJobs; // $decodedJobs is the pristine list from JSON.
 
         foreach ($fullJobListForInterestFilter as $job) {
-            if (!is_array($job)) { // Defensive check for each job item
+            if (!is_array($job)) { 
                 error_log("Skipping non-array job item in interest filter: " . print_r($job, true));
                 continue;
             }
-            $jobMatchesInterest = false;
+            $matchScore = 0;
             // Explicitly cast job fields to string and lowercase for safer comparison
             $jobTitle = strtolower((string)($job['title'] ?? ''));
             $jobCompany = strtolower((string)($job['company'] ?? ''));
             $jobLocation = strtolower((string)($job['location'] ?? ''));
             $jobTypeData = strtolower((string)($job['type'] ?? ''));
             $jobSummary = strtolower((string)($job['ai_summary'] ?? ''));
+            
+            // $matchScore = 0;
+            // $matchedInterestsDetails = []; // For potential debugging or advanced scoring
 
-            foreach ($userStoredInterests as $interest) {
-                $interest = strtolower(trim($interest));
+           $jobDescription = strtolower((string)($job['description'] ?? '')); // Add description
+
+            foreach ($userWeightedInterests as $interestTerm => $weight) {
+              
+
                 if ( 
-                    (stripos($jobTitle, $interest) !== false) || 
-                    (stripos($jobCompany, $interest) !== false) ||
-                    (stripos($jobLocation, $interest) !== false) ||
-                    (stripos($jobTypeData, $interest) !== false) ||
-                    (stripos($jobSummary, $interest) !== false)
+                    (!empty($jobTitle) && stripos($jobTitle, $interestTerm) !== false) || 
+                    (!empty($jobCompany) && stripos($jobCompany, $interestTerm) !== false) ||
+                    (!empty($jobLocation) && stripos($jobLocation, $interestTerm) !== false) ||
+                    (!empty($jobTypeData) && stripos($jobTypeData, $interestTerm) !== false) ||
+                    (!empty($jobSummary) && stripos($jobSummary, $interestTerm) !== false) ||
+                    (!empty($jobDescription) && stripos($jobDescription, $interestTerm) !== false)
                 ) {
-                    $jobMatchesInterest = true;
-                    break; // Job matches one interest, no need to check others for this job
+                    $matchScore += $weight;
                 }
             }
-            if ($jobMatchesInterest) {
-                $tempInterestJobs[] = $job;
+
+            if ($matchScore > 0) {
+                $job['recommendation_score'] = $matchScore;
+                $recommendedJobsWithScores[] = $job;
             }
         }
-        if (!empty($tempInterestJobs)) {
-            $phpJobsArray = $tempInterestJobs; // $phpJobsArray now holds interest-filtered jobs
+
+        if (!empty($recommendedJobsWithScores)) {
             $appliedInterestFilter = true;
-            error_log("[DEBUG] Interest filter applied. Job count: " . count($phpJobsArray));
-        }
+// Sort by recommendation score (descending), then by original job posting date (descending)
+            usort($recommendedJobsWithScores, function ($a, $b) {
+                $scoreA = $a['recommendation_score'] ?? 0;
+                $scoreB = $b['recommendation_score'] ?? 0;
+                if ($scoreA == $scoreB) {
+                    return ($b['posted_on_unix_ts'] ?? 0) <=> ($a['posted_on_unix_ts'] ?? 0);
+                }
+                return $scoreB <=> $scoreA; // Higher score first
+            });
+            $phpJobsArray = $recommendedJobsWithScores; // Update $phpJobsArray with scored and sorted recommendations
+            error_log("[DEBUG] Interest filter applied with scoring. Recommended job count: " . count($phpJobsArray));
+               }
     }
 }
 
 // Filepath for the daily visitor counter
 $visitorCounterFile = __DIR__ . '/data/daily_visitors.json';
 
-// Function to increment the visitor count for the current day
-function incrementDailyVisitorCounter($filePath) {
+// Function to record page view (unique visitor and total request)
+function recordPageView($filePath) {
     // Get today's date
     $today = date('Y-m-d');
+    $isNewUniqueVisitor = false;
 
     // Read the current data
     if (!file_exists($filePath)) {
         $visitorData = [];
     } else {
-        $visitorData = json_decode(file_get_contents($filePath), true);
-        if (!is_array($visitorData)) {
-            $visitorData = [];
-        }
+        $rawJson = file_get_contents($filePath);
+        $visitorData = json_decode($rawJson, true);
+        if (!is_array($visitorData)) $visitorData = [];
     }
 
-    // Increment the count for today
+    // Initialize today's entry if it doesn't exist
     if (!isset($visitorData[$today])) {
-        $visitorData[$today] = 0;
+        $visitorData[$today] = ['unique_visits' => 0, 'total_requests' => 0];
     }
-    $visitorData[$today]++;
+
+    // Increment total requests for today
+    $visitorData[$today]['total_requests'] = ($visitorData[$today]['total_requests'] ?? 0) + 1;
+
+    // Check for unique visitor (if consent given and cookie not set)
+    if (isset($_COOKIE[COOKIE_CONSENT_STATUS_NAME]) && $_COOKIE[COOKIE_CONSENT_STATUS_NAME] === 'accepted' && !isset($_COOKIE['unique_visitor'])) {
+        $visitorData[$today]['unique_visits'] = ($visitorData[$today]['unique_visits'] ?? 0) + 1;
+        $isNewUniqueVisitor = true;
+    }
 
     // Save the updated data back to the file
     file_put_contents($filePath, json_encode($visitorData));
-
-    return $visitorData[$today];
+    return $isNewUniqueVisitor; // Return true if it was a new unique visitor
 }
 
 // Check if the visitor is unique using a cookie (and has consented)
@@ -368,8 +444,11 @@ if (isset($_COOKIE[COOKIE_CONSENT_STATUS_NAME]) && $_COOKIE[COOKIE_CONSENT_STATU
     ];
     setcookie('unique_visitor', '1', $visitor_cookie_options);
 
-    // Increment the daily visitor counter
-    incrementDailyVisitorCounter($visitorCounterFile);
+    // Record the page view (this will handle unique visitor increment if applicable)
+    recordPageView($visitorCounterFile);
+} else {
+    // If not a new unique visitor (or consent not given/cookie already set), still record the page request
+    recordPageView($visitorCounterFile);
 }
 
 // Feedback alert
@@ -1979,6 +2058,22 @@ if ($isAjaxRequest) {
                         .catch(error => {
                             console.error('Error sending view increment request:', error);
                         });
+                        // New: Store viewed job ID in cookie if consent given
+                        if (getCookie(CONSENT_COOKIE_NAME_JS) === 'accepted') {
+                            const viewedJobIdsCookieName = '<?php echo USER_VIEWED_JOB_IDS_COOKIE_NAME; ?>';
+                            let viewedJobIds = [];
+                            const existingViewedCookie = getCookie(viewedJobIdsCookieName);
+                            if (existingViewedCookie) {
+                                try {
+                                    viewedJobIds = JSON.parse(existingViewedCookie);
+                                    if (!Array.isArray(viewedJobIds)) viewedJobIds = [];
+                                } catch (e) { viewedJobIds = []; }
+                            }
+                            // Add new ID to the front, remove duplicates, limit size
+                            viewedJobIds = [jobId, ...viewedJobIds.filter(id => id !== jobId)].slice(0, 10); // Keep last 10
+                            setCookie(viewedJobIdsCookieName, JSON.stringify(viewedJobIds), 30); // Store for 30 days
+                            console.log('Updated viewed jobs cookie:', viewedJobIds);
+                        }
                     }
                     
                 } else {

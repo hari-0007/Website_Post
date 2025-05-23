@@ -2,7 +2,8 @@
 
 // Define the path to the job views data file.
 // Assumes this script (increment_job_view.php) is in c:\Users\Public\Job_Post\
-define('JOB_VIEWS_DATA_PATH', __DIR__ . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'job_views.json');
+require_once __DIR__ . '/admin/includes/config.php'; // For $jobsFilename
+require_once __DIR__ . '/admin/includes/job_helpers.php'; // For incrementJobViewCountInJobsJson
 
 header('Content-Type: application/json');
 
@@ -21,48 +22,16 @@ if (empty($jobId)) {
     exit;
 }
 
-// Ensure the data directory and file exist, create them if not.
-$dataDir = dirname(JOB_VIEWS_DATA_PATH);
-if (!is_dir($dataDir)) {
-    if (!mkdir($dataDir, 0777, true)) {
-        error_log("Failed to create directory: " . $dataDir);
-        echo json_encode(['success' => false, 'message' => 'Error initializing view data directory.']);
-        exit;
+// Increment the total_views_count in jobs.json
+if (function_exists('incrementJobViewCountInJobsJson')) {
+    if (incrementJobViewCountInJobsJson($jobId)) {
+        echo json_encode(['success' => true, 'message' => 'View count incremented successfully in jobs.json.']);
+    } else {
+        echo json_encode(['success' => false, 'message' => 'Error updating view count in jobs.json.']);
     }
-}
-
-if (!file_exists(JOB_VIEWS_DATA_PATH)) {
-    // Initialize with an empty JSON object if file doesn't exist.
-    if (file_put_contents(JOB_VIEWS_DATA_PATH, json_encode([], JSON_PRETTY_PRINT)) === false) {
-        error_log("Failed to create job_views.json at " . JOB_VIEWS_DATA_PATH);
-        echo json_encode(['success' => false, 'message' => 'Error initializing view data file.']);
-        exit;
-    }
-}
-
-// Read the current view counts.
-$jobViewsJson = file_get_contents(JOB_VIEWS_DATA_PATH);
-if ($jobViewsJson === false) {
-    error_log("Failed to read job_views.json from " . JOB_VIEWS_DATA_PATH);
-    echo json_encode(['success' => false, 'message' => 'Error reading view data.']);
-    exit;
-}
-
-$jobViews = json_decode($jobViewsJson, true);
-if ($jobViews === null && json_last_error() !== JSON_ERROR_NONE) { // Handle JSON decoding errors.
-    error_log("Error decoding job_views.json: " . json_last_error_msg() . ". Content: " . $jobViewsJson);
-    $jobViews = []; // Reset to empty array if decoding fails to prevent further errors.
-}
-
-// Increment the view count for the given job ID.
-$jobViews[$jobId] = ($jobViews[$jobId] ?? 0) + 1;
-
-// Write the updated data back to the file with exclusive locking.
-if (file_put_contents(JOB_VIEWS_DATA_PATH, json_encode($jobViews, JSON_PRETTY_PRINT), LOCK_EX)) {
-    echo json_encode(['success' => true, 'message' => 'View count incremented successfully.']);
 } else {
-    error_log("Failed to write to job_views.json at " . JOB_VIEWS_DATA_PATH);
-    echo json_encode(['success' => false, 'message' => 'Error updating view count.']);
+    error_log("Function incrementJobViewCountInJobsJson does not exist.");
+    echo json_encode(['success' => false, 'message' => 'Server configuration error for view tracking.']);
 }
 
 ?>

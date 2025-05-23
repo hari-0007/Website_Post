@@ -16,8 +16,6 @@ require_once __DIR__ . '/includes/user_helpers.php'; // For loadUsers, saveUsers
 require_once __DIR__ . '/includes/job_helpers.php';
 require_once __DIR__ . '/includes/feedback_helpers.php';
 require_once __DIR__ . '/includes/user_manager_helpers.php'; // For createUser, deleteUser, updateUser
-require_once __DIR__ . '/includes/stats_helpers.php'; // For stats functions
-require_once __DIR__ . '/includes/view_helpers.php'; // For most viewed/shared jobs helper
 
 // Check if the user is logged in
 if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
@@ -75,9 +73,24 @@ $achievementsChartLabels = [];
 $userPerformanceOverall = [];
 $userPerformanceLast30Days = [];
 $userPerformanceToday = [];
+$userPerformanceList = []; // New: For consolidated horizontal list
 $performanceLeaderboard = [];
-$mostViewedJobs = []; // New variable for most viewed jobs
-$mostSharedJobs = []; // New variable for most shared jobs
+$mostViewedJobs = []; // This will no longer be populated from job_views.json
+$mostSharedJobs = []; // This will no longer be populated from job_shares.json
+
+// Variables for lifetime job stats from jobs.json
+$totalLifetimeViews = 0;
+$totalLifetimeShares = 0;
+$allTimeTopViewedJobs = [];
+$allTimeTopSharedJobs = [];
+
+// Variables for monthly views/shares of jobs posted this month
+$totalLifetimeViewsOfJobsPostedThisMonth = 0;
+$totalLifetimeSharesOfJobsPostedThisMonth = 0;
+
+// Variables for total page requests
+$totalPageRequestsAllTime = 0;
+$monthlyTotalPageRequests = 0;
 
 // Variables for server status
 $serverPhpVersion = '';
@@ -96,10 +109,18 @@ $userStatusChartLabels = [];
 $userStatusChartData = [];
 $topPostersChartLabels = [];
 $topPostersChartData = [];
+// Variables for NEW Overall User Job Posting Performance Chart
+$userOverallPerformanceChartLabels = [];
+$userOverallPerformanceChartData = [];
+$userOverallPerformanceChartColors = [];
 
 // Variables for achievements chart on user_info tab
-$userAchievementsChartLabels = [];
-$userAchievementsChartData = [];
+// $userAchievementsChartLabels = []; // This chart was removed from user_info_view
+// $userAchievementsChartData = [];   // This chart was removed from user_info_view
+
+// Variables for NEW Quarterly User Earnings Chart on user_info tab
+$quarterlyUserEarningsLabels = [];
+$quarterlyUserEarningsData = [];
 
 // Variables for Top Searched Keywords chart
 $topSearchedKeywordsLabels = [];
@@ -124,27 +145,56 @@ log_app_activity("User '$loggedInUserId' (Role: '$loggedInUserRole') attempting 
 // Filepath for the daily visitor counter
 $visitorCounterFile = __DIR__ . '/../data/daily_visitors.json';
 
-function getDailyVisitorData($filePath) { if (!file_exists($filePath)) return []; $visitorData = json_decode(file_get_contents($filePath), true); return is_array($visitorData) ? $visitorData : []; }
+function getDailyVisitorData($filePath) {
+    if (!file_exists($filePath)) return [];
+    $rawJson = file_get_contents($filePath);
+    $visitorData = json_decode($rawJson, true);
+    if (!is_array($visitorData)) return [];
 
+    $processedData = [];
+    foreach ($visitorData as $date => $entry) {
+        if (is_array($entry) && isset($entry['unique_visits']) && isset($entry['total_requests'])) {
+            // New format, use as is
+            $processedData[$date] = $entry;
+        } elseif (is_numeric($entry)) {
+            // Old format (assume $entry is unique_visits and also total_requests for that day)
+            $processedData[$date] = ['unique_visits' => (int)$entry, 'total_requests' => (int)$entry];
+            error_log("[FETCH_CONTENT_INFO] Processed old format data in daily_visitors.json for date: $date. Assumed unique_visits and total_requests = $entry");
+        } else {
+            // Malformed or unexpected format for this date
+            error_log("[FETCH_CONTENT_WARNING] Malformed or unexpected data in daily_visitors.json for date: $date. Entry skipped. Data: " . print_r($entry, true));
+            // Optionally, default to 0 for malformed entries to prevent breaking sums:
+            // $processedData[$date] = ['unique_visits' => 0, 'total_requests' => 0];
+        }
+    }
+    return $processedData;
+}
 $dailyVisitorData = getDailyVisitorData($visitorCounterFile);
 
 $visitorGraphLabels = [];
 $visitorGraphData = [];
+$totalRequestsGraphData = []; // New: For daily total requests chart
 for ($i = 29; $i >= 0; $i--) {
     $date = date('Y-m-d', strtotime("-$i days"));
     $visitorGraphLabels[] = date('M d', strtotime($date));
-    $visitorGraphData[] = $dailyVisitorData[$date] ?? 0;
+    $visitorGraphData[] = $dailyVisitorData[$date]['unique_visits'] ?? 0;
+    $totalRequestsGraphData[] = $dailyVisitorData[$date]['total_requests'] ?? 0; // Populate new data array
 }
-$totalViews = array_sum($dailyVisitorData);
+$totalViews = array_sum(array_column($dailyVisitorData, 'unique_visits')); // Total unique visits
+$totalPageRequestsAllTime = array_sum(array_column($dailyVisitorData, 'total_requests')); // Total page requests
+
 $currentMonth = date('Y-m');
 $monthlyVisitors = 0;
-foreach ($dailyVisitorData as $date => $count) {
-    if (strpos($date, $currentMonth) === 0) $monthlyVisitors += $count;
+$monthlyTotalPageRequests = 0;
+foreach ($dailyVisitorData as $date => $dateCounts) { // Corrected loop variable from $count to $dateCounts
+    if (strpos($date, $currentMonth) === 0) {
+        $monthlyVisitors += ($dateCounts['unique_visits'] ?? 0);
+        $monthlyTotalPageRequests += ($dateCounts['total_requests'] ?? 0);
+    }
 }
 
 // Load necessary data or perform actions based on the requested view
 switch ($requestedView) {
-    // ... (other cases remain the same, ensure they have log_app_activity calls if they perform actions) ...
     case 'dashboard_overview':
         $allJobs = loadJobs($jobsFilename);
         $feedbackMessages = loadFeedbackMessages($feedbackFilename);
@@ -206,6 +256,18 @@ switch ($requestedView) {
         $startOfToday = strtotime('today midnight');
         $startOfMonth = strtotime('first day of this month midnight');
 
+        // Calculate lifetime views/shares for jobs posted this month
+        // This should iterate over $allJobs, not $jobsToProcess, to get a global view for admins
+        if (!empty($allJobs)) { 
+            foreach ($allJobs as $job) {
+                $postedTimestamp = $job['posted_on_unix_ts'] ?? (isset($job['posted_on']) ? strtotime($job['posted_on']) : 0);
+                if ($postedTimestamp >= $startOfMonth) {
+                    $totalLifetimeViewsOfJobsPostedThisMonth += (int)($job['total_views_count'] ?? 0);
+                    $totalLifetimeSharesOfJobsPostedThisMonth += (int)($job['total_shares_count'] ?? 0);
+                }
+            }
+        }
+
         if (!empty($jobsToProcess)) {
             foreach ($jobsToProcess as $job) {
                  $postedTimestamp = $job['posted_on_unix_ts'] ?? (isset($job['posted_on']) ? strtotime($job['posted_on']) : 0);
@@ -232,80 +294,31 @@ switch ($requestedView) {
          }
          $graphData = $jobCountsByDay;
         
-        // --- Most Viewed Jobs Data ---
-        $jobViewsFilename = __DIR__ . '/../data/job_views.json'; // Path relative to fetch_content.php
-        $jobViewsData = []; // Initialize
-        error_log("[FETCH_CONTENT_DEBUG] Attempting to load job views data from: " . $jobViewsFilename);
-
-        if (file_exists($jobViewsFilename)) {
-            $jobViewsJson = file_get_contents($jobViewsFilename);
-            if ($jobViewsJson !== false) {
-                $jobViewsData = json_decode($jobViewsJson, true);
-                if (!is_array($jobViewsData)) {
-                    error_log("[FETCH_CONTENT_ERROR] job_views.json was not a valid array after decoding. Content: " . $jobViewsJson);
-                    $jobViewsData = [];
-                }
-            } else {
-                error_log("[FETCH_CONTENT_ERROR] Could not read job_views.json, though it exists.");
+        // --- Lifetime Job Stats from jobs.json ---
+        if (!empty($allJobs)) {
+            foreach ($allJobs as $job) {
+                $totalLifetimeViews += (int)($job['total_views_count'] ?? 0);
+                $totalLifetimeShares += (int)($job['total_shares_count'] ?? 0);
             }
-        } else {
-            error_log("[FETCH_CONTENT_INFO] job_views.json does not exist at " . $jobViewsFilename);
+
+            // Prepare All-Time Top Viewed Jobs
+            $tempAllTimeViewed = $allJobs;
+            usort($tempAllTimeViewed, function ($a, $b) {
+                return ($b['total_views_count'] ?? 0) - ($a['total_views_count'] ?? 0);
+            });
+            $allTimeTopViewedJobs = array_slice($tempAllTimeViewed, 0, 5);
+
+            // Prepare All-Time Top Shared Jobs
+            $tempAllTimeShared = $allJobs;
+            usort($tempAllTimeShared, function ($a, $b) {
+                return ($b['total_shares_count'] ?? 0) - ($a['total_shares_count'] ?? 0);
+            });
+            $allTimeTopSharedJobs = array_slice($tempAllTimeShared, 0, 5);
         }
-        error_log("[FETCH_CONTENT_DEBUG] Loaded jobViewsData count: " . count($jobViewsData));
-        error_log("[FETCH_CONTENT_DEBUG] Loaded allJobs count: " . count($allJobs)); // $allJobs is loaded earlier in the dashboard case
 
-        if (!empty($jobViewsData) && !empty($allJobs)) {
-            arsort($jobViewsData); // Sort by view count descending
-            $topJobIdsAndCounts = array_slice($jobViewsData, 0, 5, true); // Get top 5 job IDs and their counts
-            error_log("[FETCH_CONTENT_DEBUG] Top Job IDs and Counts from job_views.json: " . print_r($topJobIdsAndCounts, true));
-            
-            $anyMatchFound = false; // Flag to check if at least one job ID matched
-            // Fetch job titles for these IDs
-            foreach ($topJobIdsAndCounts as $jobId => $viewCount) {
-                $foundJobInAllJobs = false;
-                foreach ($allJobs as $job) { // $allJobs should be available from the dashboard case
-                    if (($job['id'] ?? '') === $jobId) {
-                        $mostViewedJobs[] = [
-                            'id' => $jobId, // Ensure job ID is included
-                            'title' => $job['title'] ?? 'Unknown Job',
-                            'company' => $job['company'] ?? '',
-                            'views' => $viewCount
-                        ];
-                        $foundJobInAllJobs = true;
-                        $anyMatchFound = true; // A match was found
-                        break;
-                    }
-                }
-                if (!$foundJobInAllJobs) {
-                    error_log("[FETCH_CONTENT_WARNING] Job ID '" . $jobId . "' (views: " . $viewCount . ") from job_views.json was not found in allJobs list.");
-                }
-            }
-            if (!$anyMatchFound && !empty($topJobIdsAndCounts)) { // If we processed top IDs but found no matches at all
-                $sampleJobIdsFromAllJobs = [];
-                $limit = 0;
-                foreach($allJobs as $job) {
-                    if ($limit < 5) {
-                        $sampleJobIdsFromAllJobs[] = $job['id'] ?? 'NO_ID_FIELD_IN_JOBS_JSON';
-                        $limit++;
-                    } else {
-                        break;
-                    }
-                }
-                error_log("[FETCH_CONTENT_INFO] No matches found between job_views.json IDs and allJobs IDs. Sample IDs from job_views.json (top 5): " . print_r(array_keys($topJobIdsAndCounts), true) . " Sample IDs from allJobs (first 5): " . print_r($sampleJobIdsFromAllJobs, true));
-            }
-        } else {
-            if (empty($jobViewsData)) error_log("[FETCH_CONTENT_INFO] jobViewsData is empty. Cannot process most viewed jobs.");
-            if (empty($allJobs)) error_log("[FETCH_CONTENT_INFO] allJobs is empty. Cannot process most viewed jobs.");
-        }
-        
-        error_log("[FETCH_CONTENT_DEBUG] Final mostViewedJobs count for dashboard: " . count($mostViewedJobs));
-
-        // --- Most Shared Jobs Data (Last 30 Days, Top 5) ---
-        $jobSharesFilename = __DIR__ . '/../data/job_shares.json'; // Path for job shares data
-        // The view dashboard_overview_view.php expects top 5 for the last 30 days.
-        // $allJobs is already loaded in this case.
-        $mostSharedJobs = getMostSharedJobs($jobSharesFilename, $jobsFilename, 30, 5);
-        error_log("[FETCH_CONTENT_DEBUG] Final mostSharedJobs count for dashboard_overview: " . count($mostSharedJobs));
+        // $mostViewedJobs and $mostSharedJobs (for 30-day stats) are no longer populated here.
+        // The dashboard_overview_view.php will now rely on $allTimeTopViewedJobs and $allTimeTopSharedJobs.
+        error_log("[FETCH_CONTENT_INFO] dashboard_overview: Time-windowed most viewed/shared (from job_views/job_shares.json) are no longer processed.");
 
         // Gather basic server info for the main dashboard display
         $serverPhpVersion = phpversion();
@@ -333,13 +346,10 @@ switch ($requestedView) {
 
         $cpuHistory = $serverMetricsHistory['cpu_usage'] ?? [];
         $memoryHistory = $serverMetricsHistory['memory_usage_percent'] ?? [];
-        // Add disk usage history if available in your JSON
-        // $diskHistory = $serverMetricsHistory['disk_usage_percent'] ?? [];
 
         // Take the last N points
         $cpuHistory = array_slice($cpuHistory, -$dataPointsLimit);
         $memoryHistory = array_slice($memoryHistory, -$dataPointsLimit);
-        // $diskHistory = array_slice($diskHistory, -$dataPointsLimit);
 
         // Format for Chart.js
         foreach ($cpuHistory as $point) {
@@ -347,18 +357,15 @@ switch ($requestedView) {
             $serverCpuData[] = $point['value'];
         }
         foreach ($memoryHistory as $point) {
-             // Ensure labels match the CPU data points if they have different timestamps
-             // A more robust approach would align data points by timestamp
              $serverMemoryData[] = $point['value'];
         }
-        break; // Correct position for the break statement for case 'dashboard'
+        break; 
 
     case 'dashboard_service_one': // Basic Server Info
-        // Gather basic server info
         $serverPhpVersion = phpversion();
         $serverSoftware = $_SERVER['SERVER_SOFTWARE'] ?? 'N/A';
         log_app_activity("User '$loggedInUserId' accessed 'dashboard_service_one' view.", "ACCESS_GRANTED");
-        $applicationVersion = '1.0.0'; // Define your application version here
+        $applicationVersion = '1.0.0'; 
         $serverOs = php_uname('s') . ' ' . php_uname('r');
         break;
 
@@ -373,56 +380,108 @@ switch ($requestedView) {
         arsort($userCountsByRole);
         log_app_activity("User '$loggedInUserId' accessed 'dashboard_user_info' view.", "ACCESS_GRANTED");
 
-        // --- User Performance Tracking Data (Moved here) ---
-        $allJobs = loadJobs($jobsFilename); // Load jobs if not already loaded for this view
+        // --- User Performance Tracking Data ---
+        $allJobs = loadJobs($jobsFilename); 
         error_log("[FETCH_CONTENT_DEBUG] User Performance (User Info Tab): Users count for init: " . (is_array($users) ? count($users) : 'not an array'));
         if (!is_array($users)) {
-            $users = [];
-            error_log("[FETCH_CONTENT_ERROR] User Performance (User Info Tab): \$users was not an array.");
+            $users = []; // Should not happen if loadUsers works
+            error_log("[FETCH_CONTENT_ERROR] User Performance (User Info Tab): \$users was not an array after loadUsers.");
         }
-        foreach ($users as $user) {
-            if (!isset($user['username'])) {
-                error_log("[FETCH_CONTENT_WARNING] User Performance (User Info Tab): User found without 'username': " . print_r($user, true));
-                continue;
-            }
-                        $username = $user['username'];
-            $lcUsername = strtolower($username); // Use lowercase username as key
-            $displayName = $user['display_name'] ?? $username;
-
-            $userPerformanceOverall[$lcUsername] = ['name' => $displayName, 'count' => 0];
-            $userPerformanceLast30Days[$lcUsername] = ['name' => $displayName, 'count' => 0];
-            $userPerformanceToday[$lcUsername] = ['name' => $displayName, 'count' => 0];
-    }
+        // This initial loop for performance arrays is redundant due to reset and re-initialization below.
+        // foreach ($users as $user) {
+        //     if (!isset($user['username'])) {
+        //         error_log("[FETCH_CONTENT_WARNING] User Performance (User Info Tab): User found without 'username': " . print_r($user, true));
+        //         continue;
+        //     }
+        //     $username = $user['username']; 
+        //     $lcUsername = strtolower($username); 
+        //     $displayName = $user['display_name'] ?? $username;
+        //     $userPerformanceOverall[$lcUsername] = ['name' => $displayName, 'count' => 0];
+        //     $userPerformanceLast30Days[$lcUsername] = ['name' => $displayName, 'count' => 0];
+        //     $userPerformanceToday[$lcUsername] = ['name' => $displayName, 'count' => 0];
+        // }
 
         $thirtyDaysAgoTimestamp = strtotime('-30 days midnight');
         $todayTimestamp = strtotime('today midnight');
         error_log("[FETCH_CONTENT_DEBUG] User Performance (User Info Tab): AllJobs count: " . (is_array($allJobs) ? count($allJobs) : 'not an array'));
         
-        foreach ($allJobs as $job) {
-        $postedByRaw = $job['posted_by_user_id'] ?? null; // Original value from job data
-        if ($postedByRaw) {
-            $lcPostedBy = strtolower($postedByRaw); // Convert to lowercase for lookup
+        // Ensure all performance arrays are reset for this specific view context
+        $userPerformanceOverall = [];
+        $userPerformanceLast30Days = [];
+        $userPerformanceToday = [];
+        $userPerformanceList = [];
+        $performanceLeaderboard = []; // This will be rebuilt
 
-            if (isset($userPerformanceOverall[$lcPostedBy])) {
-                $userPerformanceOverall[$lcPostedBy]['count']++;
-                $jobTimestamp = $job['posted_on_unix_ts'] ?? 0;
-                if ($jobTimestamp >= $thirtyDaysAgoTimestamp) {
-                    if (isset($userPerformanceLast30Days[$lcPostedBy])) { // Ensure key exists
-                         $userPerformanceLast30Days[$lcPostedBy]['count']++;
-                    }
-                }
-                if ($jobTimestamp >= $todayTimestamp) {
-                    if (isset($userPerformanceToday[$lcPostedBy])) { // Ensure key exists
-                        $userPerformanceToday[$lcPostedBy]['count']++;
-                    }
-                }
-            } elseif ($postedByRaw) { // Log if $postedByRaw was set but not found after lowercasing
-                 error_log("[FETCH_CONTENT_WARNING] User Performance (User Info Tab): Job posted_by_user_id (raw: '$postedByRaw', lc: '$lcPostedBy') not found in user lookup. Job ID: " . ($job['id'] ?? 'N/A'));
+
+        // Create a lookup map of lowercase usernames to their original user data for efficient access
+        $lcUsersMap = [];
+        foreach ($users as $user) { // $users is already loaded for this case
+            if (isset($user['username'])) {
+                $lcUsersMap[strtolower(trim($user['username']))] = $user; // Trim username before lowercasing for map key
+            }
         }
-        
+
+        // Initialize performance arrays using the $lcUsersMap to ensure all registered users are included
+        foreach ($lcUsersMap as $lcUsernameKey => $userData) {
+            $displayName = $userData['display_name'] ?? $userData['username'];
+            $userPerformanceOverall[$lcUsernameKey] = ['name' => $displayName, 'count' => 0];
+            $userPerformanceLast30Days[$lcUsernameKey] = ['name' => $displayName, 'count' => 0];
+            $userPerformanceToday[$lcUsernameKey] = ['name' => $displayName, 'count' => 0];
+        }
+
+        foreach ($allJobs as $job) {
+            $postedByRaw = $job['posted_by_user_id'] ?? null; 
+            if ($postedByRaw) {
+                $lcPostedByJob = strtolower(trim($postedByRaw)); 
+
+                if (isset($lcUsersMap[$lcPostedByJob])) {
+                    $canonicalLcUsername = $lcPostedByJob; 
+                    
+                    if (isset($userPerformanceOverall[$canonicalLcUsername])) {
+                        $userPerformanceOverall[$canonicalLcUsername]['count']++;
+                        $jobTimestamp = $job['posted_on_unix_ts'] ?? 0;
+                        if ($jobTimestamp >= $thirtyDaysAgoTimestamp) {
+                            if (array_key_exists($canonicalLcUsername, $userPerformanceLast30Days)) {
+                                $userPerformanceLast30Days[$canonicalLcUsername]['count']++;
+                            } else {
+                                error_log("[FETCH_CONTENT_ERROR] User '$canonicalLcUsername' missing from userPerformanceLast30Days during increment.");
+                            }
+                        }
+                        if ($jobTimestamp >= $todayTimestamp) {
+                            if (array_key_exists($canonicalLcUsername, $userPerformanceToday)) {
+                                $userPerformanceToday[$canonicalLcUsername]['count']++;
+                            } else {
+                                error_log("[FETCH_CONTENT_ERROR] User '$canonicalLcUsername' missing from userPerformanceToday during increment.");
+                            }
+                        }
+                    } else {
+                        error_log("[FETCH_CONTENT_ERROR] User Performance (User Info Tab): User '$canonicalLcUsername' from job ID '{$job['id']}' was not pre-initialized in performance arrays. This indicates an issue with user list processing.");
+                    }
+                } else { 
+                     error_log("[FETCH_CONTENT_WARNING] User Performance (User Info Tab): Job posted_by_user_id (raw: '$postedByRaw', lc: '$lcPostedByJob') not found in registered users list (lcUsersMap). Job ID: " . ($job['id'] ?? 'N/A'));
+            }
         }
        $performanceLeaderboard = $userPerformanceLast30Days;
-        uasort($performanceLeaderboard, function ($a, $b) { return $b['count'] - $a['count']; });
+        $performanceLeaderboard = array_filter($performanceLeaderboard, function($user) {
+            return ($user['count'] ?? 0) > 0;
+        });
+        uasort($performanceLeaderboard, function ($a, $b) { return ($b['count'] ?? 0) - ($a['count'] ?? 0); });
+
+        // "User Job Posting Performance" list data ($userPerformanceList) is no longer needed for this view.
+        // "Overall Job Posting Performance by User" chart data is no longer needed.
+        $userPerformanceList = []; // Clear it as it's not used by this view anymore
+
+        $colorIndexForOverallPerfChart = 0;
+        // Re-use baseColors or define a new set if needed for more users
+        // $baseColors is defined later for Quarterly chart, ensure it's available or define here
+        $chartBaseColors = ['rgba(255, 99, 132, 0.7)', 'rgba(54, 162, 235, 0.7)', 'rgba(255, 206, 86, 0.7)', 'rgba(75, 192, 192, 0.7)', 'rgba(153, 102, 255, 0.7)', 'rgba(255, 159, 64, 0.7)', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40', '#FF6384'];
+
+        foreach ($userPerformanceList as $lcUsername => $data) {
+            $userOverallPerformanceChartLabels[] = $data['name'];
+            $userOverallPerformanceChartData[] = $data['overall'] ?? 0;
+            $userOverallPerformanceChartColors[] = $chartBaseColors[$colorIndexForOverallPerfChart % count($chartBaseColors)];
+            $colorIndexForOverallPerfChart++;
+        }
         $performanceLeaderboard = array_slice($performanceLeaderboard, 0, 5, true); // Top 5
 
         // Prepare data for charts in user_info_view
@@ -434,61 +493,85 @@ switch ($requestedView) {
             $userStatusChartLabels = array_keys($userCountsByStatus);
             $userStatusChartData = array_values($userCountsByStatus);
         }
+        
+        $topPostersChartLabels = [];
+        $topPostersChartData = [];
+
         if (!empty($performanceLeaderboard)) {
             foreach($performanceLeaderboard as $data) {
-                if ($data['count'] > 0) { // Only include users with posts in the chart
+                if (($data['count'] ?? 0) > 0) { 
                     $topPostersChartLabels[] = $data['name'];
                     $topPostersChartData[] = $data['count'];
                 }
             }
         }
 
-        // --- Achievements Chart Data for User Info Tab ---
-        // This logic is similar to the 'achievements' case
-        // $allJobs and $users are already loaded in this 'dashboard_user_info' case.
-        $userJobCountsByDate = [];
+        // User Achievements (Points/Earnings - Last 30 Days) chart data preparation removed from here.
+
+        // --- NEW: Quarterly User Earnings Chart Data (Last 3 Months) ---
         $rupeesPerJob = 3; // Or your defined points per job
+        $currentMonthTimestampForQuarterly = strtotime('first day of this month midnight');
+        $quarterlyMonthLabelsRaw = []; 
+        $monthTimestamps = [];
 
-        // Prepare labels for the last 30 days for the chart
-        for ($i = 29; $i >= 0; $i--) {
-            $userAchievementsChartLabels[] = date('M d', strtotime("-$i days"));
+        for ($m = 0; $m < 3; $m++) {
+            $monthTimestamp = strtotime("-$m months", $currentMonthTimestampForQuarterly);
+            $quarterlyMonthLabelsRaw[] = date('F Y', $monthTimestamp); 
+            $monthTimestamps[date('Y-m', $monthTimestamp)] = [
+                'start' => $monthTimestamp,
+                'end' => strtotime('last day of this month 23:59:59', $monthTimestamp)
+            ];
         }
+        $quarterlyUserEarningsLabels = array_reverse($quarterlyMonthLabelsRaw); 
+        $targetMonthKeysForQuarterly = array_keys($monthTimestamps); 
+        $targetMonthKeysForQuarterly = array_reverse($targetMonthKeysForQuarterly); 
 
-        // Aggregate job counts per user per day
+        $userMonthlyJobCountsForQuarterly = [];
+
         foreach ($allJobs as $job) {
-            $postedByUserId = $job['posted_by_user_id'] ?? null;
-            if (!$postedByUserId) continue;
+            $postedByRaw = $job['posted_by_user_id'] ?? null;
+            if (!$postedByRaw) continue;
+            $lcPostedByJob = strtolower(trim($postedByRaw));
 
-            $postedTimestamp = $job['posted_on_unix_ts'] ?? (isset($job['posted_on']) ? strtotime($job['posted_on']) : 0);
+            if (!isset($lcUsersMap[$lcPostedByJob])) continue; // Skip if job poster isn't a registered user
+            $canonicalLcUsername = $lcPostedByJob;
+
+            $postedTimestamp = $job['posted_on_unix_ts'] ?? 0;
             if ($postedTimestamp === 0) continue;
+            $jobMonthYear = date('Y-m', $postedTimestamp);
 
-            $jobDate = date('Y-m-d', $postedTimestamp);
-
-            if (!isset($userJobCountsByDate[$postedByUserId])) $userJobCountsByDate[$postedByUserId] = [];
-            if (!isset($userJobCountsByDate[$postedByUserId][$jobDate])) $userJobCountsByDate[$postedByUserId][$jobDate] = 0;
-            $userJobCountsByDate[$postedByUserId][$jobDate]++;
-        }
-
-        // Prepare datasets for Chart.js
-        $userDisplayNames = array_column($users, 'display_name', 'username');
-        $colorIndex = 0;
-        $baseColors = ['rgba(255, 99, 132, 0.7)', 'rgba(54, 162, 235, 0.7)', 'rgba(255, 206, 86, 0.7)', 'rgba(75, 192, 192, 0.7)', 'rgba(153, 102, 255, 0.7)', 'rgba(255, 159, 64, 0.7)'];
-
-        foreach ($userJobCountsByDate as $userId => $dates) {
-            $userDisplayName = $userDisplayNames[$userId] ?? $userId;
-            $userDataPoints = [];
-            foreach ($userAchievementsChartLabels as $labelDate) {
-                $checkDate = date('Y-m-d', strtotime($labelDate . " " . date("Y")));
-                $jobsCount = $dates[$checkDate] ?? 0;
-                $userDataPoints[] = $jobsCount * $rupeesPerJob;
+            if (in_array($jobMonthYear, $targetMonthKeysForQuarterly)) {
+                if (!isset($userMonthlyJobCountsForQuarterly[$canonicalLcUsername])) {
+                    $userMonthlyJobCountsForQuarterly[$canonicalLcUsername] = array_fill_keys($targetMonthKeysForQuarterly, 0);
+                }
+                $userMonthlyJobCountsForQuarterly[$canonicalLcUsername][$jobMonthYear]++;
             }
-            $userAchievementsChartData[] = ['label' => $userDisplayName, 'data' => $userDataPoints, 'borderColor' => $baseColors[$colorIndex % count($baseColors)], 'backgroundColor' => $baseColors[$colorIndex % count($baseColors)], 'fill' => false, 'tension' => 0.1];
-            $colorIndex++;
         }
-    }
-    
-        break;
 
+        $colorIndexForQuarterlyChart = 0; 
+        $baseColors = ['rgba(255, 99, 132, 0.7)', 'rgba(54, 162, 235, 0.7)', 'rgba(255, 206, 86, 0.7)', 'rgba(75, 192, 192, 0.7)', 'rgba(153, 102, 255, 0.7)', 'rgba(255, 159, 64, 0.7)'];
+        
+        foreach ($lcUsersMap as $lcUsernameKey => $userData) { // Iterate through all registered users via lcUsersMap
+            $userDisplayName = $userData['display_name'] ?? $userData['username'];
+            $userMonthlyEarnings = [];
+            foreach ($targetMonthKeysForQuarterly as $monthKey) {
+                $jobsCount = $userMonthlyJobCountsForQuarterly[$lcUsernameKey][$monthKey] ?? 0;
+                $userMonthlyEarnings[] = $jobsCount * $rupeesPerJob;
+            }
+            if (array_sum($userMonthlyEarnings) > 0) {
+                $userColor = $baseColors[$colorIndexForQuarterlyChart % count($baseColors)];
+                $quarterlyUserEarningsData[] = [
+                    'label' => $userDisplayName,
+                    'data' => $userMonthlyEarnings,
+                    'backgroundColor' => $userColor,
+                    'borderColor' => str_replace('0.7', '1', $userColor), 
+                    'borderWidth' => 1
+                ];
+                $colorIndexForQuarterlyChart++;
+            }
+        }
+        break;
+        }
     case 'dashboard_service_two': // Server Monitoring Charts
         $serverMetricsFilename = __DIR__ . '/../data/server_metrics_history.json';
         $serverMetricsHistory = [];
@@ -514,7 +597,21 @@ switch ($requestedView) {
         $allJobs = loadJobs($jobsFilename);
         log_app_activity("User '$loggedInUserId' accessed 'dashboard_job_stats' view.", "ACCESS_GRANTED");
 
-        // Calculate Jobs Today and Jobs This Month (Global for this view)
+        // Calculate Jobs Today and Jobs This Month for Job Stats view
+        // This should be based on all jobs for this view
+        $jobsTodayCount = 0;
+        $jobsMonthlyCount = 0;
+        $nowForJobStats = time(); // Use a distinct 'now' variable if needed, or global $now is fine
+        $startOfTodayForJobStats = strtotime('today midnight');
+        $startOfMonthForJobStats = strtotime('first day of this month midnight');
+
+        if (!empty($allJobs)) {
+            foreach ($allJobs as $job) {
+                 $postedTimestamp = $job['posted_on_unix_ts'] ?? (isset($job['posted_on']) ? strtotime($job['posted_on']) : 0);
+                 if ($postedTimestamp >= $startOfTodayForJobStats) $jobsTodayCount++;
+                 if ($postedTimestamp >= $startOfMonthForJobStats) $jobsMonthlyCount++;
+            }
+        }
          $jobCountsByDay = array_fill(0, 30, 0);
          for ($i = 29; $i >= 0; $i--) {
              $graphLabels[] = date('M d', strtotime("-$i days"));
@@ -523,7 +620,7 @@ switch ($requestedView) {
              foreach ($allJobs as $job) {
                   $postedTimestamp = $job['posted_on_unix_ts'] ?? (isset($job['posted_on']) ? strtotime($job['posted_on']) : 0);
                   if ($postedTimestamp > 0) {
-                      $now = time(); // Define $now here as it's used in the loop
+                      $now = time(); 
                       $daysAgo = floor(($now - $postedTimestamp) / (24 * 60 * 60));
                       if ($daysAgo >= 0 && $daysAgo < 30) {
                           $jobCountsByDay[29 - $daysAgo]++;
@@ -533,27 +630,28 @@ switch ($requestedView) {
          }
          $graphData = $jobCountsByDay;
 
-        // Note: Most Viewed and Most Shared Jobs have been moved to 'dashboard_visitors_info'
+        if (!empty($allJobs)) {
+            foreach ($allJobs as $job) {
+                $totalLifetimeViews += (int)($job['total_views_count'] ?? 0); 
+                $totalLifetimeShares += (int)($job['total_shares_count'] ?? 0);
+            }
+        }
         break;
+
     case 'dashboard_visitors_info':
-        // This data is already prepared by the general logic at the top of fetch_content.php
-        // $dailyVisitorData, $visitorGraphLabels, $visitorGraphData, $totalViews, $monthlyVisitors
-        // are available.
         log_app_activity("User '$loggedInUserId' accessed 'dashboard_visitors_info' view.", "ACCESS_GRANTED");
 
-        // --- Top Searched Keywords Data ---
         $searchKeywordsLogFile = __DIR__ . '/../data/search_keywords_log.json';
         if (file_exists($searchKeywordsLogFile)) {
             $keywordsJson = file_get_contents($searchKeywordsLogFile);
             $allSearchedKeywords = json_decode($keywordsJson, true);
 
             if (is_array($allSearchedKeywords) && !empty($allSearchedKeywords)) {
-                // Convert all keywords to lowercase for consistent counting
                 $allSearchedKeywords = array_map('strtolower', $allSearchedKeywords);
                 $keywordCounts = array_count_values($allSearchedKeywords);
-                arsort($keywordCounts); // Sort by count descending
+                arsort($keywordCounts); 
 
-                $topKeywords = array_slice($keywordCounts, 0, 25, true); // Get top 25
+                $topKeywords = array_slice($keywordCounts, 0, 25, true); 
 
                 foreach ($topKeywords as $keyword => $count) {
                     $topSearchedKeywordsLabels[] = $keyword;
@@ -566,32 +664,31 @@ switch ($requestedView) {
             log_app_activity("Search keywords log file ('$searchKeywordsLogFile') not found.", "DATA_WARNING");
         }
 
-        // --- Most Viewed & Shared Jobs Data for Visitors Info Tab (Top 10, Last 30 Days) ---
-        $allJobs = loadJobs($jobsFilename); // Load all jobs
-        $jobViewsFilename = __DIR__ . '/../data/job_views.json';
-        $jobSharesFilename = __DIR__ . '/../data/job_shares.json';
+        $allJobs = loadJobs($jobsFilename); 
+        if (!empty($allJobs)) {
+            $tempAllTimeViewedVisitors = $allJobs;
+            usort($tempAllTimeViewedVisitors, function ($a, $b) {
+                return ($b['total_views_count'] ?? 0) - ($a['total_views_count'] ?? 0);
+            });
+            $allTimeTopViewedJobs = array_slice($tempAllTimeViewedVisitors, 0, 10); 
 
-        $mostViewedJobs = getMostViewedJobs($jobViewsFilename, $jobsFilename, 30, 10);
-        $mostSharedJobs = getMostSharedJobs($jobSharesFilename, $jobsFilename, 30, 10);
-        break;
-
+            $tempAllTimeSharedVisitors = $allJobs;
+            usort($tempAllTimeSharedVisitors, function ($a, $b) {
+                return ($b['total_shares_count'] ?? 0) - ($a['total_shares_count'] ?? 0);
+            });
+            $allTimeTopSharedJobs = array_slice($tempAllTimeSharedVisitors, 0, 10); 
+        }
+        error_log("[FETCH_CONTENT_INFO] dashboard_visitors_info: Time-windowed most viewed/shared (from job_views/job_shares.json) are no longer processed.");
+        break; 
+    
     case 'dashboard_qoe':
-        // Placeholder for Quality of Experience data
-        // You would load or calculate QOE metrics here.
-        // For example:
-        // $averagePageLoadTime = getAveragePageLoadTime(); // Fictional function
-        // $errorRate = getErrorRate(); // Fictional function
-        // $userSatisfactionScores = loadUserSatisfactionScores(); // Fictional function
         log_app_activity("User '$loggedInUserId' accessed 'dashboard_qoe' view.", "ACCESS_GRANTED");
-        // For now, we'll just ensure the view file can be included.
-        // You can pass placeholder variables if needed by the view.
         $qoeMetrics = [
             'avg_load_time' => 'N/A (Placeholder)',
             'error_rate_percent' => 'N/A (Placeholder)',
             'user_feedback_summary' => 'No QOE data available yet. (Placeholder)',
         ];
 
-        // --- QOE Chart Data Preparation (DNS Resolution, Server Response) ---
         $qoeMetricsFile = __DIR__ . '/../data/qoe_metrics_history.json';
         $qoeMetricsHistory = [];
 
@@ -605,16 +702,13 @@ switch ($requestedView) {
             log_app_activity("QOE metrics history file not found: $qoeMetricsFile", "DATA_WARNING");
         }
 
-        // Prepare labels for the last 30 days
         for ($i = 29; $i >= 0; $i--) {
             $qoeChartLabels[] = date('M d', strtotime("-$i days"));
         }
 
-        // Helper function to process metrics for daily averages
-        // (Could be moved to a helper file if used elsewhere)
         if (!function_exists('calculate_daily_averages')) {
             function calculate_daily_averages($metricHistory, $days = 30) {
-                $dailyAverages = array_fill(0, $days, null); // Initialize with null for days with no data
+                $dailyAverages = array_fill(0, $days, null); 
                 $dailyData = [];
                 $thirtyDaysAgo = strtotime("-$days days midnight");
 
@@ -648,13 +742,9 @@ switch ($requestedView) {
         $qoeDnsResolutionData = calculate_daily_averages($dnsHistory, 30);
         $qoeServerResponseData = calculate_daily_averages($serverResponseHistory, 30);
 
-        // Set flag to load Chart.js if data is available for any chart
         if (!empty($qoeDnsResolutionData) || !empty($qoeServerResponseData)) {
             $shouldLoadChartJsForQoe = true;
         }
-
-        // Most Viewed Jobs table has been removed from the QOE dashboard.
-        // $mostViewedJobs will remain empty or not be used by the dashboard_qoe_view.php
         break;
 
     case 'manage_jobs':
@@ -796,56 +886,85 @@ switch ($requestedView) {
 
     case 'achievements':
         $allJobs = loadJobs($jobsFilename);
-        $allUsers = loadUsers($usersFilename);
-        $userJobCountsByDate = [];
+        $allUsers = loadUsers($usersFilename); // Ensure $allUsers is loaded
         $rupeesPerJob = 3;
+        // Clear old achievements chart data variables as they are being removed
+        $achievementsChartLabels = [];
+        $achievementsChartData = [];
 
-        for ($i = 29; $i >= 0; $i--) {
-            $achievementsChartLabels[] = date('M d', strtotime("-$i days"));
+        // --- User Earnings (Last 3 Months) Chart Data for Achievements Tab ---
+        // This logic is similar to the one in 'dashboard_user_info'
+        $currentMonthTimestampForQuarterly = strtotime('first day of this month midnight');
+        $quarterlyMonthLabelsRaw = []; 
+        $monthTimestamps = [];
+
+        for ($m = 0; $m < 3; $m++) {
+            $monthTimestamp = strtotime("-$m months", $currentMonthTimestampForQuarterly);
+            $quarterlyMonthLabelsRaw[] = date('F Y', $monthTimestamp); 
+            $monthTimestamps[date('Y-m', $monthTimestamp)] = [
+                'start' => $monthTimestamp,
+                'end' => strtotime('last day of this month 23:59:59', $monthTimestamp)
+            ];
+        }
+        $quarterlyUserEarningsLabels = array_reverse($quarterlyMonthLabelsRaw); 
+        $targetMonthKeysForQuarterly = array_keys($monthTimestamps); 
+        $targetMonthKeysForQuarterly = array_reverse($targetMonthKeysForQuarterly); 
+
+        $userMonthlyJobCountsForQuarterly = [];
+
+        // Create a lowercase user map for matching
+        $lcUsersMapForAchievements = [];
+        foreach ($allUsers as $user) {
+            if (isset($user['username'])) {
+                $lcUsersMapForAchievements[strtolower(trim($user['username']))] = $user;
+            }
         }
 
         foreach ($allJobs as $job) {
-            $postedByUserId = $job['posted_by_user_id'] ?? null;
-            if (!$postedByUserId) continue;
+            $postedByRaw = $job['posted_by_user_id'] ?? null;
+            if (!$postedByRaw) continue;
+            $lcPostedByJob = strtolower(trim($postedByRaw));
 
-            $postedTimestamp = $job['posted_on_unix_ts'] ?? (isset($job['posted_on']) ? strtotime($job['posted_on']) : 0);
+            if (!isset($lcUsersMapForAchievements[$lcPostedByJob])) continue; 
+            $canonicalLcUsername = $lcPostedByJob;
+
+            $postedTimestamp = $job['posted_on_unix_ts'] ?? 0;
             if ($postedTimestamp === 0) continue;
+            $jobMonthYear = date('Y-m', $postedTimestamp);
 
-            $jobDate = date('Y-m-d', $postedTimestamp);
-
-            if (!isset($userJobCountsByDate[$postedByUserId])) {
-                $userJobCountsByDate[$postedByUserId] = [];
+            if (in_array($jobMonthYear, $targetMonthKeysForQuarterly)) {
+                if (!isset($userMonthlyJobCountsForQuarterly[$canonicalLcUsername])) {
+                    $userMonthlyJobCountsForQuarterly[$canonicalLcUsername] = array_fill_keys($targetMonthKeysForQuarterly, 0);
+                }
+                $userMonthlyJobCountsForQuarterly[$canonicalLcUsername][$jobMonthYear]++;
             }
-            if (!isset($userJobCountsByDate[$postedByUserId][$jobDate])) {
-                $userJobCountsByDate[$postedByUserId][$jobDate] = 0;
-            }
-            $userJobCountsByDate[$postedByUserId][$jobDate]++;
         }
 
-        $userDisplayNames = array_column($allUsers, 'display_name', 'username');
-        $colorIndex = 0;
+        $colorIndexForQuarterlyChart = 0; 
         $baseColors = [
             'rgba(255, 99, 132, 0.7)', 'rgba(54, 162, 235, 0.7)', 'rgba(255, 206, 86, 0.7)',
             'rgba(75, 192, 192, 0.7)', 'rgba(153, 102, 255, 0.7)', 'rgba(255, 159, 64, 0.7)'
         ];
-
-        foreach ($userJobCountsByDate as $userId => $dates) {
-            $userDisplayName = $userDisplayNames[$userId] ?? $userId;
-            $userDataPoints = [];
-            foreach ($achievementsChartLabels as $labelDate) {
-                $checkDate = date('Y-m-d', strtotime($labelDate . " " . date("Y"))); // Add current year for correct strtotime parsing
-                $jobsCount = $dates[$checkDate] ?? 0;
-                $userDataPoints[] = $jobsCount * $rupeesPerJob;
+        
+        $quarterlyUserEarningsData = []; // Ensure it's initialized for this case
+        foreach ($lcUsersMapForAchievements as $lcUsernameKey => $userData) { 
+            $userDisplayName = $userData['display_name'] ?? $userData['username'];
+            $userMonthlyEarnings = [];
+            foreach ($targetMonthKeysForQuarterly as $monthKey) {
+                $jobsCount = $userMonthlyJobCountsForQuarterly[$lcUsernameKey][$monthKey] ?? 0;
+                $userMonthlyEarnings[] = $jobsCount * $rupeesPerJob;
             }
-            $achievementsChartData[] = [
-                'label' => $userDisplayName,
-                'data' => $userDataPoints,
-                'borderColor' => $baseColors[$colorIndex % count($baseColors)],
-                'backgroundColor' => $baseColors[$colorIndex % count($baseColors)],
-                'fill' => false,
-                'tension' => 0.1
-            ];
-            $colorIndex++;
+            if (array_sum($userMonthlyEarnings) > 0) {
+                $userColor = $baseColors[$colorIndexForQuarterlyChart % count($baseColors)];
+                $quarterlyUserEarningsData[] = [
+                    'label' => $userDisplayName,
+                    'data' => $userMonthlyEarnings,
+                    'backgroundColor' => $userColor,
+                    'borderColor' => str_replace('0.7', '1', $userColor), 
+                    'borderWidth' => 1
+                ];
+                $colorIndexForQuarterlyChart++;
+            }
         }
         break;
 
@@ -856,12 +975,10 @@ switch ($requestedView) {
             error_log("Admin Fetch Content Access Denied: User '" . htmlspecialchars($loggedInUserId) . "' (role: " . htmlspecialchars($loggedInUserRole) . ") attempted to access 'server_management' view via AJAX.");
             exit;
         }
-        // Data for the dedicated server management page
         $serverPhpVersion = phpversion();
         log_app_activity("User '$loggedInUserId' accessed 'server_management' view.", "ACCESS_GRANTED");
         $serverSoftware = $_SERVER['SERVER_SOFTWARE'] ?? 'N/A';
-        $serverOs = php_uname(); // More detailed OS info
-        // You can add more detailed checks here like disk space, load averages (if applicable and safe)
+        $serverOs = php_uname(); 
         break;    
     case 'logs':
         if ($loggedInUserRole !== 'super_admin') {
@@ -870,56 +987,42 @@ switch ($requestedView) {
             error_log("Admin Fetch Content Access Denied: User '" . htmlspecialchars($loggedInUserId) . "' (role: " . htmlspecialchars($loggedInUserRole) . ") attempted to access 'logs' view.");
             exit;
         }
-        // Use the application-specific log file defined in log_helpers.php (via config.php)
         $logFilePath = APP_LOG_FILE_PATH; 
-        $linesToFetch = 100; // Number of recent log lines to display
+        $linesToFetch = 100; 
 
         if (file_exists($logFilePath) && is_readable($logFilePath)) {
-            // Efficiently read last N lines (can be complex for very large files)
-            // A simpler approach for moderately sized files:
             $fileContents = file($logFilePath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
             if ($fileContents === false) {
                 $logEntries[] = "Error: Could not read log file content.";
-                // Log this error to the PHP system error log, not the app log itself
                 error_log("Admin Logs View System Error: Could not read app_activity.log content from: " . $logFilePath); 
             } else {
                 $logEntries = array_slice($fileContents, -$linesToFetch);
-                // Filter out log entries related to accessing or attempting to access the 'logs' view itself
                 $logEntries = array_filter($logEntries, function($entry) {
                     return strpos($entry, "attempting to access view: 'logs'") === false &&
                            strpos($entry, "accessed 'logs' view.") === false;
                 });
                 if (empty($logEntries)) {
-                    // If filtering results in an empty array, provide a message.
                     $logEntries[] = "Log file is empty or contains no recent entries.";
                 }
             }
         } else {
             $logEntries[] = "Application log file not found or not readable at: " . htmlspecialchars($logFilePath);
-            // Log this error to the PHP system error log
             error_log("Admin Logs View System Error: Application log file (app_activity.log) not found or not readable at: " . $logFilePath);
-            // Attempt to create it if it doesn't exist, so it's there for next time
             log_app_activity("Log file initialized.", "SYSTEM"); 
         }
-          // Check if this is an AJAX request specifically for updating logs
         $isAjaxLogUpdate = isset($_GET['ajax']) && $_GET['ajax'] === '1';
 
         if ($isAjaxLogUpdate) {
-            // For AJAX updates, clean any previous buffer from fetch_content.php itself,
-            // then output only the log entries.
             ob_clean(); 
             if (!empty($logEntries) && !(count($logEntries) === 1 && strpos($logEntries[0], 'No log entries') !== false && strpos($logEntries[0], 'error loading logs') !== false )) {
                 foreach ($logEntries as $entry) {
                     echo '<div class="log-entry">' . htmlspecialchars($entry) . '</div>';
                 }
             } else {
-                // Output the specific message if logEntries contains an error or "no entries" message
                 echo '<div class="log-entry no-data-message">' . htmlspecialchars($logEntries[0] ?? 'No log entries found or log file is empty.') . '</div>';
             }
-            exit; // Important: Stop further processing for AJAX log updates
+            exit; 
         }
-        // For non-AJAX (initial load), $logEntries will be passed to logs_view.php
-        // and the full logs_view.php will be included by the main logic at the end of this script.
        
         log_app_activity("User '$loggedInUserId' accessed 'logs' view.", "ACCESS_GRANTED");
         break;

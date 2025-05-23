@@ -121,7 +121,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if (!empty($experience) && $experience !== '0') {
                     // Use $experience which already holds custom_experience if 'other' was selected
                     $experienceText = $experience; 
-                    if ($experienceText !== 'internship' && $experienceText !== '0' && !str_contains($experienceText, 'year')) $experienceText .= (is_numeric($experienceText) && $experienceText > 1 || $experienceText === '15+' || $experienceText === '20+') ? " years" : " year";
+                    if ($experienceText !== 'internship' && $experienceText !== '0' && strpos($experienceText, 'year') === false) $experienceText .= (is_numeric($experienceText) && $experienceText > 1 || $experienceText === '15+' || $experienceText === '20+') ? " years" : " year";
                     $prompt .= "- Experience Required: $experienceText\n";
                 }
                 if (!empty($type)) $prompt .= "- Job Type: $type\n";
@@ -226,7 +226,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'posted_on' => date('Y-m-d H:i:s'),
             'posted_on_unix_ts' => time(),
             // Add the logged-in user's ID
-            'posted_by_user_id' => $_SESSION['admin_username'] ?? null 
+            'posted_by_user_id' => $_SESSION['admin_username'] ?? null,
+            'total_views_count' => 0, // Initialize new field
+            'total_shares_count' => 0  // Initialize new field
         ];
 
         $jobsFile = __DIR__ . '/../data/jobs.json';

@@ -4,18 +4,24 @@
 // Assumes these variables are available from fetch_content.php:
 $totalViews = $totalViews ?? 0;
 $monthlyVisitors = $monthlyVisitors ?? 0;
+$totalPageRequestsAllTime = $totalPageRequestsAllTime ?? 0; // New variable
+$monthlyTotalPageRequests = $monthlyTotalPageRequests ?? 0; // New variable
 $visitorGraphLabels = $visitorGraphLabels ?? [];
 $visitorGraphData = $visitorGraphData ?? [];
+$totalRequestsGraphData = $totalRequestsGraphData ?? []; // New: For daily total requests chart
 
 // Data for Top Searched Keywords chart
 $topSearchedKeywordsLabels = $topSearchedKeywordsLabels ?? [];
 $topSearchedKeywordsData = $topSearchedKeywordsData ?? [];
 
-// Data for Most Viewed Jobs table
-$mostViewedJobs = $mostViewedJobs ?? [];
-$mostSharedJobs = $mostSharedJobs ?? [];
+// $mostViewedJobs and $mostSharedJobs for 30-day stats are no longer used here.
+// The view will rely on $allTimeTopViewedJobs and $allTimeTopSharedJobs.
 
-$shouldLoadChartJsForVisitors = (!empty($visitorGraphLabels) && !empty($visitorGraphData)) || (!empty($topSearchedKeywordsLabels) && !empty($topSearchedKeywordsData));
+// All-Time stats from jobs.json (prepared in fetch_content.php)
+$allTimeTopViewedJobs = $allTimeTopViewedJobs ?? [];
+$allTimeTopSharedJobs = $allTimeTopSharedJobs ?? [];
+
+$shouldLoadChartJsForVisitors = (!empty($visitorGraphLabels) && (!empty($visitorGraphData) || !empty($totalRequestsGraphData))) || (!empty($topSearchedKeywordsLabels) && !empty($topSearchedKeywordsData));
 ?>
 <div class="dashboard-content visitors-info-view-content">
     <h3>Visitor Statistics & Insights</h3>
@@ -28,6 +34,14 @@ $shouldLoadChartJsForVisitors = (!empty($visitorGraphLabels) && !empty($visitorG
          <div class="stat-card">
             <h4>Monthly Unique Visitors (Current Month)</h4>
             <p><?= htmlspecialchars($monthlyVisitors) ?></p>
+        </div>
+        <div class="stat-card">
+            <h4>Total Page Loads (All Time)</h4>
+            <p><?= htmlspecialchars($totalPageRequestsAllTime) ?></p>
+        </div>
+         <div class="stat-card">
+            <h4>Monthly Page Loads (Current Month)</h4>
+            <p><?= htmlspecialchars($monthlyTotalPageRequests) ?></p>
         </div>
     </div>
 
@@ -44,6 +58,16 @@ $shouldLoadChartJsForVisitors = (!empty($visitorGraphLabels) && !empty($visitorG
     </div>
     <?php endif; ?>
 
+    <?php if (!empty($visitorGraphLabels) && !empty($totalRequestsGraphData) && count(array_filter($totalRequestsGraphData)) > 0): ?>
+    <div class="dashboard-section">
+        <h4>Daily Page Loads (Last 30 Days)</h4>
+        <div class="chart-container" style="height: 350px;">
+            <canvas id="totalPageLoadsChart"></canvas>
+        </div>
+    </div>
+    <?php else: ?>
+    <?php endif; ?>
+
     <?php if (!empty($topSearchedKeywordsLabels) && !empty($topSearchedKeywordsData)): ?>
     <div class="dashboard-section">
         <h4>Top 25 Searched Keywords (All Time)</h4>
@@ -58,18 +82,14 @@ $shouldLoadChartJsForVisitors = (!empty($visitorGraphLabels) && !empty($visitorG
     
     <?php endif; ?>
     <?php if ($loggedInUserRole === 'super_admin' || in_array($loggedInUserRole, $allRegionalAdminRoles)): ?>
-    <div class="stats-columns-container" style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 20px;"> <!-- Added margin-top -->
-        <div class="stats-column" style="flex: 1; min-width: 300px;"> <!-- Column for Most Viewed -->
-           
-    
-
-<div class="stats-columns-container" style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 0;">
+    <!-- All-Time Stats from jobs.json -->
+<div class="stats-columns-container" style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 20px;">
     <div class="stats-column" style="width: 100%;">
-        <?php if (!empty($mostViewedJobs)): ?>
-        <div class="dashboard-section most-viewed-jobs-section">
-            <h4>Top 10 Most Viewed Jobs (Last 30 Days)</h4>
+        <?php if (!empty($allTimeTopViewedJobs)): ?>
+        <div class="dashboard-section alltime-most-viewed-jobs-section">
+            <h4>All-Time Top 10 Viewed Jobs</h4>
                 <ol class="leaderboard-list">
-                    <?php foreach (array_slice($mostViewedJobs, 0, 10) as $job): ?>
+                    <?php foreach ($allTimeTopViewedJobs as $job): ?>
                         <li>
                             <div class="leaderboard-item-main-content">
                                 <span class="leaderboard-name">
@@ -78,7 +98,7 @@ $shouldLoadChartJsForVisitors = (!empty($visitorGraphLabels) && !empty($visitorG
                                         <small>at <?= htmlspecialchars($job['company']) ?></small>
                                     <?php endif; ?>
                                 </span>
-                                <span class="leaderboard-count"><?= htmlspecialchars($job['views'] ?? 0) ?> views</span>
+                                <span class="leaderboard-count"><?= htmlspecialchars($job['total_views_count'] ?? 0) ?> views</span>
                             </div>
                             <?php if (!empty($job['id'])): ?>
                             <a href="../index.php?job_id=<?= htmlspecialchars($job['id']) ?>" target="_blank" class="leaderboard-action-button">View Job</a>
@@ -88,19 +108,17 @@ $shouldLoadChartJsForVisitors = (!empty($visitorGraphLabels) && !empty($visitorG
                 </ol>
         </div>
         <?php else: ?>
-        <div class="dashboard-section most-viewed-jobs-section">
-            <h4>Top 10 Most Viewed Jobs (Last 30 Days)</h4>
-            <p class="no-data-message">No job view data available for the last 30 days.</p>
-        </div>
+        <div class="dashboard-section alltime-most-viewed-jobs-section">
+            <h4>All-Time Top 10 Viewed Jobs</h4><p class="no-data-message">No job view data available.</p></div>
         <?php endif; ?>
     </div>
 
     <div class="stats-column" style="width: 100%;">
-        <?php if (!empty($mostSharedJobs)): ?>
-        <div class="dashboard-section most-shared-jobs-section">
-            <h4>Top 10 Most Shared Jobs (Last 30 Days)</h4>
+        <?php if (!empty($allTimeTopSharedJobs)): ?>
+        <div class="dashboard-section alltime-most-shared-jobs-section">
+            <h4>All-Time Top 10 Shared Jobs</h4>
                 <ol class="leaderboard-list">
-                    <?php foreach (array_slice($mostSharedJobs, 0, 10) as $job): ?>
+                    <?php foreach ($allTimeTopSharedJobs as $job): ?>
                         <li>
                             <div class="leaderboard-item-main-content">
                                 <span class="leaderboard-name">
@@ -109,7 +127,7 @@ $shouldLoadChartJsForVisitors = (!empty($visitorGraphLabels) && !empty($visitorG
                                         <small>at <?= htmlspecialchars($job['company']) ?></small>
                                     <?php endif; ?>
                                 </span>
-                                <span class="leaderboard-count"><?= htmlspecialchars($job['shares'] ?? 0) ?> shares</span>
+                                <span class="leaderboard-count"><?= htmlspecialchars($job['total_shares_count'] ?? 0) ?> shares</span>
                             </div>
                             <?php if (!empty($job['id'])): ?>
                             <a href="../index.php?job_id=<?= htmlspecialchars($job['id']) ?>" target="_blank" class="leaderboard-action-button">View Job</a>
@@ -119,10 +137,8 @@ $shouldLoadChartJsForVisitors = (!empty($visitorGraphLabels) && !empty($visitorG
                 </ol>
         </div>
         <?php else: ?>
-        <div class="dashboard-section most-shared-jobs-section">
-            <h4>Top 10 Most Shared Jobs (Last 30 Days)</h4>
-            <p class="no-data-message">No job share data available for the last 30 days.</p>
-        </div>
+        <div class="dashboard-section alltime-most-shared-jobs-section">
+            <h4>All-Time Top 10 Shared Jobs</h4><p class="no-data-message">No job share data available.</p></div>
         <?php endif; ?>
     </div>
 <style>
@@ -316,6 +332,29 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
     <?php endif; ?>
+
+    <?php if (!empty($visitorGraphLabels) && !empty($totalRequestsGraphData) && count(array_filter($totalRequestsGraphData)) > 0): ?>
+    if (document.getElementById('totalPageLoadsChart')) {
+        const pageLoadsLabels = <?= json_encode($visitorGraphLabels) ?>; // Same labels as unique visitors
+        const pageLoadsData = <?= json_encode($totalRequestsGraphData) ?>;
+        const pageLoadsCtx = document.getElementById('totalPageLoadsChart').getContext('2d');
+        new Chart(pageLoadsCtx, {
+            type: 'line',
+            data: {
+                labels: pageLoadsLabels,
+                datasets: [{
+                    label: 'Daily Page Loads',
+                    data: pageLoadsData,
+                    backgroundColor: 'rgba(255, 159, 64, 0.5)', // Orange color
+                    borderColor: 'rgba(255, 159, 64, 1)',
+                    borderWidth: 1, fill: true, tension: 0.1
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } }, x: {} }, plugins: { legend: { display: true }, title: { display: false } } }
+        });
+    }
+    <?php endif; ?>
+
 
     <?php if (!empty($topSearchedKeywordsLabels) && !empty($topSearchedKeywordsData)): ?>
     if (document.getElementById('topSearchedKeywordsChart')) {

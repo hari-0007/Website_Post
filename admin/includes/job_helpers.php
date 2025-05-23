@@ -1,131 +1,162 @@
 <?php
 
 // admin/includes/job_helpers.php
-define('JOB_VIEWS_INIT_PATH', __DIR__ . '/../../data/job_views.json'); // Path from admin/includes
-define('JOB_SHARES_INIT_PATH', __DIR__ . '/../../data/job_shares.json'); // Path for shares
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+require_once __DIR__ . '/config.php'; // Ensures $jobsFilename is available
 
 /**
- * Loads job data from the JSON file.
+ * Loads all jobs from the JSON file.
+ * Ensures 'total_views_count' and 'total_shares_count' fields exist.
  *
- * @param string $filename The path to the job data file.
+ * @param string $filename Path to the jobs JSON file.
  * @return array An array of job objects.
  */
-function loadJobs($filename) {
-    // Cast to string to prevent "Passing null" deprecation warning if $filename is null
-    $filename = (string) $filename;
-
+function loadJobs(string $filename): array {
     if (!file_exists($filename)) {
-        error_log("Admin Error: Job data file not found: " . $filename); // Log error with path
-        return []; // Return empty array if file doesn't exist
+        return [];
     }
-
-    $jsonData = file_get_contents($filename);
-    if ($jsonData === false) {
-        error_log("Admin Error: Could not read job data file: " . $filename); // Log error with path
-        return []; // Return empty array on read error
-    }
-
-    $jobs = json_decode($jsonData, true);
-    if ($jobs === null) { // Handle malformed JSON
-        error_log("Admin Error: Error decoding jobs.json: " . json_last_error_msg() . " in file: " . $filename); // Log JSON error with path
-        return []; // Return empty array on decode error
-    }
+    $json = file_get_contents($filename);
+    $jobs = json_decode($json, true);
 
     if (!is_array($jobs)) {
-         error_log("Admin Error: Job data is not an array in file: " . $filename); // Log error with path
-         return []; // Return empty array if data is not an array
+        error_log("Error decoding jobs JSON or not an array: $filename");
+        return [];
     }
+
+    // Ensure new fields exist with defaults and unix timestamp for sorting
+    foreach ($jobs as &$job) { // Pass by reference to modify
+        if (!isset($job['total_views_count'])) {
+            $job['total_views_count'] = 0;
+        }
+        if (!isset($job['total_shares_count'])) {
+            $job['total_shares_count'] = 0;
+        }
+        if (!isset($job['posted_on_unix_ts']) && isset($job['posted_on'])) {
+            $job['posted_on_unix_ts'] = strtotime($job['posted_on']);
+        } elseif (!isset($job['posted_on_unix_ts'])) {
+            $job['posted_on_unix_ts'] = time(); // Fallback if no date info
+        }
+    }
+    unset($job); // Unset reference
 
     return $jobs;
 }
 
 /**
- * Saves job data to the JSON file.
+ * Saves an array of jobs to the JSON file.
  *
- * @param array $jobs The array of job objects to save.
- * @param string $filename The path to the job data file.
- * @return bool True on success, false on failure.
+ * @param string $filename Path to the jobs JSON file.
+ * @param array $jobs Array of job objects to save.
+ * @return bool|int False on failure, otherwise number of bytes written.
  */
-function saveJobs($jobs, $filename) {
-     // Cast to string to prevent potential issues if $filename is not a string
-    $filename = (string) $filename;
-
-    $jsonData = json_encode($jobs, JSON_PRETTY_PRINT);
-    if ($jsonData === false) {
-         error_log("Admin Error: Could not encode job data to JSON: " . json_last_error_msg());
-         return false;
+function saveJobs(string $filename, array $jobs) {
+    $dir = dirname($filename);
+    if (!is_dir($dir)) {
+        if (!mkdir($dir, 0777, true) && !is_dir($dir)) {
+            error_log("Failed to create directory: $dir");
+            return false;
+        }
     }
-    // Use LOCK_EX to prevent concurrent writes from corrupting the file
-    if (file_put_contents($filename, $jsonData, LOCK_EX) === false) {
-        error_log("Admin Error: Could not write job data to file: " . $filename); // Log write error with path
-        return false;
-    }
-
-    // Check if file was actually written and has content (optional but good practice)
-    if (filesize($filename) === 0 && !empty($jobs)) {
-         error_log("Admin Error: Wrote to job data file, but it appears empty: " . $filename); // Log empty file after write
-         return false; // Consider it a failure if data should have been written
-    }
-    return true; // Save successful
+    return file_put_contents($filename, json_encode($jobs, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
 }
 
 /**
- * Adds a new job post to the jobs data file and initializes its view/share counts.
+ * Adds a new job to the jobs list.
+ * (This is a simplified example; your actual addJob function might have more parameters)
  *
- * @param array $newJob The new job data.
- * @param string $jobsFilename Path to the main jobs.json file.
- * @return bool True on success, false on failure.
+ * @param array $jobData Associative array of job data.
+ * @return string|false The ID of the new job, or false on failure.
  */
-function addJobPost(array $newJob, string $jobsFilename): bool {
+function addJob(array $jobData) {
+    global $jobsFilename;
     $allJobs = loadJobs($jobsFilename);
-    array_unshift($allJobs, $newJob); // Add new job to the beginning
 
-    if (!saveJobs($allJobs, $jobsFilename)) {
-        error_log("Failed to save jobs after adding new job ID: " . ($newJob['id'] ?? 'N/A'));
-        return false;
+    $newJob = [
+        'id' => $jobData['id'] ?? uniqid('job_'),
+        'title' => $jobData['title'] ?? 'Untitled Job',
+        'description' => $jobData['description'] ?? '',
+        'company' => $jobData['company'] ?? '',
+        'posted_on' => date('Y-m-d H:i:s'),
+        'posted_on_unix_ts' => time(),
+        'posted_by_user_id' => $jobData['posted_by_user_id'] ?? ($_SESSION['admin_username'] ?? 'system'),
+        'region' => $jobData['region'] ?? null,
+        'status' => $jobData['status'] ?? 'active',
+        'total_views_count' => 0, // Initialize new field
+        'total_shares_count' => 0, // Initialize new field
+        // Add any other fields from $jobData
+    ];
+
+    $allJobs[] = $newJob;
+
+    if (saveJobs($jobsFilename, $allJobs)) {
+        return $newJob['id'];
     }
-
-    // Initialize view count for the new job
-    if (!file_exists(JOB_VIEWS_INIT_PATH)) {
-        if (!is_dir(dirname(JOB_VIEWS_INIT_PATH))) {
-            mkdir(dirname(JOB_VIEWS_INIT_PATH), 0777, true);
-        }
-        file_put_contents(JOB_VIEWS_INIT_PATH, json_encode([], JSON_PRETTY_PRINT));
-    }
-
-    $jobViewsJson = file_get_contents(JOB_VIEWS_INIT_PATH);
-    $jobViews = $jobViewsJson ? json_decode($jobViewsJson, true) : [];
-    if (!is_array($jobViews)) $jobViews = [];
-
-    if (!isset($jobViews[$newJob['id']])) {
-        $jobViews[$newJob['id']] = 0;
-        if (file_put_contents(JOB_VIEWS_INIT_PATH, json_encode($jobViews, JSON_PRETTY_PRINT), LOCK_EX) === false) {
-            error_log("Failed to initialize view count for new job ID: " . ($newJob['id'] ?? 'N/A'));
-            // Optionally, decide if this failure should be critical
-        }
-    }
-
-    // Initialize share count for the new job
-    if (!file_exists(JOB_SHARES_INIT_PATH)) {
-        if (!is_dir(dirname(JOB_SHARES_INIT_PATH))) {
-            mkdir(dirname(JOB_SHARES_INIT_PATH), 0777, true);
-        }
-        file_put_contents(JOB_SHARES_INIT_PATH, json_encode([], JSON_PRETTY_PRINT));
-    }
-
-    $jobSharesJson = file_get_contents(JOB_SHARES_INIT_PATH);
-    $jobShares = $jobSharesJson ? json_decode($jobSharesJson, true) : [];
-    if (!is_array($jobShares)) $jobShares = [];
-
-    if (!isset($jobShares[$newJob['id']])) {
-        $jobShares[$newJob['id']] = 0;
-        if (file_put_contents(JOB_SHARES_INIT_PATH, json_encode($jobShares, JSON_PRETTY_PRINT), LOCK_EX) === false) {
-            error_log("Failed to initialize share count for new job ID: " . ($newJob['id'] ?? 'N/A'));
-            // Optionally, decide if this failure should be critical
-        }
-    }
-
-    return true;
+    return false;
 }
 
+// Other job helper functions like updateJob, deleteJob, findJobById etc.
+// Ensure updateJob preserves 'total_views_count' and 'total_shares_count'.
+/**
+ * Increments the total view count for a specific job in jobs.json.
+ *
+ * @param string $jobId The ID of the job to update.
+ * @return bool True on success, false on failure.
+ */
+function incrementJobViewCountInJobsJson(string $jobId): bool {
+    global $jobsFilename; // Assumes $jobsFilename is defined in config.php and included
+    $allJobs = loadJobs($jobsFilename);
+    $jobFound = false;
+
+    foreach ($allJobs as &$job) { // Pass by reference
+        if (isset($job['id']) && $job['id'] === $jobId) {
+            $job['total_views_count'] = (isset($job['total_views_count']) ? (int)$job['total_views_count'] : 0) + 1;
+            $jobFound = true;
+            break;
+        }
+    }
+    unset($job); // Unset reference
+
+    if ($jobFound) {
+        if (saveJobs($jobsFilename, $allJobs)) {
+            return true;
+        } else {
+            error_log("Failed to save jobs.json after incrementing total_views_count for job ID: $jobId");
+            return false;
+        }
+    } else {
+        error_log("Job ID: $jobId not found in jobs.json for incrementing total_views_count.");
+        return false; // Job not found
+    }
+}
+
+/**
+ * Increments the total share count for a specific job in jobs.json.
+ *
+ * @param string $jobId The ID of the job to update.
+ * @return bool True on success, false on failure.
+ */
+function incrementJobShareCountInJobsJson(string $jobId): bool {
+    global $jobsFilename;
+    $allJobs = loadJobs($jobsFilename);
+    $jobFound = false;
+
+    foreach ($allJobs as &$job) {
+        if (isset($job['id']) && $job['id'] === $jobId) {
+            $job['total_shares_count'] = (isset($job['total_shares_count']) ? (int)$job['total_shares_count'] : 0) + 1;
+            $jobFound = true;
+            break;
+        }
+    }
+    unset($job);
+
+    if ($jobFound) {
+        return saveJobs($jobsFilename, $allJobs);
+    }
+    error_log("Job ID: $jobId not found in jobs.json for incrementing total_shares_count.");
+    return false;
+}
 ?>

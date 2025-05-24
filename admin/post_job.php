@@ -128,6 +128,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if (!empty($salary) && $salary !== '0') $prompt .= "- Salary: $salary\n";
                 if ($vacant_positions > 1) $prompt .= "- Number of Vacancies: $vacant_positions\n";
                 $prompt .= "- Key Responsibilities/Details: $description\n\n";
+                   $prompt .= "Format the output with clear headings of Job Summary, Key Responsibilities and Requirements. Do not include contact information like emails or phone numbers, job title and location";
                 // $prompt .= "The summary should be attractive to potential candidates and provide a clear overview of the role. Focus on the most important information. Do not include contact information like emails or phone numbers, summary, job title and location in this summary.";
                 error_log("[AI_SUMMARY_DEBUG] Prompt being sent to API: " . $prompt);
 
@@ -241,6 +242,87 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         unset($_SESSION['review_job_data']); // Clear review data from session
         log_app_activity("Job ID '{$jobData['id']}' (Title: '$title') posted successfully by '$loggedInUsernameForLog'.", "JOB_POST_SUCCESS");
         $_SESSION['admin_status'] = ['message' => 'Job posted successfully!', 'type' => 'success'];
+         // --- AI Image Generation for Job Poster ---
+        $posterImageStoragePath = __DIR__ . '/../data/job_posters/';
+        if (!is_dir($posterImageStoragePath)) {
+            if (!mkdir($posterImageStoragePath, 0777, true)) {
+                log_app_activity("Failed to create job poster image directory: {$posterImageStoragePath}", "AI_IMAGE_ERROR");
+                error_log("[AI_IMAGE_ERROR] Failed to create directory: {$posterImageStoragePath}");
+            }
+        }
+
+        if (is_dir($posterImageStoragePath) && is_writable($posterImageStoragePath)) {
+            $imageJobId = $jobData['id'];
+// Refined prompt for image generation
+            $imagePrompt = "Create a professional and visually appealing poster for a job opening. " .
+                           "Job Title: '{$jobData['title']}'. " .
+                           "Company: '{$jobData['company']}'. " .
+                           "Location: '{$jobData['location']}'. " .
+                           "Key elements to convey: opportunity, growth, modern workplace. " .
+                           "Style: Clean, corporate, with a touch of innovation. " .
+                           "Dominant colors: blues, greys, with an accent color like teal or orange. " .
+                           "Include abstract representations of collaboration or technology if appropriate. Avoid text clutter.";
+                        
+            // Placeholder for actual AI image generation
+            // In a real scenario, you would call an AI image generation API here.
+            // For now, we'll simulate it and create a dummy file or just log.
+            $generatedImagePath = $posterImageStoragePath . $imageJobId . '.png';
+            $imageGenerationSuccess = false;
+
+            // --- Replace this block with your actual AI Image Generation API call ---
+            try {
+                // Example: Simulate creating a placeholder image file
+                // For a real implementation, you'd get image data from an API
+                // and use file_put_contents($generatedImagePath, $imageDataFromApi);
+                
+               // Fallback: For now, we'll just log that the real API call is needed
+                // and create an empty file as a placeholder.
+                error_log("[AI_IMAGE_INFO] Placeholder: Actual AI image generation API call needed for job ID '{$imageJobId}'. Prompt: '{$imagePrompt}'");
+                           // ... inside the try block ...
+            error_log("[AI_IMAGE_INFO] Placeholder: Attempting to generate GD placeholder for job ID '{$imageJobId}'. Prompt: '{$imagePrompt}'");
+            if (function_exists('imagecreatetruecolor')) {
+                $width = 200; // Small placeholder
+                $height = 100;
+                $img = @imagecreatetruecolor($width, $height);
+                if ($img) {
+                    $bgColor = imagecolorallocate($img, 240, 240, 240); // Light grey
+                    $textColor = imagecolorallocate($img, 50, 50, 50);   // Dark grey
+                    imagefill($img, 0, 0, $bgColor);
+                    imagestring($img, 3, 10, 40, "Placeholder", $textColor);
+                    if (imagepng($img, $generatedImagePath)) {
+                        $imageGenerationSuccess = true;
+                    } else {
+                        error_log("[AI_IMAGE_ERROR] GD: Failed to save PNG for job ID '{$imageJobId}'. Check path/permissions for {$generatedImagePath}");
+                    }
+                    imagedestroy($img);
+                } else {
+                     error_log("[AI_IMAGE_ERROR] GD: imagecreatetruecolor() failed for job ID '{$imageJobId}'.");
+                }
+            } else {
+                error_log("[AI_IMAGE_INFO] GD library not available. Cannot create GD placeholder for job ID '{$imageJobId}'. No image file will be created by placeholder logic.");
+                // $imageGenerationSuccess remains false
+            }
+            // ... rest of the try block ...
+
+            } catch (Exception $e) {
+                log_app_activity("Exception during AI image generation for job ID '{$imageJobId}': " . $e->getMessage(), "AI_IMAGE_ERROR");
+                error_log("[AI_IMAGE_EXCEPTION] for job ID '{$imageJobId}': " . $e->getMessage());
+            }
+            // --- End of AI Image Generation API call block ---
+
+            if ($imageGenerationSuccess) {
+                log_app_activity("AI poster image generated successfully for job ID '{$imageJobId}' at '{$generatedImagePath}'. Prompt: '{$imagePrompt}'", "AI_IMAGE_SUCCESS");
+                error_log("[AI_IMAGE_SUCCESS] Poster generated for job ID '{$imageJobId}'. Path: {$generatedImagePath}");
+            } else {
+                log_app_activity("AI poster image generation FAILED for job ID '{$imageJobId}'. Prompt: '{$imagePrompt}'", "AI_IMAGE_ERROR");
+                error_log("[AI_IMAGE_ERROR] Failed to generate poster for job ID '{$imageJobId}'.");
+            }
+        } else {
+            log_app_activity("Job poster image directory is not writable or does not exist: {$posterImageStoragePath}", "AI_IMAGE_ERROR");
+            error_log("[AI_IMAGE_ERROR] Directory not writable/exists: {$posterImageStoragePath}");
+        }
+        // --- End AI Image Generation ---
+
         header('Location: dashboard.php?view=manage_jobs');
         exit();
     } else {

@@ -48,7 +48,7 @@ error_log("[DEBUG] dashboard.php: Initial \$loggedIn state: " . ($loggedIn ? 'tr
 error_log("[DEBUG] dashboard.php: Initial \$requestedView (from \$_GET['view'] or default based on login) = '" . $requestedView . "'");
 
 // Validate requested view if logged in
-$allowedViews = ['dashboard_overview', 'dashboard_service_one', 'dashboard_user_info', 'dashboard_job_stats', 'dashboard_service_two', 'dashboard_visitors_info', 'dashboard_qoe', 'manage_jobs', 'edit_job', 'edit_user', 'profile', 'messages', 'generate_message', 'manage_users', 'post_job', 'achievements', 'server_management', 'logs'];
+$allowedViews = ['dashboard_overview', 'dashboard_service_one', 'dashboard_user_info', 'dashboard_job_stats', 'dashboard_service_two', 'dashboard_visitors_info', 'dashboard_qoe', 'manage_jobs', 'reported_jobs', 'edit_job', 'edit_user', 'profile', 'messages', 'generate_message', 'manage_users', 'post_job', 'achievements', 'server_management', 'logs'];
 error_log("[CRITICAL_DEBUG] dashboard.php: Just before \$allowedViews check. \$requestedView = '" . $requestedView . "'. \$loggedIn = " . ($loggedIn ? 'true' : 'false'));
 
 if ($loggedIn && $requestedView !== 'login') { // Ensure we don't try to validate 'login' if somehow requested while logged in
@@ -250,8 +250,11 @@ require_once __DIR__ . '/partials/header.php';
         <div class="admin-nav">
             <?php $displayName = $_SESSION['admin_display_name'] ?? ($_SESSION['admin_username'] ?? 'Admin'); ?>
             <a href="?view=dashboard_overview" class="<?= $loggedIn && (strpos($requestedView, 'dashboard_') === 0 || $requestedView === 'dashboard') ? 'active' : '' ?>">Dashboard</a>
-            <?php /* Removed Post New Job Tab: <a href="dashboard.php?view=post_job" class="<?= $loggedIn && $requestedView === 'post_job' ? 'active' : '' ?>">Post New Job</a> */ ?>
             <a href="?view=manage_jobs" class="<?= $loggedIn && ($requestedView === 'manage_jobs' || $requestedView === 'edit_job') ? 'active' : '' ?>">Manage Jobs</a>
+            <?php if ($loggedInUserRole === 'super_admin' || in_array($loggedInUserRole, $allRegionalAdminRoles)): ?>
+                <a href="?view=reported_jobs" class="<?= $loggedIn && $requestedView === 'reported_jobs' ? 'active' : '' ?>">Reported Jobs</a>
+            <?php endif; ?>
+            <?php /* Removed Post New Job Tab: <a href="dashboard.php?view=post_job" class="<?= $loggedIn && $requestedView === 'post_job' ? 'active' : '' ?>">Post New Job</a> */ ?>
             <?php if ($loggedInUserRole === 'super_admin' || in_array($loggedInUserRole, $allRegionalAdminRoles)): ?>
                             <a href="?view=messages">
                     Messages

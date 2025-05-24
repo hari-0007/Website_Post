@@ -135,6 +135,7 @@ $shouldLoadChartJsForQoe = false; // Flag to load Chart.js
 
 // Variables for logs view
 $logEntries = [];
+$reportedJobsData = []; // For reported_jobs view
 
 $loggedInUserRole = $_SESSION['admin_role'] ?? 'user';
 $loggedInUserId = $_SESSION['admin_username'] ?? null;
@@ -747,6 +748,41 @@ switch ($requestedView) {
         }
         break;
 
+    case 'reported_jobs':
+        if (!($loggedInUserRole === 'super_admin' || in_array($loggedInUserRole, $allRegionalAdminRoles))) {
+            echo '<p class="status-message error">Access Denied: You do not have permission to view reported jobs.</p>';
+            log_app_activity("User '$loggedInUserId' (Role: '$loggedInUserRole') attempted to access 'reported_jobs' view - DENIED.", "SECURITY_WARNING");
+            exit;
+        }
+        log_app_activity("User '$loggedInUserId' accessed 'reported_jobs' view.", "ACCESS_GRANTED");
+
+        $reportedJobsFilename = __DIR__ . '/../data/reported_jobs.json';
+        $rawReports = [];
+        if (file_exists($reportedJobsFilename)) {
+            $jsonData = file_get_contents($reportedJobsFilename);
+            if ($jsonData) {
+                $rawReports = json_decode($jsonData, true);
+                if (!is_array($rawReports)) $rawReports = [];
+            }
+        }
+
+        // Load all jobs to get titles
+        $allJobsData = loadJobs($jobsFilename);
+        $jobsLookup = [];
+        foreach ($allJobsData as $job) {
+            if (isset($job['id'])) {
+                $jobsLookup[$job['id']] = $job;
+            }
+        }
+
+        foreach ($rawReports as $report) {
+            $report['job_title'] = $jobsLookup[$report['job_id']]['title'] ?? 'Job Not Found or Title Missing';
+            $report['job_company'] = $jobsLookup[$report['job_id']]['company'] ?? '';
+            $reportedJobsData[] = $report;
+        }
+        // Reports are already unshifted, so they are newest first.
+        break;
+
     case 'manage_jobs':
     case 'edit_job':
         $allJobs = loadJobs($jobsFilename);
@@ -785,7 +821,18 @@ switch ($requestedView) {
             $loggedInUserObject = findUserByUsername($loggedInUserId, $usersFilename);
             $loggedInUserRegion = $loggedInUserObject['region'] ?? null;
             $targetUserRegion = $userToEdit['region'] ?? null;
-            $targetUserBaseRole = getRoleParts($targetUserRole)['base_role'];
+            
+            $targetUserBaseRole = 'user'; // Default if function is missing or returns unexpected
+            if (function_exists('getRoleParts')) {
+                $roleParts = getRoleParts($targetUserRole);
+                if (is_array($roleParts) && isset($roleParts['base_role'])) {
+                    $targetUserBaseRole = $roleParts['base_role'];
+                } else {
+                    error_log("Function getRoleParts() exists but did not return the expected array structure for role: " . htmlspecialchars($targetUserRole));
+                }
+            } else {
+                error_log("CRITICAL ERROR: Function getRoleParts() is not defined. Please check admin/includes/user_helpers.php. Defaulting targetUserBaseRole to 'user'. This may affect authorization logic.");
+            }
 
             $canAccessView = false;
             if ($loggedInUserRole === 'super_admin') {
@@ -1038,7 +1085,7 @@ switch ($requestedView) {
 $viewFileSuffix = '_view.php';
 $viewFilePath = __DIR__ . '/views/' . $requestedView . $viewFileSuffix;
 
-$allowedFetchViews = ['dashboard_overview', 'dashboard_service_one', 'dashboard_user_info', 'dashboard_job_stats', 'dashboard_service_two', 'dashboard_visitors_info', 'dashboard_qoe', 'manage_jobs', 'edit_job', 'edit_user', 'profile', 'messages', 'generate_message', 'manage_users', 'post_job', 'achievements', 'server_management', 'logs'];
+$allowedFetchViews = ['dashboard_overview', 'dashboard_service_one', 'dashboard_user_info', 'dashboard_job_stats', 'dashboard_service_two', 'dashboard_visitors_info', 'dashboard_qoe', 'manage_jobs', 'reported_jobs', 'edit_job', 'edit_user', 'profile', 'messages', 'generate_message', 'manage_users', 'post_job', 'achievements', 'server_management', 'logs'];
 
 if (!in_array($requestedView, $allowedFetchViews)) {
      echo '<p class="status-message error">Error: Access denied or view not available.</p>';

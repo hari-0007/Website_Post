@@ -7,6 +7,21 @@ define('USER_VIEWED_JOB_IDS_COOKIE_NAME', 'user_viewed_job_ids'); // New cookie 
 define('USER_UNIQUE_ID_COOKIE_NAME', 'user_unique_site_id'); // New cookie for unique user ID
 define('MAX_USER_INTERESTS', 5); // Store up to 5 recent interests
 
+// At the top of index.php
+$default_cookie_options = [
+    'path' => '/',
+    'samesite' => 'Lax',
+    'secure' => true, // Uncomment if always HTTPS
+    'httponly' => false, // Default, as some cookies are read by JS
+];
+
+// When setting unique_visitor cookie:
+setcookie('unique_visitor', '1', array_merge($default_cookie_options, ['expires' => time() + (24 * 60 * 60)]));
+
+// When setting USER_INTERESTS_COOKIE_NAME:
+setcookie(USER_INTERESTS_COOKIE_NAME, json_encode($userInterests), array_merge($default_cookie_options, ['expires' => time() + (30 * 24 * 60 * 60)]));
+
+
 // --- MANAGE UNIQUE USER ID COOKIE ---
 $currentUserUniqueID = $_COOKIE[USER_UNIQUE_ID_COOKIE_NAME] ?? null;
 if (!$currentUserUniqueID) {
@@ -15,8 +30,8 @@ if (!$currentUserUniqueID) {
         'expires' => time() + (365 * 24 * 60 * 60), // Expires in 1 year
         'path' => '/',
         'samesite' => 'Lax',
-        // 'secure' => true, // If using HTTPS
-        // 'httponly' => true, // This ID might be needed by JS if you extend functionality
+        'secure' => true, // If using HTTPS
+        'httponly' => true, // This ID might be needed by JS if you extend functionality
     ];
     setcookie(USER_UNIQUE_ID_COOKIE_NAME, $currentUserUniqueID, $uid_cookie_options);
     $_COOKIE[USER_UNIQUE_ID_COOKIE_NAME] = $currentUserUniqueID; // Make available for current script run
@@ -414,9 +429,20 @@ function recordPageView($filePath) {
         if (!is_array($visitorData)) $visitorData = [];
     }
 
-    // Initialize today's entry if it doesn't exist
-    if (!isset($visitorData[$today])) {
+    // Ensure today's entry is an array, converting old scalar values if necessary
+    if (!isset($visitorData[$today]) || !is_array($visitorData[$today])) {
+        $old_scalar_value = null;
+        if (isset($visitorData[$today]) && is_numeric($visitorData[$today])) {
+            $old_scalar_value = (int)$visitorData[$today];
+        }
+        // Initialize with new structure. If old value existed, it's effectively reset/upgraded.
         $visitorData[$today] = ['unique_visits' => 0, 'total_requests' => 0];
+        if ($old_scalar_value !== null) {
+            // If you want to preserve the old scalar as the initial unique_visit and total_request count for that day:
+            // $visitorData[$today]['unique_visits'] = $old_scalar_value;
+            // $visitorData[$today]['total_requests'] = $old_scalar_value;
+            error_log("Upgraded scalar visitor data for date {$today} to new array structure.");
+        }
     }
 
     // Increment total requests for today
@@ -625,7 +651,13 @@ function render_job_listings_and_pagination($pagedJobs, $singleJobView, $totalPa
             <a href="<?= strtok($_SERVER["REQUEST_URI"], '?') ?>" id="showAllJobsBtn" class="button">Show All Jobs</a>
         <?php endif; ?>
 
-        <?php foreach ($pagedJobs as $job): ?>
+        <?php
+        // Calculate the timestamp for 3 months ago once, before the loop
+        $threeMonthsAgoTimestamp = strtotime('-3 months');
+        foreach ($pagedJobs as $job):
+            // Determine if the current job is expired for this iteration
+            $isExpired = ($job['posted_on_unix_ts'] ?? 0) < $threeMonthsAgoTimestamp;
+            ?>
         <div class="job-card" onclick="toggleJobDetails(this)" data-job-id="<?= htmlspecialchars($job['id'] ?? '') ?>">
             <!-- 2D Animated Icons for Job Card -->
             <div class="animated-icons-container">
@@ -641,8 +673,13 @@ function render_job_listings_and_pagination($pagedJobs, $singleJobView, $totalPa
             <h3>
                 <?= htmlspecialchars($job['title'] ?? 'N/A') ?>
                 <?php if (!empty($job['vacant_positions']) && $job['vacant_positions'] > 1): ?>
-                    <span style="font-size: 0.8rem; color: #777; font-weight: normal; margin-left: 10px;">
+                    <span style="font-size: 0.8rem; color: #777; font-weight: normal; margin-left: 10px; white-space: nowrap;">
                         (<?= htmlspecialchars($job['vacant_positions']) ?> vacancies)
+                        </span>
+                <?php endif; ?>
+                <?php if ($isExpired): ?>
+                    <span style="font-size: 0.8rem; color: #dc3545; font-weight: bold; margin-left: 10px; background-color: #f8d7da; padding: 2px 6px; border-radius: 4px;">
+                        Expired
                     </span>
                 <?php endif; ?>
             </h3>
@@ -653,9 +690,12 @@ function render_job_listings_and_pagination($pagedJobs, $singleJobView, $totalPa
 
             <div class="job-details" style="display: none;">
                 <div class="formatted-summary">
-                    <?= formatAiSummary($job['ai_summary'] ?? 'N/A') ?>
+                    <?= formatAiSummary($job['ai_summary']?? 'N/A') ?>
                 </div>
-            </div>
+<div style="text-align: right; margin-top: 8px;"> <!-- Wrapper for right alignment -->
+                    <span class="job-caution-alert" title="Important Security Advice" onclick="showJobCautionAlert(event)">⚠️</span>
+                </div>
+                        </div>
             
             <?php if (!empty($job['experience'])): ?>
                 <p style="margin: 10px 0;">
@@ -673,22 +713,39 @@ function render_job_listings_and_pagination($pagedJobs, $singleJobView, $totalPa
             <?php endif; ?>
 
             <?php if (!empty($job['phones'])): ?>
-            <p style="margin: 10px 0;"><strong>📞 Phone:</strong>
-                <?php foreach (explode(',', $job['phones']) as $phone): ?>
-                    <a href="tel:<?= trim($phone) ?>"><?= trim($phone) ?></a>&nbsp;
-                <?php endforeach; ?>
-            </p>
-            <?php endif; ?>
-            <?php if (!empty($job['emails'])): ?>
-            <p style="margin-bottom: 15px;"><strong>📧 Email:</strong>
-                <?php foreach (explode(',', $job['emails']) as $email): ?>
-                    <a href="mailto:<?= trim($email) ?>"><?= trim($email) ?></a>&nbsp;
-                <?php endforeach; ?>
-            </p>
+                <p style="margin: 10px 0;"><strong>📞 Phone:</strong>
+                <?php if ($isExpired): ?>
+                    <span class="blurred-text">05X-XXX-XXXX</span>
+                    <?php else: ?>
+                        <?php foreach (explode(',', $job['phones']) as $phone): ?>
+                            <a href="tel:<?= htmlspecialchars(trim($phone)) ?>"><?= htmlspecialchars(trim($phone)) ?></a>&nbsp;
+                        <?php endforeach; ?>
+                <?php endif; ?>
+                </p>
+
+                <?php endif; ?>
+
+            <?php if (!empty($job['emails'])): // Always show Email label if emails existed ?>
+                <p style="margin-bottom: 15px;"><strong>📧 Email:</strong>
+                <?php if ($isExpired): ?>
+                    <span class="blurred-text">support@jobhunt.top</span>
+                <?php else: ?>
+                    <?php foreach (explode(',', $job['emails']) as $email): ?>
+                        <a href="mailto:<?= htmlspecialchars(trim($email)) ?>"><?= htmlspecialchars(trim($email)) ?></a>&nbsp;
+                    <?php endforeach; ?>
+                <?php endif; ?>
+                </p>
             <?php endif; ?>
             
             <small>Posted on <?= htmlspecialchars($job['posted_on'] ?? 'N/A') ?></small><br>
- <button style="margin-top: 10px;" class="share-button" onclick="shareJob('<?= htmlspecialchars($job['id'] ?? '') ?>', '<?= htmlspecialchars($job['title'] ?? '') ?>', '<?= htmlspecialchars($job['company'] ?? '') ?>'); event.stopPropagation();">Share</button>
+            <?php // Share button and Caution Alert can be on the same line or separate
+            // We'll place the caution alert after the share button or directly after "Posted on" if no share button
+            ?>
+            
+
+            <?php if (!$isExpired): ?>
+                <button style="margin-top: 10px; margin-right: 10px;" class="share-button" onclick="shareJob('<?= htmlspecialchars($job['id'] ?? '') ?>', '<?= htmlspecialchars($job['title'] ?? '') ?>', '<?= htmlspecialchars($job['company'] ?? '') ?>'); event.stopPropagation();">Share</button>
+            <?php endif; ?>
         </div>
         <?php endforeach; ?>
     <?php endif; ?>
@@ -990,6 +1047,21 @@ if ($isAjaxRequest) {
             outline: none;
         }
 
+        .sidebar a.active-filter, a.active-filter {
+    background-color: #005fa3; /* Your primary color */
+    color: white;
+    font-weight: bold;
+    border-radius: 4px;
+    padding-left: 10px; 
+    padding-right: 10px;
+}
+.mobile-filters a.active-filter { /* Ensure mobile active filters also get the background */
+    background-color: #005fa3 !important; /* Your primary color, use !important if needed to override */
+    color: #fff !important; /* Ensure text is white */
+    border-color: #005fa3; /* Match background or use a slightly darker shade like #004a80 */
+}
+
+
         main {
             flex: 1;
             min-width: 0;
@@ -1225,6 +1297,96 @@ if ($isAjaxRequest) {
             outline: none;
         }
 
+        .caution-message-modal .close-caution-modal:hover {
+            color: #777;
+        }
+        .caution-message-modal .modal-actions {
+            text-align: right;
+            margin-top: 20px;
+        }
+        .caution-message-modal .modal-actions button {
+            padding: 8px 15px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;
+        }
+        .caution-message-modal.is-opening {
+            animation: fadeInScaleUp 0.3s ease-out forwards;
+        }
+        .caution-message-modal.is-closing {
+            animation: fadeOutScaleDown 0.3s ease-out forwards;
+        }
+
+        .caution-message-modal .modal-actions button.report-issue-btn {
+            background-color: #dc3545; /* Red for report */
+            color: white;
+        }
+        .caution-message-modal .modal-actions button.understood-btn,
+        .caution-message-modal .modal-actions button.submit-report-btn {
+            background-color: #007bff; /* Blue for primary actions */
+            color: white;
+        }
+        .caution-message-modal .report-form-container {
+            display: none; /* Hidden by default */
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+        .caution-message-modal .report-form-container label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 0.9em;
+            color: #444;
+        }
+        .caution-message-modal .report-form-container input[type="text"],
+        .caution-message-modal .report-form-container input[type="email"],
+        .caution-message-modal .report-form-container textarea {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 0.9em;
+        }
+        .caution-message-modal .report-form-container textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+        .caution-message-modal #reportStatusMessage {
+            margin-top: 10px;
+            font-size: 0.9em;
+        }
+        .caution-message-modal #reportedJobInfo {
+            font-style: italic;
+            color: #555;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+        }
+
+        /* Shake Animation Keyframes */
+        @keyframes shakeAttentionPeriodic {
+            /* Shake happens in the first 0.5s of the 1.5s cycle */
+            0%, 33.33%, 100% { /* Start, end of shake, and end of cycle (rest) */
+                transform: translateX(0) rotate(0deg);
+            }
+            3%, 27% { /* Small shake left */
+                transform: translateX(-2px) rotate(-2deg);
+
+            }
+            6%, 24% { /* Small shake right */
+                transform: translateX(2px) rotate(2deg);
+           }
+            9%, 21% { /* Medium shake left */
+                transform: translateX(-3px) rotate(-3deg);
+            }
+            12%, 18% { /* Medium shake right */
+                transform: translateX(3px) rotate(3deg);
+            }
+            15% { /* Peak shake */
+                transform: translateX(-2px) rotate(-2deg);
+            }
+            /* From 33.33% to 100% is the rest period */
+        }
+
         /* Cookie Consent Banner Styles */
         #cookieConsentBanner {
             position: fixed;
@@ -1311,6 +1473,80 @@ if ($isAjaxRequest) {
             /* border-color will be inherited from .current-page */
         }
         .pagination-container .first-arrow { order: 1; }
+        .page-content-blur {
+        filter: blur(5px);
+        transition: filter 0.3s ease-out;
+        /* pointer-events: none; */ /* Optional: if you want to disable interaction with blurred content */
+    }
+        .blurred-text {
+            filter: blur(4px);
+            pointer-events: none; /* Optional: makes the blurred text not interactive */
+            user-select: none; /* Optional: prevents text selection */
+        }
+        .job-caution-alert {
+            display: inline-block; /* Keep it inline but allow margins/padding */
+            padding: 5px 8px; /* Add some padding to make it look more like a button */
+            background-color: #fff; /* Base color for the button */
+            color: white; /* Text color for the emoji/icon */
+            border-radius: 5px; /* Rounded corners */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2), 0 1px 2px rgba(0,0,0,0.1) inset; /* 3D shadow effect */
+            font-size: 1.1em;
+            cursor: pointer;
+            text-align: center;
+            line-height: 1;
+            transition: transform 0.1s ease-out, box-shadow 0.1s ease-out; /* For click effect */
+            /* Animation: name duration timing-function delay iteration-count direction fill-mode play-state */
+            animation: shakeAttentionPeriodic 2s ease-in-out infinite; 
+        }
+        .job-caution-alert:active { /* Simple pressed effect */
+            transform: translateY(1px);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.25), 0 0px 1px rgba(0,0,0,0.15) inset;
+
+        }
+        .job-caution-alert:hover {
+            color: #e0a800; /* Darker on hover */
+                animation: shakeAttention 0.8s cubic-bezier(.36,.07,.19,.97) 1; /* Shake once on hover */
+
+        }
+        .caution-message-modal {
+            display: none; /* Hidden by default */
+            position: fixed;
+            z-index: 1010; /* Above job cards, below main share modal if any */
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 400px; /* Slightly narrower for a cleaner look */
+            background-color: #ffffff; /* White background */
+            color: #333; 
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            text-align: left;
+            /* animation: fadeInScaleUp 0.3s ease-out forwards; */
+            font-size: 0.95em;
+        }
+        .caution-message-modal h4 {
+            margin-top: 0;
+            color: #d9534f; /* Warning red for title */
+            font-size: 1.1em;
+            margin-bottom: 15px;
+        }
+        .caution-message-modal p { margin-bottom: 10px; line-height: 1.5; color: #555; }
+
+        .caution-message-modal .close-caution-modal {
+            float: right;
+            font-size: 1.5rem;
+            font-weight: bold;
+            line-height: 1;
+            color: #aaa;
+            text-shadow: 0 1px 0 #fff;
+            opacity: 0.7;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+        }
         .pagination-container .prev-arrow { order: 2; }
         .pagination-container .page-numbers { order: 3; }
         .pagination-container .next-arrow { order: 4; }
@@ -1394,11 +1630,34 @@ if ($isAjaxRequest) {
             animation: fadeInModal 0.3s ease-out;
         }
 
+        @keyframes fadeOutScaleDown {
+            from {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+            to {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.95);
+            }
+        }
+
+
         @keyframes fadeInModal {
             from { opacity: 0; transform: translateY(-20px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
+        /* Keyframes for Modal Animation */
+        @keyframes fadeInScaleUp {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
         .share-modal-close-button {
             position: absolute;
             top: 10px;
@@ -1534,20 +1793,19 @@ if ($isAjaxRequest) {
         <div class="content-wrapper">
             <aside class="sidebar">
                 <h4>Job Filters</h4>
-                <a href="?type=&filter=all&search=">📋 All Jobs (<span data-count-id="countAll">0</span>)</a>
-                <a href="?type=remote&filter=<?= urlencode($filter) ?>&search=<?= urlencode($search) ?>">💻 Remote (<span data-count-id="countRemote">0</span>)</a>
-                <a href="?type=onsite&filter=<?= urlencode($filter) ?>&search=<?= urlencode($search) ?>">🏢 Onsite (<span data-count-id="countOnsite">0</span>)</a>
-                <a href="?type=hybrid&filter=<?= urlencode($filter) ?>&search=<?= urlencode($search) ?>">🌐 Hybrid (<span data-count-id="countHybrid">0</span>)</a>
+                <a href="?type=&filter=all&search=" class="<?= ($jobType === '' && $filter === 'all' && $search === '') ? 'active-filter' : '' ?>">📋 All Jobs (<span data-count-id="countAll">0</span>)</a>
+                <a href="?type=remote&filter=<?= urlencode($filter) ?>&search=<?= urlencode($search) ?>" class="<?= ($jobType === 'remote') ? 'active-filter' : '' ?>">💻 Remote (<span data-count-id="countRemote">0</span>)</a>
+                <a href="?type=onsite&filter=<?= urlencode($filter) ?>&search=<?= urlencode($search) ?>" class="<?= ($jobType === 'onsite') ? 'active-filter' : '' ?>">🏢 Onsite (<span data-count-id="countOnsite">0</span>)</a>
+                <a href="?type=hybrid&filter=<?= urlencode($filter) ?>&search=<?= urlencode($search) ?>" class="<?= ($jobType === 'hybrid') ? 'active-filter' : '' ?>">🌐 Hybrid (<span data-count-id="countHybrid">0</span>)</a>
                 <h4>Quick Filters</h4>
-                <a href="?type=full time&filter=<?= urlencode($filter) ?>&search=<?= urlencode($search) ?>">🕐 Full-Time (<span data-count-id="countFullTime">0</span>)</a>
-                <a href="?type=part time&filter=<?= urlencode($filter) ?>&search=<?= urlencode($search) ?>">⌛ Part-Time (<span data-count-id="countPartTime">0</span>)</a>
-                <a href="?type=internship&filter=<?= urlencode($filter) ?>&search=<?= urlencode($search) ?>">🎓 Internships (<span data-count-id="countInternship">0</span>)</a>
-                <a href="?type=developer&filter=<?= urlencode($filter) ?>&search=<?= urlencode($search) ?>">👨‍💻 Developer (<span data-count-id="countDeveloper">0</span>)</a>
+                <a href="?type=full time&filter=<?= urlencode($filter) ?>&search=<?= urlencode($search) ?>" class="<?= ($jobType === 'full time') ? 'active-filter' : '' ?>">🕐 Full-Time (<span data-count-id="countFullTime">0</span>)</a>
+                <a href="?type=part time&filter=<?= urlencode($filter) ?>&search=<?= urlencode($search) ?>" class="<?= ($jobType === 'part time') ? 'active-filter' : '' ?>">⌛ Part-Time (<span data-count-id="countPartTime">0</span>)</a>
+                <a href="?type=internship&filter=<?= urlencode($filter) ?>&search=<?= urlencode($search) ?>" class="<?= ($jobType === 'internship') ? 'active-filter' : '' ?>">🎓 Internships (<span data-count-id="countInternship">0</span>)</a>
+                <a href="?type=developer&filter=<?= urlencode($filter) ?>&search=<?= urlencode($search) ?>" class="<?= ($jobType === 'developer') ? 'active-filter' : '' ?>">👨‍💻 Developer (<span data-count-id="countDeveloper">0</span>)</a>
                 <h4>Date Posted</h4>
-                <a href="?filter=all&type=&search=">All Time (<span data-count-id="countAllTime">0</span>)</a>
-                <a href="?filter=30&type=<?= urlencode($jobType) ?>&search=<?= urlencode($search) ?>">Past 30 Days (<span data-count-id="count30">0</span>)</a>
-                <a href="?filter=7&type=<?= urlencode($jobType) ?>&search=<?= urlencode($search) ?>">Past 7 Days (<span data-count-id="count7">0</span>)</a>
-                <a href="?filter=1&type=<?= urlencode($jobType) ?>&search=<?= urlencode($search) ?>">Past 24 Hours (<span data-count-id="count1">0</span>)</a>
+                <a href="?filter=30&type=<?= urlencode($jobType) ?>&search=<?= urlencode($search) ?>" class="<?= ($filter === '30') ? 'active-filter' : '' ?>">Past 30 Days (<span data-count-id="count30">0</span>)</a>
+                <a href="?filter=7&type=<?= urlencode($jobType) ?>&search=<?= urlencode($search) ?>" class="<?= ($filter === '7') ? 'active-filter' : '' ?>">Past 7 Days (<span data-count-id="count7">0</span>)</a>
+                <a href="?filter=1&type=<?= urlencode($jobType) ?>&search=<?= urlencode($search) ?>" class="<?= ($filter === '1') ? 'active-filter' : '' ?>">Past 24 Hours (<span data-count-id="count1">0</span>)</a>
             </aside>
 
             <main>
@@ -1575,19 +1833,18 @@ if ($isAjaxRequest) {
                 
                 <!-- Mobile Filters - Hidden on desktop, shown on mobile -->
                 <div class="mobile-filters">
-                    <a href="?recommendations=1&type=&filter=all&search=">🌟 Recommendations</a>
-                    <a href="?type=&filter=all&search=">All Jobs (<span data-count-id="countAll">0</span>)</a>
-                    <a href="?filter=1&type=<?= urlencode($jobType) ?>&search=<?= urlencode($search) ?>">Past 24 Hours (<span data-count-id="count1">0</span>)</a>
-                    <a href="?filter=7&type=<?= urlencode($jobType) ?>&search=<?= urlencode($search) ?>">Past 7 Days (<span data-count-id="count7">0</span>)</a>
-                    <a href="?filter=30&type=<?= urlencode($jobType) ?>&search=<?= urlencode($search) ?>">Past 30 Days (<span data-count-id="count30">0</span>)</a>
-                    <a href="?filter=all&type=&search=">All Time (<span data-count-id="countAllTime">0</span>)</a>
-                    <a href="?type=remote&filter=<?= urlencode($filter) ?>&search=<?= urlencode($search) ?>">Remote (<span data-count-id="countRemote">0</span>)</a>
-                    <a href="?type=onsite&filter=<?= urlencode($filter) ?>&search=<?= urlencode($search) ?>">Onsite (<span data-count-id="countOnsite">0</span>)</a>
-                    <a href="?type=hybrid&filter=<?= urlencode($filter) ?>&search=<?= urlencode($search) ?>">Hybrid (<span data-count-id="countHybrid">0</span>)</a>
-                    <a href="?type=full time&filter=<?= urlencode($filter) ?>&search=<?= urlencode($search) ?>">Full-Time (<span data-count-id="countFullTime">0</span>)</a>
-                    <a href="?type=part time&filter=<?= urlencode($filter) ?>&search=<?= urlencode($search) ?>">Part-Time (<span data-count-id="countPartTime">0</span>)</a>
-                    <a href="?type=internship&filter=<?= urlencode($filter) ?>&search=<?= urlencode($search) ?>">Internships (<span data-count-id="countInternship">0</span>)</a>
-                    <a href="?type=developer&filter=<?= urlencode($filter) ?>&search=<?= urlencode($search) ?>">Developer (<span data-count-id="countDeveloper">0</span>)</a>
+                    <a href="?recommendations=1&type=&filter=all&search=" class="<?= ($isRecommendationsView) ? 'active-filter' : '' ?>">🌟 Recommendations</a>
+                    <a href="?type=&filter=all&search=" class="<?= ($jobType === '' && $filter === 'all' && $search === '' && !$isRecommendationsView) ? 'active-filter' : '' ?>">All Jobs (<span data-count-id="countAll">0</span>)</a>
+                    <a href="?filter=1&type=<?= urlencode($jobType) ?>&search=<?= urlencode($search) ?>" class="<?= ($filter === '1') ? 'active-filter' : '' ?>">Past 24 Hours (<span data-count-id="count1">0</span>)</a>
+                    <a href="?filter=7&type=<?= urlencode($jobType) ?>&search=<?= urlencode($search) ?>" class="<?= ($filter === '7') ? 'active-filter' : '' ?>">Past 7 Days (<span data-count-id="count7">0</span>)</a>
+                    <a href="?filter=30&type=<?= urlencode($jobType) ?>&search=<?= urlencode($search) ?>" class="<?= ($filter === '30') ? 'active-filter' : '' ?>">Past 30 Days (<span data-count-id="count30">0</span>)</a>
+                    <a href="?type=remote&filter=<?= urlencode($filter) ?>&search=<?= urlencode($search) ?>" class="<?= ($jobType === 'remote') ? 'active-filter' : '' ?>">Remote (<span data-count-id="countRemote">0</span>)</a>
+                    <a href="?type=onsite&filter=<?= urlencode($filter) ?>&search=<?= urlencode($search) ?>" class="<?= ($jobType === 'onsite') ? 'active-filter' : '' ?>">Onsite (<span data-count-id="countOnsite">0</span>)</a>
+                    <a href="?type=hybrid&filter=<?= urlencode($filter) ?>&search=<?= urlencode($search) ?>" class="<?= ($jobType === 'hybrid') ? 'active-filter' : '' ?>">Hybrid (<span data-count-id="countHybrid">0</span>)</a>
+                    <a href="?type=full time&filter=<?= urlencode($filter) ?>&search=<?= urlencode($search) ?>" class="<?= ($jobType === 'full time') ? 'active-filter' : '' ?>">Full-Time (<span data-count-id="countFullTime">0</span>)</a>
+                    <a href="?type=part time&filter=<?= urlencode($filter) ?>&search=<?= urlencode($search) ?>" class="<?= ($jobType === 'part time') ? 'active-filter' : '' ?>">Part-Time (<span data-count-id="countPartTime">0</span>)</a>
+                    <a href="?type=internship&filter=<?= urlencode($filter) ?>&search=<?= urlencode($search) ?>" class="<?= ($jobType === 'internship') ? 'active-filter' : '' ?>">Internships (<span data-count-id="countInternship">0</span>)</a>
+                    <a href="?type=developer&filter=<?= urlencode($filter) ?>&search=<?= urlencode($search) ?>" class="<?= ($jobType === 'developer') ? 'active-filter' : '' ?>">Developer (<span data-count-id="countDeveloper">0</span>)</a>
                 </div>
 
                 <div id="job-listings-container">
@@ -1608,10 +1865,16 @@ if ($isAjaxRequest) {
             </div>
             <div class="footer-column">
                 <h4>Explore</h4>
-                <a href="admin/dashboard.php" target="_blank">👤 Admin Login</a>
                 <a href="?search=remote&filter=all">💻 Remote Jobs</a>
                 <a href="?search=uae&filter=all">📍 UAE Jobs</a>
-                <a href="mailto:support@uaejobs.com">📩 Contact Support</a>
+                <a href="contact-us.php">📩 Contact Us</a> 
+                <a href="admin/dashboard.php" target="_blank">👤 Admin Login</a>
+            </div>
+            <div class="footer-column">
+                <h4>Information</h4>
+                <a href="about-us.php">🌟 About Us</a>
+                <a href="privacy-policy.php">🔒 Privacy Policy</a>
+                <a href="terms-of-service.php">📜 Terms of Service</a>
             </div>
             <div class="footer-column">
                 <h4>Follow Channels</h4>
@@ -1633,6 +1896,30 @@ if ($isAjaxRequest) {
             &copy; <?= date('Y') ?> UAE Jobs Portal. All rights reserved.
         </div>
     </footer>
+
+    <!-- Caution Message Modal HTML -->
+    <div id="jobCautionModal" class="caution-message-modal">
+        <button class="close-caution-modal" onclick="closeJobCautionAlert()">&times;</button>
+        <h4>Important Security Advice</h4>
+        <p>Be cautious! Reputable employers and agencies don't charge you for a job.</p>
+        <p>If an agency demands fees, always check their license and, if possible, visit them in person before paying anything.</p>
+        <div id="reportJobFormContainer" class="report-form-container">
+            <p id="reportedJobInfo" style="display:none;"></p> <!-- For Job Title & Company -->
+            <h5>Report This Job</h5>
+            <label for="reportName">Your Name:</label>
+            <input type="text" id="reportName" name="reportName">
+            <label for="reportEmail">Your Email (for follow-up):</label>
+            <input type="email" id="reportEmail" name="reportEmail">
+            <label for="reportReason">Reason for Report:</label>
+            <textarea id="reportReason" name="reportReason" rows="3" required placeholder="Please provide details..."></textarea>
+            <div id="reportStatusMessage" style="display:none; margin-top:10px;"></div>
+        </div>
+
+<div class="modal-actions">
+<button id="reportIssueBtn" class="report-issue-btn" onclick="toggleReportForm()">Report Issue</button>
+            <button id="cautionUnderstoodBtn" class="understood-btn" onclick="closeJobCautionAlert()">Understood</button>
+                </div>
+    </div>
 
     <div id="telegramModal" class="modal" style="display:none;">
         <div class="modal-content">
@@ -1717,7 +2004,150 @@ if ($isAjaxRequest) {
         function openWModal(){ document.getElementById('modal').style.display='flex'; }
         function closeWModal(){ document.getElementById('modal').style.display='none'; }
 
-        // --- Professional Share Modal Logic ---
+        // --- Job Caution Alert Modal Logic ---
+        const cautionModal = document.getElementById('jobCautionModal');
+        const reportJobFormContainer = document.getElementById('reportJobFormContainer');
+        const reportIssueBtn = document.getElementById('reportIssueBtn');
+        const cautionUnderstoodBtn = document.getElementById('cautionUnderstoodBtn');
+        const reportNameField = document.getElementById('reportName');
+        const reportEmailField = document.getElementById('reportEmail');
+        const reportReasonField = document.getElementById('reportReason');
+        const reportStatusMessage = document.getElementById('reportStatusMessage');
+        const reportedJobInfoElement = document.getElementById('reportedJobInfo');
+        const mainPageContainer = document.querySelector('.container'); // Or document.body
+        let currentJobIdForReport = null; // To store the job ID when caution is clicked
+
+        function showJobCautionAlert(event) {
+            event.stopPropagation(); // Prevent job card click-to-expand
+            const jobCard = event.target.closest('.job-card');
+            if (jobCard) {
+                currentJobIdForReport = jobCard.dataset.jobId;
+            } else {
+                currentJobIdForReport = null; // Should not happen if icon is on card
+            }
+            resetReportForm(); // Reset form to initial state when modal opens
+            
+            if (cautionModal) {
+                if (mainPageContainer) mainPageContainer.classList.add('page-content-blur');
+                    cautionModal.style.display = 'block';
+            }
+        }
+        function toggleReportForm() {
+            if (reportJobFormContainer.style.display === 'none' || reportJobFormContainer.style.display === '') {
+                reportJobFormContainer.style.display = 'block';
+                // Display job title and company
+                if (currentJobIdForReport && reportedJobInfoElement) {
+                    const job = allJobDataFromPHP.find(j => j.id === currentJobIdForReport);
+                    if (job) {
+                        reportedJobInfoElement.textContent = `Reporting job: "${job.title || 'N/A'}" at "${job.company || 'N/A'}"`;
+                        reportedJobInfoElement.style.display = 'block';
+                    } else {
+                        reportedJobInfoElement.textContent = `Reporting job ID: ${currentJobIdForReport}`;
+                        reportedJobInfoElement.style.display = 'block';
+                    }
+                }
+                reportIssueBtn.textContent = 'Submit Report';
+                reportIssueBtn.onclick = submitJobReport; // Change action
+                cautionUnderstoodBtn.textContent = 'Cancel'; // Change "Understood" to "Cancel"
+                reportReasonField.focus();
+            } else {
+                // This case is now handled by submitJobReport or Cancel (resetReportForm)
+            }
+        }
+
+        function submitJobReport() {
+            const name = reportNameField.value.trim();
+            const email = reportEmailField.value.trim();
+            const reason = reportReasonField.value.trim();
+
+            if (!reason) {
+                reportStatusMessage.textContent = 'Please provide a reason for the report.';
+                reportStatusMessage.style.color = 'red';
+                reportStatusMessage.style.display = 'block';
+                return;
+            }
+
+            const reportData = {
+                job_id: currentJobIdForReport,
+                reporter_name: name,
+                reporter_email: email,
+                reason: reason
+            };
+
+            reportStatusMessage.textContent = 'Submitting report...';
+            reportStatusMessage.style.color = '#007bff'; // Blue for processing
+            reportStatusMessage.style.display = 'block';
+
+            fetch('report_job.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(reportData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    reportStatusMessage.textContent = 'Thank you! Your report has been submitted.';
+                    reportStatusMessage.style.color = 'green';
+                    reportJobFormContainer.style.display = 'none'; // Hide form
+                    reportIssueBtn.style.display = 'none'; // Hide submit button
+                    cautionUnderstoodBtn.textContent = 'Close'; 
+                    cautionUnderstoodBtn.onclick = closeJobCautionAlert;
+                } else {
+                    reportStatusMessage.textContent = data.message || 'Failed to submit report. Please try again.';
+                    reportStatusMessage.style.color = 'red';
+                }
+            })
+            .catch(error => {
+                console.error('Error submitting report:', error);
+                reportStatusMessage.textContent = 'An error occurred while submitting your report.';
+                reportStatusMessage.style.color = 'red';
+            });
+        }
+
+        function resetReportForm() {
+            if(reportJobFormContainer) reportJobFormContainer.style.display = 'none';
+            if(reportIssueBtn) {
+                reportIssueBtn.textContent = 'Report Issue';
+                reportIssueBtn.onclick = toggleReportForm;
+                reportIssueBtn.style.display = 'inline-block';
+            }
+            if(cautionUnderstoodBtn) {
+                cautionUnderstoodBtn.textContent = 'Understood';
+                cautionUnderstoodBtn.style.display = 'inline-block';
+            }
+            if(reportNameField) reportNameField.value = '';
+            if(reportEmailField) reportEmailField.value = '';
+            if(reportReasonField) reportReasonField.value = '';
+            if(reportStatusMessage) {
+                reportStatusMessage.textContent = '';
+                reportStatusMessage.style.display = 'none';
+                }
+            if(reportedJobInfoElement) {
+                reportedJobInfoElement.style.display = 'none';
+
+            }
+        }
+
+        function closeJobCautionAlert() {
+            if (cautionModal) {
+                cautionModal.classList.remove('is-opening');
+                cautionModal.classList.add('is-closing');
+                // Listen for the end of the closing animation
+                cautionModal.addEventListener('animationend', function handleAnimationEnd() {
+                    cautionModal.style.display = 'none'; // Hide after animation
+                    cautionModal.classList.remove('is-closing'); // Reset class
+                    
+                    if (mainPageContainer) mainPageContainer.classList.remove('page-content-blur');
+                    resetReportForm(); // Always reset form state when modal closes
+
+                    // Important: Remove the event listener to prevent it from firing multiple times
+                    cautionModal.removeEventListener('animationend', handleAnimationEnd);
+                }, { once: true }); // { once: true } ensures the listener is auto-removed after firing
+
+            }
+        }
         const shareModalElement = document.getElementById('jobShareModal');
         let shareModalJobTitleElement = null; // Initialize to null
         let shareModalCloseButton = null; // Initialize to null
@@ -2260,6 +2690,8 @@ if ($isAjaxRequest) {
                     // The toggleJobDetails is an inline onclick, so it should still work.
                     // The shareJob is also inline onclick.
                     // Scroll to the top of the job listings container
+                    
+                    updateActiveFilterLinks(ajaxUrl.toString()); // Update active filter links
 
                     // Clear the search input field if the current navigation was a search
                     // This is now handled by the fact that on refresh, PHP sets $search to '' for filtering,
@@ -2354,6 +2786,67 @@ if ($isAjaxRequest) {
             handleAjaxNavigation(event, this.href);
         }
         
+        function updateActiveFilterLinks(currentUrl) {
+            const url = new URL(currentUrl, window.location.origin);
+            const params = url.searchParams;
+
+            const currentType = params.get('type') || ''; // Default to empty string if not present
+            const currentFilter = params.get('filter') || 'all'; // Default to 'all' for date
+            const currentSearch = params.get('search') || '';
+            const currentRecommendations = params.get('recommendations') === '1';
+
+            document.querySelectorAll('.sidebar a, .mobile-filters a').forEach(link => {
+                link.classList.remove('active-filter');
+                const linkUrl = new URL(link.href);
+                const linkParams = linkUrl.searchParams;
+
+                const linkType = linkParams.get('type') || '';
+                const linkFilter = linkParams.get('filter') || 'all';
+                const linkSearch = linkParams.get('search') || '';
+                const linkRecommendations = linkParams.get('recommendations') === '1';
+
+                let isActive = false;
+
+                if (linkRecommendations) {
+                    if (currentRecommendations) isActive = true;
+                } else if (currentRecommendations) { // If current view is recommendations, other links are not active
+                    isActive = false;
+                }
+                // "All Jobs" link logic (handles cases where it's the default view)
+                else if (linkType === '' && linkFilter === 'all' && linkSearch === '' && !linkRecommendations) {
+                    if (currentType === '' && currentFilter === 'all' && currentSearch === '' && !currentRecommendations) {
+                        // This is the true "All Jobs" or default view
+                        isActive = true;
+                    }
+                }
+                // Specific filter link matching
+                else {
+                    // For specific filters, a link is active if its main distinguishing parameter matches the current URL's parameter.
+                    // We need to be careful not to activate multiple links incorrectly.
+                    // Example: If current URL is ?type=remote&filter=7
+                    // - Link for "?type=remote" should be active.
+                    // - Link for "?filter=7" should be active.
+
+                    let linkIsForType = linkParams.has('type') && linkType !== '';
+                    let linkIsForDate = linkParams.has('filter') // Date filters might not have type='' explicitly
+                                        && linkFilter !== '' && linkFilter !== 'all' 
+                                        && !linkIsForType; // Prioritize type if link sets both
+
+                    if (linkIsForType && linkType === currentType) {
+                        isActive = true;
+                    } else if (linkIsForDate && linkFilter === currentFilter) {
+                        isActive = true;
+                    }
+                    // More complex logic might be needed if links combine multiple filters that must all match
+                    // For now, this prioritizes the main filter the link represents.
+                }
+
+                if (isActive) {
+                    link.classList.add('active-filter');
+                }
+            });
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             // const urlParams = new URLSearchParams(window.location.search);
             // const searchInput = document.querySelector('.search-bar input[name="search"]');
@@ -2363,6 +2856,7 @@ if ($isAjaxRequest) {
             // Initial attachment of event listeners for AJAX navigation
             attachAjaxToFilterLinks();
             attachAjaxToPagination();
+            updateActiveFilterLinks(window.location.href); // Set active filters on initial page load
         });
 
     </script>

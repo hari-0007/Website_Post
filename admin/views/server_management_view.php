@@ -59,57 +59,82 @@ if (function_exists('disk_free_space') && function_exists('disk_total_space')) {
         </ul>
     </div>
 
-    <div class="dashboard-section">
-        <h4>Git Backup Configuration</h4>
-        <form action="server_actions.php" method="POST" class="form-container compact-form">
-            <input type="hidden" name="action" value="save_git_config">
-
-            <div class="form-group">
-                <label for="repository_url">GitHub Repository URL:</label>
-                <input type="text" id="repository_url" name="repository_url" value="<?= htmlspecialchars($gitConfig['repository_url']) ?>" placeholder="https://username:YOUR_PAT@github.com/username/repo.git OR git@github.com:username/repo.git" required>
-                <small class="form-text text-muted">
-                    For HTTPS with PAT: `https://YOUR_USERNAME:YOUR_PAT@github.com/YOUR_USERNAME/YOUR_PRIVATE_REPO.git`. <br>
-                    For SSH: `git@github.com:YOUR_USERNAME/YOUR_PRIVATE_REPO.git` (ensure server's SSH key is added to GitHub).<br>
-                    <strong>Warning:</strong> Storing a Personal Access Token (PAT) directly in the URL can be a security risk if this configuration file is exposed. Prefer SSH keys for server-side automation.
-                </small>
-            </div>
-
-            <div class="form-group">
-                <label for="branch_name">Branch Name:</label>
-                <input type="text" id="branch_name" name="branch_name" value="<?= htmlspecialchars($gitConfig['branch_name']) ?>" placeholder="main" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="git_username">Git Commit Username:</label>
-                <input type="text" id="git_username" name="git_username" value="<?= htmlspecialchars($gitConfig['git_username']) ?>" placeholder="Your Bot Name or Username">
-                 <small class="form-text text-muted">Used for `git config user.name` for commits by the backup script.</small>
-            </div>
-
-            <div class="form-group">
-                <label for="git_email">Git Commit Email:</label>
-                <input type="email" id="git_email" name="git_email" value="<?= htmlspecialchars($gitConfig['git_email']) ?>" placeholder="your-bot-email@example.com">
-                <small class="form-text text-muted">Used for `git config user.email` for commits by the backup script.</small>
-            </div>
-
-            <button type="submit" class="button primary">Save Git Configuration</button>
-        </form>
+    <div class="management-toggles" style="padding: 15px 0; border-bottom: 1px solid #eee; margin-bottom: 15px;">
+        <!-- The WhatsApp toggle button is removed as WhatsApp now has its own page -->
+        <!-- You might want a general "Server Management" page that then links to "WhatsApp Profile" and "Git Management" -->
+        <!-- Or keep this as a combined page, and the dashboard link directly shows the WhatsApp part -->
+        <button id="toggleGitBtn" class="button">Toggle Git Section</button>
     </div>
 
-    <div class="dashboard-section">
-        <h4>Data Management Actions</h4>
-        <form action="server_actions.php" method="POST" style="display: inline-block; margin-right: 10px;">
-            <input type="hidden" name="action" value="trigger_backup">
-            <button type="submit" class="button success">Backup Data to GitHub</button>
-        </form>
-        <form action="server_actions.php" method="POST" style="display: inline-block;">
-            <input type="hidden" name="action" value="trigger_restore">
-            <button type="submit" class="button warning" onclick="return confirm('WARNING: This will overwrite local data with the latest backup from GitHub. This action cannot be undone. Are you absolutely sure?')">Restore Data from GitHub</button>
-        </form>
-        <p style="margin-top:10px;"><small>Note: Backup and Restore actions require the above Git configuration to be correctly set and server-side shell scripts (`backup_data_to_github.sh`, `restore_data_from_github.sh`) to be in place and executable.</small></p>
-  
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const toggleGitBtn = document.getElementById('toggleGitBtn');
+    const gitDetailsDiv = document.getElementById('gitManagementDetails');
+
+    if (toggleGitBtn && gitDetailsDiv) {
+        toggleGitBtn.addEventListener('click', function() {
+            const isHidden = gitDetailsDiv.style.display === 'none' || gitDetailsDiv.style.display === '';
+            gitDetailsDiv.style.display = isHidden ? 'block' : 'none';
+        });
+    }
+
+    // Check URL parameters to focus on a section
+    // This logic is removed as this view will no longer handle the 'focus=whatsapp' parameter.
+});
+</script>
+
+    <div id="gitManagementDetails" style="display: none;">
+        <div class="dashboard-section">
+            <h4>Git Backup Configuration</h4>
+            <form action="server_actions.php" method="POST" class="form-container compact-form">
+                <input type="hidden" name="action" value="save_git_config">
+
+                <div class="form-group">
+                    <label for="repository_url">GitHub Repository URL:</label>
+                    <input type="text" id="repository_url" name="repository_url" value="<?= htmlspecialchars($gitConfig['repository_url']) ?>" placeholder="https://username:YOUR_PAT@github.com/username/repo.git OR git@github.com:username/repo.git" required>
+                    <small class="form-text text-muted">
+                        For HTTPS with PAT: `https://YOUR_USERNAME:YOUR_PAT@github.com/YOUR_USERNAME/YOUR_PRIVATE_REPO.git`. <br>
+                        For SSH: `git@github.com:YOUR_USERNAME/YOUR_PRIVATE_REPO.git` (ensure server's SSH key is added to GitHub).<br>
+                        <strong>Warning:</strong> Storing a Personal Access Token (PAT) directly in the URL can be a security risk if this configuration file is exposed. Prefer SSH keys for server-side automation.
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    <label for="branch_name">Branch Name:</label>
+                    <input type="text" id="branch_name" name="branch_name" value="<?= htmlspecialchars($gitConfig['branch_name']) ?>" placeholder="main" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="git_username">Git Commit Username:</label>
+                    <input type="text" id="git_username" name="git_username" value="<?= htmlspecialchars($gitConfig['git_username']) ?>" placeholder="Your Bot Name or Username">
+                    <small class="form-text text-muted">Used for `git config user.name` for commits by the backup script.</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="git_email">Git Commit Email:</label>
+                    <input type="email" id="git_email" name="git_email" value="<?= htmlspecialchars($gitConfig['git_email']) ?>" placeholder="your-bot-email@example.com">
+                    <small class="form-text text-muted">Used for `git config user.email` for commits by the backup script.</small>
+                </div>
+
+                <button type="submit" class="button primary">Save Git Configuration</button>
+            </form>
+        </div>
+
+        <div class="dashboard-section">
+            <h4>Data Management Actions</h4>
+            <form action="server_actions.php" method="POST" style="display: inline-block; margin-right: 10px;">
+                <input type="hidden" name="action" value="trigger_backup">
+                <button type="submit" class="button success">Backup Data to GitHub</button>
+            </form>
+            <form action="server_actions.php" method="POST" style="display: inline-block;">
+                <input type="hidden" name="action" value="trigger_restore">
+                <button type="submit" class="button warning" onclick="return confirm('WARNING: This will overwrite local data with the latest backup from GitHub. This action cannot be undone. Are you absolutely sure?')">Restore Data from GitHub</button>
+            </form>
+            <p style="margin-top:10px;"><small>Note: Backup and Restore actions require the above Git configuration to be correctly set and server-side shell scripts (`backup_data_to_github.sh`, `restore_data_from_github.sh`) to be in place and executable.</small></p>
+        </div>
     </div>
 
-</div>
+</div> <!-- This closes div.dashboard-content.server-management-content -->
 <style>
 .info-list { list-style: none; padding-left: 0; }
 .info-list li { padding: 5px 0; border-bottom: 1px dashed #eee; }

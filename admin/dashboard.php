@@ -48,7 +48,7 @@ error_log("[DEBUG] dashboard.php: Initial \$loggedIn state: " . ($loggedIn ? 'tr
 error_log("[DEBUG] dashboard.php: Initial \$requestedView (from \$_GET['view'] or default based on login) = '" . $requestedView . "'");
 
 // Validate requested view if logged in
-$allowedViews = ['dashboard_overview', 'dashboard_service_one', 'dashboard_user_info', 'dashboard_job_stats', 'dashboard_service_two', 'dashboard_visitors_info', 'dashboard_qoe', 'manage_jobs', 'reported_jobs', 'edit_job', 'edit_user', 'profile', 'messages', 'generate_message', 'manage_users', 'post_job', 'achievements', 'server_management', 'logs'];
+$allowedViews = ['dashboard_overview', 'dashboard_service_one', 'dashboard_user_info', 'dashboard_job_stats', 'dashboard_service_two', 'dashboard_visitors_info', 'dashboard_qoe', 'manage_jobs', 'reported_jobs', 'edit_job', 'edit_user', 'profile', 'messages', 'generate_message', 'manage_users', 'post_job', 'achievements', 'server_management', 'whatsapp_profile', 'logs'];
 error_log("[CRITICAL_DEBUG] dashboard.php: Just before \$allowedViews check. \$requestedView = '" . $requestedView . "'. \$loggedIn = " . ($loggedIn ? 'true' : 'false'));
 
 if ($loggedIn && $requestedView !== 'login') { // Ensure we don't try to validate 'login' if somehow requested while logged in
@@ -86,7 +86,7 @@ if ($loggedIn && $requestedView !== 'login') { // Ensure we don't try to validat
     //     header('Location: dashboard.php?view=dashboard_overview');
     //     exit;
     // }
-    // Authorization check for server_management view: Super Admin and Regional Admins (example)
+    // Authorization check for server_management (Git/Server Info) and whatsapp_profile views
     if ($requestedView === 'server_management' && !($loggedInUserRole === 'super_admin' || in_array($loggedInUserRole, $allRegionalAdminRoles))) {
         $_SESSION['admin_status'] = ['message' => 'Access Denied: You do not have permission to view server management.', 'type' => 'error'];
         header('Location: dashboard.php?view=dashboard_overview');
@@ -94,6 +94,11 @@ if ($loggedIn && $requestedView !== 'login') { // Ensure we don't try to validat
     }
     // Authorization check for logs view: Super Admin ONLY
     if ($requestedView === 'logs' && $loggedInUserRole !== 'super_admin') {
+        $_SESSION['admin_status'] = ['message' => 'Access Denied: You do not have permission to view server logs.', 'type' => 'error'];
+        header('Location: dashboard.php?view=dashboard_overview');
+        exit;
+    }
+    if ($requestedView === 'whatsapp_profile' && !($loggedInUserRole === 'super_admin' || in_array($loggedInUserRole, $allRegionalAdminRoles))) {
         $_SESSION['admin_status'] = ['message' => 'Access Denied: You do not have permission to view server logs.', 'type' => 'error'];
         header('Location: dashboard.php?view=dashboard_overview');
         exit;
@@ -274,6 +279,9 @@ require_once __DIR__ . '/partials/header.php';
                 <a href="javascript:void(0);"><?= htmlspecialchars($displayName) ?> ▼</a>
                 <div class="profile-dropdown-content">
                     <a href="dashboard.php?view=profile" class="<?= $loggedIn && $requestedView === 'profile' ? 'active' : '' ?>">Manage Profile</a>
+                    <?php if ($loggedInUserRole === 'super_admin' || in_array($loggedInUserRole, $allRegionalAdminRoles)): ?>
+                        <a href="?view=whatsapp_profile" class="<?= $loggedIn && $requestedView === 'whatsapp_profile' ? 'active' : '' ?>">WhatsApp</a>
+                    <?php endif; ?>
                     <?php 
                     // User Manager link
                     if ($loggedInUserRole === 'super_admin' || in_array($loggedInUserRole, $allRegionalAdminRoles) || in_array($loggedInUserRole, $allRegionalManagerRoles)): 
@@ -281,7 +289,7 @@ require_once __DIR__ . '/partials/header.php';
                          <a href="dashboard.php?view=manage_users" class="<?= $loggedIn && $requestedView === 'manage_users' ? 'active' : '' ?>">User Manager</a>
                     <?php endif; ?>
                     <?php if ($loggedInUserRole === 'super_admin' || in_array($loggedInUserRole, $allRegionalAdminRoles)): ?>
-                        <a href="?view=server_management" class="<?= $loggedIn && $requestedView === 'server_management' ? 'active' : '' ?>">Manage Server</a>
+                        <a href="?view=server_management" class="<?= $loggedIn && $requestedView === 'server_management' ? 'active' : '' ?>">Server Info & Git</a>
                     <?php endif; ?>
                     <a href="auth.php?action=logout">Logout</a> <?php // Logout link ?>
                 </div>

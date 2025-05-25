@@ -1026,7 +1026,14 @@ switch ($requestedView) {
         log_app_activity("User '$loggedInUserId' accessed 'server_management' view.", "ACCESS_GRANTED");
         $serverSoftware = $_SERVER['SERVER_SOFTWARE'] ?? 'N/A';
         $serverOs = php_uname(); 
-        break;    
+        break;
+
+    case 'whatsapp_profile':
+        // No specific data needs to be pre-loaded from PHP for this view,
+        // as all interactions are client-side JavaScript with whatsapp_manager.php
+        log_app_activity("User '$loggedInUserId' accessed 'whatsapp_profile' view.", "ACCESS_GRANTED");
+        break;
+
     case 'logs':
         if ($loggedInUserRole !== 'super_admin') {
             echo '<p class="status-message error">Access Denied: You do not have permission to view server logs.</p>';
@@ -1085,7 +1092,7 @@ switch ($requestedView) {
 $viewFileSuffix = '_view.php';
 $viewFilePath = __DIR__ . '/views/' . $requestedView . $viewFileSuffix;
 
-$allowedFetchViews = ['dashboard_overview', 'dashboard_service_one', 'dashboard_user_info', 'dashboard_job_stats', 'dashboard_service_two', 'dashboard_visitors_info', 'dashboard_qoe', 'manage_jobs', 'reported_jobs', 'edit_job', 'edit_user', 'profile', 'messages', 'generate_message', 'manage_users', 'post_job', 'achievements', 'server_management', 'logs'];
+$allowedFetchViews = ['dashboard_overview', 'dashboard_service_one', 'dashboard_user_info', 'dashboard_job_stats', 'dashboard_service_two', 'dashboard_visitors_info', 'dashboard_qoe', 'manage_jobs', 'reported_jobs', 'edit_job', 'edit_user', 'profile', 'messages', 'generate_message', 'manage_users', 'post_job', 'achievements', 'server_management', 'whatsapp_profile', 'logs'];
 
 if (!in_array($requestedView, $allowedFetchViews)) {
      echo '<p class="status-message error">Error: Access denied or view not available.</p>';

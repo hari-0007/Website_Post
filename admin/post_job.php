@@ -243,6 +243,136 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         log_app_activity("Job ID '{$jobData['id']}' (Title: '$title') posted successfully by '$loggedInUsernameForLog'.", "JOB_POST_SUCCESS");
         $_SESSION['admin_status'] = ['message' => 'Job posted successfully!', 'type' => 'success'];
          // --- AI Image Generation for Job Poster ---
+         // --- WHATSAPP AUTOMATION INTEGRATION ---
+        // This block is copied and adapted from actions/process_job_post.php
+        $whatsappEnabled = true; // Make this configurable
+        if ($whatsappEnabled) {
+            // Use the specific Group ID for reliability
+            $targetWhatsappGroupId = '120363401972837358@g.us'; // Specific Group ID for "Auto Post Job"
+
+            if (empty($targetWhatsappGroupId)) { // Should not be empty if hardcoded, but good practice
+                error_log("WhatsApp Automation (from post_job.php): Target WhatsApp Group ID is not configured. Skipping message for job ID '{$jobData['id']}'.");
+                if (isset($_SESSION['admin_status']['message'])) {
+                     $_SESSION['admin_status']['message'] .= ' (WhatsApp notification skipped: Target Group Name not configured)';
+                }
+            } else {
+                // Construct the link to the job detail page on your website
+                $jobDisplayLink = rtrim(APP_BASE_URL, '/') . '/job_detail.php?id=' . $jobData['id'];
+                
+                // Format the message for WhatsApp
+                $whatsappMessage = "📢 *New Job Opportunity Posted!* 📢\n\n" .
+                                   "✨ *Title:* " . ($jobData['title'] ?? 'N/A') . "\n" .
+                                   "🏢 *Company:* " . ($jobData['company'] ?? 'N/A') . "\n" .
+                                   "📍 *Location:* " . ($jobData['location'] ?? 'N/A') . "\n";
+                if (!empty($jobData['type'])) { // Assuming 'type' is the job type field in $jobData
+                    $whatsappMessage .= "⏰ *Type:* " . $jobData['type'] . "\n";
+                }
+                // Use ai_summary if available and not empty, otherwise fallback to a snippet of description
+                $descriptionSnippet = !empty($jobData['ai_summary']) ? $jobData['ai_summary'] : substr(strip_tags($jobData['description'] ?? ''), 0, 150) . "...";
+                $whatsappMessage .= "\n📝 *Summary:* " . $descriptionSnippet . "\n\n" .
+                                   "🔗 *Apply Here & More Info:* " . $jobDisplayLink . "\n\n" .
+                                   "Good luck! 🚀";
+
+                // URL to your whatsapp_manager.php script
+                $whatsappManagerUrl = rtrim(APP_BASE_URL, '/') . '/admin/whatsapp_manager.php';
+
+                $postDataForWhatsApp = [
+                    'action' => 'send_whatsapp_message',
+                    'target_identifier' => $targetWhatsappGroupId, // Use the Group ID
+                    'message' => $whatsappMessage,
+                ];
+                
+                error_log("WhatsApp Automation: Attempting to call whatsapp_manager.php at URL: " . $whatsappManagerUrl); // Add this line
+
+               // ...
+$ch_wa = curl_init();
+curl_setopt($ch_wa, CURLOPT_URL, $whatsappManagerUrl);
+curl_setopt($ch_wa, CURLOPT_POST, true);
+curl_setopt($ch_wa, CURLOPT_POSTFIELDS, http_build_query($postDataForWhatsApp));
+curl_setopt($ch_wa, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch_wa, CURLOPT_TIMEOUT, 45);
+curl_setopt($ch_wa, CURLOPT_CONNECTTIMEOUT, 10); // Timeout for the connection phase (seconds)
+curl_setopt($ch_wa, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4); // Force IPv4 resolution
+
+// --- Start Enhanced Debugging for cURL ---
+curl_setopt($ch_wa, CURLOPT_VERBOSE, true);
+$verbose_log_wa = fopen('php://temp', 'w+'); // Capture verbose output to a temporary stream
+curl_setopt($ch_wa, CURLOPT_STDERR, $verbose_log_wa);
+// --- End Enhanced Debugging for cURL ---
+
+// --- Start Pre-cURL Call Logging ---
+error_log("[post_job.php] WhatsApp Notification: Attempting cURL call.");
+error_log("[post_job.php] Target URL: " . $whatsappManagerUrl);
+error_log("[post_job.php] POST Data: " . http_build_query($postDataForWhatsApp));
+$urlPartsForLog = parse_url($whatsappManagerUrl);
+if (isset($urlPartsForLog['scheme']) && $urlPartsForLog['scheme'] === 'https') {
+    if (defined('APP_ENV') && APP_ENV === 'development' && ($urlPartsForLog['host'] === 'localhost' || $urlPartsForLog['host'] === '127.0.0.1')) {
+        error_log("[post_job.php] SSL verification bypass is ON for this local HTTPS request.");
+    } else {
+        error_log("[post_job.php] SSL verification bypass is OFF. Standard SSL verification will apply for this HTTPS request.");
+    }
+} else {
+    error_log("[post_job.php] This is an HTTP request. No SSL verification applicable.");
+}
+// --- End Pre-cURL Call Logging ---
+if (isset($_COOKIE[session_name()])) {
+    curl_setopt($ch_wa, CURLOPT_COOKIE, session_name() . '=' . $_COOKIE[session_name()]);
+}
+
+// --- Adjust SSL verification bypass for local development HTTPS ---
+// --- SSL Verification Handling for cURL ---
+$urlPartsWA_post = parse_url($whatsappManagerUrl); // Use a unique variable name to avoid scope issues if included elsewhere
+$isLocalHttpsRequest_post = (isset($urlPartsWA_post['scheme']) && $urlPartsWA_post['scheme'] === 'https' &&
+                           isset($urlPartsWA_post['host']) && ($urlPartsWA_post['host'] === 'localhost' || $urlPartsWA_post['host'] === '127.0.0.1'));
+
+if ($isLocalHttpsRequest_post) {
+    // Unconditionally disable SSL verification for https://localhost or https://127.0.0.1
+    error_log("[post_job.php] cURL Info: Local HTTPS detected for URL: {$whatsappManagerUrl}. Disabling SSL peer/host verification.");
+    curl_setopt($ch_wa, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch_wa, CURLOPT_SSL_VERIFYHOST, false);
+} elseif (defined('APP_ENV') && APP_ENV === 'development' && isset($urlPartsWA_post['scheme']) && $urlPartsWA_post['scheme'] === 'https') {
+    // For other HTTPS URLs in a development environment (e.g., https://myproject.local with self-signed cert)
+    error_log("[post_job.php] cURL Info: Development environment HTTPS detected for URL: {$whatsappManagerUrl} (APP_ENV=development). Disabling SSL peer/host verification.");
+        curl_setopt($ch_wa, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch_wa, CURLOPT_SSL_VERIFYHOST, false);
+}
+// --- End SSL Verification Handling ---
+
+
+                $responseJson_wa = curl_exec($ch_wa);
+                $httpCode_wa = curl_getinfo($ch_wa, CURLINFO_HTTP_CODE);
+                $curlError_wa = curl_error($ch_wa);
+
+                // --- Retrieve and log verbose output ---
+                rewind($verbose_log_wa);
+                $verboseOutput_wa = stream_get_contents($verbose_log_wa);
+                fclose($verbose_log_wa);
+                if (!empty($verboseOutput_wa)) {
+                    error_log("WhatsApp Automation cURL VERBOSE (from post_job.php) for job ID '{$jobData['id']}': " . trim($verboseOutput_wa));
+                }
+                // --- End Retrieve and log verbose output ---
+
+                curl_close($ch_wa);
+
+                if ($curlError_wa) {
+                    // Log the specific cURL error, the URL, and the HTTP code if available
+                    error_log("WhatsApp Automation cURL Error (from post_job.php) for job ID '{$jobData['id']}': " . $curlError_wa . ". URL: " . $whatsappManagerUrl . ". HTTP Code: " . $httpCode_wa);
+                    $_SESSION['admin_status']['message'] .= ' (WhatsApp notification failed: cURL error - please check server logs for details)';
+                } else {
+                    $waResponse = json_decode($responseJson_wa, true);
+                    if ($httpCode_wa === 200 && $waResponse && isset($waResponse['success']) && $waResponse['success']) {
+                        log_app_activity("WhatsApp notification sent (from post_job.php) for job ID '{$jobData['id']}' to target '{$targetWhatsappGroupId}'. Controller: " . ($waResponse['message'] ?? 'OK'), "WHATSAPP_SENT");
+                        $_SESSION['admin_status']['message'] .= ' (WhatsApp: ' . htmlspecialchars($waResponse['message'] ?? 'Notification sent.') . ')';
+                    } else {
+                        $waErrorMsg = $waResponse['message'] ?? 'Unknown WhatsApp controller error';
+                        error_log("WhatsApp Automation Failed (from post_job.php) for job ID '{$jobData['id']}'. HTTP Code: {$httpCode_wa}. Controller Msg: " . $waErrorMsg . ". Raw Response: " . $responseJson_wa);
+                        $_SESSION['admin_status']['message'] .= ' (WhatsApp notification failed: ' . htmlspecialchars($waErrorMsg) . ')';
+                    }
+                }
+            }
+        }
+        // --- END WHATSAPP AUTOMATION INTEGRATION ---
+
         $posterImageStoragePath = __DIR__ . '/../data/job_posters/';
         if (!is_dir($posterImageStoragePath)) {
             if (!mkdir($posterImageStoragePath, 0777, true)) {
@@ -341,90 +471,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         unset($_SESSION['review_job_data']); // Clear review data for a fresh form
         log_app_activity("Job post form accessed directly by '$loggedInUsernameForLog', review data cleared.", "JOB_POST_FORM_ACCESS");
     }
-    header('Location: dashboard.php?view=post_job');
-    exit();
-}
-
-?>
-                    ]
-                ]
-            ]
-        ];
-
-        // Initialize cURL
-        $ch = curl_init($apiUrl);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Content-Type: application/json'
-        ]);
-
-        // Disable SSL verification (temporary fix)
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-
-        // Execute the request
-        $response = curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $curlError = curl_error($ch);
-        curl_close($ch);
-
-        if ($httpCode === 200) {
-            $responseData = json_decode($response, true);
-            if (isset($responseData['candidates'][0]['content']['parts'][0]['text'])) {
-                $aiSummary = $responseData['candidates'][0]['content']['parts'][0]['text'];
-            } else {
-                error_log('AI summary not found in response.');
-            }
-        } else {
-            error_log("Gemini AI API error: HTTP Code $httpCode. Response: $response. cURL Error: $curlError");
-        }
-    } catch (Exception $e) {
-        error_log('Error generating AI summary: ' . $e->getMessage());
-    }
-
-
-    // Save the job data (e.g., to a JSON file)
-    $jobData = [
-        'id' => time() . '_' . rand(1000, 9999), // Generate a unique ID
-        'title' => $title,
-        'company' => $company,
-        'location' => $location,
-        'description' => $description,
-        'ai_summary' => trim($aiSummary), // Save the AI-generated summary
-        'experience' => $experience,
-        'type' => $type,
-        'salary' => $salary,
-        'phones' => $phones,
-        'emails' => $emails,
-        'vacant_positions' => $vacant_positions,
-        'posted_on' => date('Y-m-d H:i:s'),
-        'posted_on_unix_ts' => time()
-    ];
-
-    // Save to jobs.json
-    // $existingJobs array is already loaded and checked
-    // array_unshift($existingJobs, $jobData); // Add the new job to the beginning of the array
-    // file_put_contents($jobsFile, json_encode($existingJobs, JSON_PRETTY_PRINT));
-// $allExistingJobs is the full list, we add to this one
-    array_unshift($allExistingJobs, $jobData); // Add the new job to the beginning of the full array
-    file_put_contents($jobsFile, json_encode($allExistingJobs, JSON_PRETTY_PRINT));
- 
-    // Set success message and redirect to the dashboard
-    $_SESSION['admin_status'] = [
-        'message' => 'Job posted successfully!',
-        'type' => 'success'
-    ];
-    header('Location: dashboard.php?view=manage_jobs');
-    exit();
-} else {
-    // Invalid request method
-    $_SESSION['admin_status'] = [
-        'message' => 'Invalid job action.',
-        'type' => 'error'
-    ];
-    header('Location: dashboard.php?view=post_job'); // Redirect if not a POST request or other issue
+    // This redirect was missing in the original file if it's not a POST request.
+    // It should redirect to the view that displays the form.
+    header('Location: dashboard.php?view=post_job'); 
     exit();
 }
 

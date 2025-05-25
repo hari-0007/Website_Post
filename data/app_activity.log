@@ -1391,3 +1391,405 @@
 [2025-05-24 23:41:26] [JOB_POST_SUCCESS] Job ID '1748110286_3050' (Title: 'Senior Network Engineer II') posted successfully by 'suthan@jobhunt.top'.
 [2025-05-24 23:41:26] [AI_IMAGE_ERROR] AI poster image generation FAILED for job ID '1748110286_3050'. Prompt: 'Create a professional and visually appealing poster for a job opening. Job Title: 'Senior Network Engineer II'. Company: 'Etisalat'. Location: 'Abu Dhabi'. Key elements to convey: opportunity, growth, modern workplace. Style: Clean, corporate, with a touch of innovation. Dominant colors: blues, greys, with an accent color like teal or orange. Include abstract representations of collaboration or technology if appropriate. Avoid text clutter.'
 [2025-05-24 23:41:26] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-05-24 23:48:55] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-05-24 23:48:55] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-05-24 23:50:34] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'reported_jobs'.
+[2025-05-24 23:50:34] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'reported_jobs' view.
+[2025-05-25 00:12:37] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'reported_jobs'.
+[2025-05-25 00:12:37] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'reported_jobs' view.
+[2025-05-25 00:12:40] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-05-25 00:12:40] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-05-25 00:14:36] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-05-25 00:14:36] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-05-25 00:14:38] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-05-25 00:14:38] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-05-25 00:18:26] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-05-25 00:18:26] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-05-25 00:18:34] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-05-25 00:18:34] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-05-25 00:20:16] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'generate_message'.
+[2025-05-25 00:20:16] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'generate_message' view. WhatsApp generated: Yes. Telegram generated: Yes.
+[2025-05-25 00:20:40] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-05-25 00:27:59] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-05-25 00:27:59] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-05-25 00:30:23] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-05-25 00:30:23] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-05-25 00:32:15] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-05-25 00:32:15] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-05-25 00:37:33] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-05-25 00:37:33] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-05-25 00:40:08] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-05-25 00:40:08] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-05-25 00:42:24] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-05-25 00:42:24] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-05-25 00:43:19] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-05-25 00:43:19] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-05-25 00:44:34] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-05-25 00:44:34] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-05-25 00:46:13] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-05-25 00:46:13] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-05-25 00:46:14] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-05-25 00:46:14] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-05-25 00:48:24] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-05-25 00:48:24] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-05-25 00:51:01] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-05-25 00:51:01] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-05-25 00:51:41] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-05-25 00:51:41] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-05-25 00:53:46] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-05-25 00:53:49] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-05-25 00:53:49] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-05-25 03:33:18] [AUTH_SUCCESS] User 'suthan@jobhunt.top' logged in successfully. Role: 'super_admin'.
+[2025-05-25 03:33:18] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-05-25 03:33:24] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'reported_jobs'.
+[2025-05-25 03:33:24] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'reported_jobs' view.
+[2025-05-25 03:33:31] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_users'.
+[2025-05-25 03:33:31] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'manage_users' view.
+[2025-05-25 03:33:34] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-05-25 03:33:34] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-05-25 04:10:55] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-05-25 04:11:11] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-05-25 04:11:11] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-05-25 04:18:02] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-05-25 04:18:02] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-05-25 04:33:44] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-05-25 04:33:44] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-05-25 04:40:51] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-05-25 04:40:51] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-05-25 04:46:02] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-05-25 04:46:02] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-05-25 04:55:13] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-05-25 04:55:13] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-05-25 04:55:20] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-05-25 04:55:20] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-05-25 04:55:21] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-05-25 04:55:21] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-05-25 04:55:21] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-05-25 04:55:21] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-05-25 05:24:51] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-05-25 05:24:51] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-05-25 06:15:33] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-05-25 06:15:33] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-05-25 06:15:39] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-05-25 06:15:39] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-05-25 06:15:42] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-05-25 06:15:42] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-05-25 06:15:44] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_users'.
+[2025-05-25 06:15:44] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'manage_users' view.
+[2025-05-25 06:15:46] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-05-25 06:15:46] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-05-25 06:19:42] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-05-25 06:19:42] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-05-25 06:19:44] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-05-25 06:19:44] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-05-25 06:21:56] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-05-25 06:21:56] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-05-25 06:22:00] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-05-25 06:22:00] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-05-25 06:22:16] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-05-25 06:22:16] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-05-25 06:27:56] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-05-25 06:27:56] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-05-25 06:28:00] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'whatsapp_profile'.
+[2025-05-25 06:28:00] [INVALID_VIEW_ERROR] User 'suthan@jobhunt.top' attempted to access invalid view: 'whatsapp_profile'.
+[2025-05-25 06:30:21] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'whatsapp_profile'.
+[2025-05-25 06:30:21] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'whatsapp_profile' view.
+[2025-05-25 06:46:44] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'whatsapp_profile'.
+[2025-05-25 06:46:44] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'whatsapp_profile' view.
+[2025-05-25 06:52:50] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'whatsapp_profile'.
+[2025-05-25 06:52:50] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'whatsapp_profile' view.
+[2025-05-25 06:58:20] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'whatsapp_profile'.
+[2025-05-25 06:58:20] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'whatsapp_profile' view.
+[2025-05-25 07:03:19] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'whatsapp_profile'.
+[2025-05-25 07:03:19] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'whatsapp_profile' view.
+[2025-05-25 07:05:43] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'whatsapp_profile'.
+[2025-05-25 07:05:43] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'whatsapp_profile' view.
+[2025-05-25 07:08:36] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'whatsapp_profile'.
+[2025-05-25 07:08:36] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'whatsapp_profile' view.
+[2025-05-25 07:08:37] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'whatsapp_profile'.
+[2025-05-25 07:08:37] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'whatsapp_profile' view.
+[2025-05-25 07:08:37] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'whatsapp_profile'.
+[2025-05-25 07:08:37] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'whatsapp_profile' view.
+[2025-05-25 07:12:15] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'whatsapp_profile'.
+[2025-05-25 07:12:15] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'whatsapp_profile' view.
+[2025-05-25 07:12:18] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-05-25 07:12:21] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'whatsapp_profile'.
+[2025-05-25 07:12:21] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'whatsapp_profile' view.
+[2025-05-25 07:16:03] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'whatsapp_profile'.
+[2025-05-25 07:16:03] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'whatsapp_profile' view.
+[2025-05-25 07:16:04] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'whatsapp_profile'.
+[2025-05-25 07:16:04] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'whatsapp_profile' view.
+[2025-05-25 07:16:07] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'profile'.
+[2025-05-25 07:16:07] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'profile' view.
+[2025-05-25 07:16:10] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'whatsapp_profile'.
+[2025-05-25 07:16:10] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'whatsapp_profile' view.
+[2025-05-25 07:16:12] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_users'.
+[2025-05-25 07:16:12] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'manage_users' view.
+[2025-05-25 07:16:14] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-05-25 07:16:14] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-05-25 07:16:18] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'whatsapp_profile'.
+[2025-05-25 07:16:18] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'whatsapp_profile' view.
+[2025-05-25 07:18:18] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'whatsapp_profile'.
+[2025-05-25 07:18:18] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'whatsapp_profile' view.
+[2025-05-25 07:20:17] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'whatsapp_profile'.
+[2025-05-25 07:20:17] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'whatsapp_profile' view.
+[2025-05-25 07:23:22] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'whatsapp_profile'.
+[2025-05-25 07:23:22] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'whatsapp_profile' view.
+[2025-05-25 07:23:23] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'whatsapp_profile'.
+[2025-05-25 07:23:23] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'whatsapp_profile' view.
+[2025-05-25 07:23:23] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'whatsapp_profile'.
+[2025-05-25 07:23:23] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'whatsapp_profile' view.
+[2025-05-25 07:25:16] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'whatsapp_profile'.
+[2025-05-25 07:25:16] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'whatsapp_profile' view.
+[2025-05-25 07:27:43] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'whatsapp_profile'.
+[2025-05-25 07:27:43] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'whatsapp_profile' view.
+[2025-05-25 07:36:46] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'whatsapp_profile'.
+[2025-05-25 07:36:46] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'whatsapp_profile' view.
+[2025-05-25 07:41:18] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'whatsapp_profile'.
+[2025-05-25 07:41:18] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'whatsapp_profile' view.
+[2025-05-25 07:45:54] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'whatsapp_profile'.
+[2025-05-25 07:45:54] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'whatsapp_profile' view.
+[2025-05-25 07:45:57] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'whatsapp_profile'.
+[2025-05-25 07:45:57] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'whatsapp_profile' view.
+[2025-05-25 07:46:56] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'whatsapp_profile'.
+[2025-05-25 07:46:56] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'whatsapp_profile' view.
+[2025-05-25 08:04:05] [AUTH_SUCCESS] User 'suthan@jobhunt.top' logged in successfully. Role: 'super_admin'.
+[2025-05-25 08:04:05] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-05-25 08:04:09] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'whatsapp_profile'.
+[2025-05-25 08:04:09] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'whatsapp_profile' view.
+[2025-05-25 08:15:07] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'whatsapp_profile'.
+[2025-05-25 08:15:07] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'whatsapp_profile' view.
+[2025-05-25 08:21:47] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'whatsapp_profile'.
+[2025-05-25 08:21:47] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'whatsapp_profile' view.
+[2025-05-25 08:23:27] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-05-25 08:23:27] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-05-25 08:23:33] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'whatsapp_profile'.
+[2025-05-25 08:23:33] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'whatsapp_profile' view.
+[2025-05-25 08:24:24] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'whatsapp_profile'.
+[2025-05-25 08:24:24] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'whatsapp_profile' view.
+[2025-05-25 08:24:26] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'whatsapp_profile'.
+[2025-05-25 08:24:26] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'whatsapp_profile' view.
+[2025-05-25 08:25:50] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'whatsapp_profile'.
+[2025-05-25 08:25:50] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'whatsapp_profile' view.
+[2025-05-25 08:28:18] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'whatsapp_profile'.
+[2025-05-25 08:28:18] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'whatsapp_profile' view.
+[2025-05-25 08:32:17] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'whatsapp_profile'.
+[2025-05-25 08:32:17] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'whatsapp_profile' view.
+[2025-05-25 08:38:50] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'whatsapp_profile'.
+[2025-05-25 08:38:50] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'whatsapp_profile' view.
+[2025-05-25 08:39:06] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'whatsapp_profile'.
+[2025-05-25 08:39:06] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'whatsapp_profile' view.
+[2025-05-25 08:41:54] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'whatsapp_profile'.
+[2025-05-25 08:41:54] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'whatsapp_profile' view.
+[2025-05-25 08:41:55] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'whatsapp_profile'.
+[2025-05-25 08:41:55] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'whatsapp_profile' view.
+[2025-05-25 08:41:56] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'whatsapp_profile'.
+[2025-05-25 08:41:57] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'whatsapp_profile' view.
+[2025-05-25 08:41:57] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'whatsapp_profile'.
+[2025-05-25 08:41:57] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'whatsapp_profile' view.
+[2025-05-25 08:44:00] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'whatsapp_profile'.
+[2025-05-25 08:44:00] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'whatsapp_profile' view.
+[2025-05-25 08:44:38] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'whatsapp_profile'.
+[2025-05-25 08:44:38] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'whatsapp_profile' view.
+[2025-05-25 08:51:01] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'whatsapp_profile'.
+[2025-05-25 08:51:01] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'whatsapp_profile' view.
+[2025-05-25 08:58:45] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'reported_jobs'.
+[2025-05-25 08:58:45] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'reported_jobs' view.
+[2025-05-25 08:58:46] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-05-25 08:58:49] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-05-25 08:58:51] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-05-25 08:59:04] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Hari 41': API Key is placeholder or empty.
+[2025-05-25 08:59:08] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Hari 41'.
+[2025-05-25 08:59:08] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Hari 41') ready for review. AI Summary generated (length: 1892).
+[2025-05-25 08:59:08] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-05-25 08:59:10] [JOB_POST_SUCCESS] Job ID '1748143750_7990' (Title: 'Hari 41') posted successfully by 'suthan@jobhunt.top'.
+[2025-05-25 08:59:10] [AI_IMAGE_ERROR] AI poster image generation FAILED for job ID '1748143750_7990'. Prompt: 'Create a professional and visually appealing poster for a job opening. Job Title: 'Hari 41'. Company: 'Allitson'. Location: ''. Key elements to convey: opportunity, growth, modern workplace. Style: Clean, corporate, with a touch of innovation. Dominant colors: blues, greys, with an accent color like teal or orange. Include abstract representations of collaboration or technology if appropriate. Avoid text clutter.'
+[2025-05-25 08:59:10] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-05-25 08:59:45] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'whatsapp_profile'.
+[2025-05-25 08:59:45] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'whatsapp_profile' view.
+[2025-05-25 09:04:21] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-05-25 09:04:22] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-05-25 09:04:24] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-05-25 09:04:40] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Hari 0007': API Key is placeholder or empty.
+[2025-05-25 09:04:46] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Hari 0007'.
+[2025-05-25 09:04:46] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Hari 0007') ready for review. AI Summary generated (length: 2246).
+[2025-05-25 09:04:46] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-05-25 09:04:48] [JOB_POST_SUCCESS] Job ID '1748144088_4540' (Title: 'Hari 0007') posted successfully by 'suthan@jobhunt.top'.
+[2025-05-25 09:11:44] [JOB_POST_SUCCESS] Job ID '1748144504_7402' (Title: 'Hari 0007') posted successfully by 'suthan@jobhunt.top'.
+[2025-05-25 09:11:46] [AI_IMAGE_ERROR] AI poster image generation FAILED for job ID '1748144504_7402'. Prompt: 'Create a professional and visually appealing poster for a job opening. Job Title: 'Hari 0007'. Company: 'Allitson'. Location: ''. Key elements to convey: opportunity, growth, modern workplace. Style: Clean, corporate, with a touch of innovation. Dominant colors: blues, greys, with an accent color like teal or orange. Include abstract representations of collaboration or technology if appropriate. Avoid text clutter.'
+[2025-05-25 09:11:46] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-05-25 09:19:53] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'whatsapp_profile'.
+[2025-05-25 09:19:53] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'whatsapp_profile' view.
+[2025-05-25 09:21:23] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-05-25 09:21:25] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-05-25 09:21:33] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Hari 007': API Key is placeholder or empty.
+[2025-05-25 09:21:38] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Hari 007'.
+[2025-05-25 09:21:38] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Hari 007') ready for review. AI Summary generated (length: 2003).
+[2025-05-25 09:21:38] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-05-25 09:21:40] [JOB_POST_SUCCESS] Job ID '1748145100_5901' (Title: 'Hari 007') posted successfully by 'suthan@jobhunt.top'.
+[2025-05-25 09:21:42] [AI_IMAGE_ERROR] AI poster image generation FAILED for job ID '1748145100_5901'. Prompt: 'Create a professional and visually appealing poster for a job opening. Job Title: 'Hari 007'. Company: 'Allitson'. Location: ''. Key elements to convey: opportunity, growth, modern workplace. Style: Clean, corporate, with a touch of innovation. Dominant colors: blues, greys, with an accent color like teal or orange. Include abstract representations of collaboration or technology if appropriate. Avoid text clutter.'
+[2025-05-25 09:21:42] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-05-25 09:23:27] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-05-25 09:23:38] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Hari07': API Key is placeholder or empty.
+[2025-05-25 09:23:42] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Hari07'.
+[2025-05-25 09:23:42] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Hari07') ready for review. AI Summary generated (length: 1796).
+[2025-05-25 09:23:42] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-05-25 09:23:49] [JOB_POST_SUCCESS] Job ID '1748145229_3765' (Title: 'Hari07') posted successfully by 'suthan@jobhunt.top'.
+[2025-05-25 09:23:51] [AI_IMAGE_ERROR] AI poster image generation FAILED for job ID '1748145229_3765'. Prompt: 'Create a professional and visually appealing poster for a job opening. Job Title: 'Hari07'. Company: 'Allitson'. Location: ''. Key elements to convey: opportunity, growth, modern workplace. Style: Clean, corporate, with a touch of innovation. Dominant colors: blues, greys, with an accent color like teal or orange. Include abstract representations of collaboration or technology if appropriate. Avoid text clutter.'
+[2025-05-25 09:23:51] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-05-25 09:26:54] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-05-25 09:26:56] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-05-25 09:27:04] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Hari007': API Key is placeholder or empty.
+[2025-05-25 09:27:08] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Hari007'.
+[2025-05-25 09:27:08] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Hari007') ready for review. AI Summary generated (length: 1898).
+[2025-05-25 09:27:08] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-05-25 09:27:11] [JOB_POST_SUCCESS] Job ID '1748145431_6453' (Title: 'Hari007') posted successfully by 'suthan@jobhunt.top'.
+[2025-05-25 09:27:14] [AI_IMAGE_ERROR] AI poster image generation FAILED for job ID '1748145431_6453'. Prompt: 'Create a professional and visually appealing poster for a job opening. Job Title: 'Hari007'. Company: 'Allitson'. Location: ''. Key elements to convey: opportunity, growth, modern workplace. Style: Clean, corporate, with a touch of innovation. Dominant colors: blues, greys, with an accent color like teal or orange. Include abstract representations of collaboration or technology if appropriate. Avoid text clutter.'
+[2025-05-25 09:27:14] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-05-25 09:39:27] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'whatsapp_profile'.
+[2025-05-25 09:39:27] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'whatsapp_profile' view.
+[2025-05-25 09:41:28] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'whatsapp_profile'.
+[2025-05-25 09:41:28] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'whatsapp_profile' view.
+[2025-05-25 09:47:02] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-05-25 09:47:04] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-05-25 09:47:12] [AI_SUMMARY_SKIP] AI Summary generation skipped for job '1': API Key is placeholder or empty.
+[2025-05-25 09:47:16] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job '1'.
+[2025-05-25 09:47:16] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: '1') ready for review. AI Summary generated (length: 2279).
+[2025-05-25 09:47:16] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-05-25 09:47:18] [JOB_POST_SUCCESS] Job ID '1748146638_1037' (Title: '1') posted successfully by 'suthan@jobhunt.top'.
+[2025-05-25 09:47:20] [AI_IMAGE_ERROR] AI poster image generation FAILED for job ID '1748146638_1037'. Prompt: 'Create a professional and visually appealing poster for a job opening. Job Title: '1'. Company: 'Allitson'. Location: ''. Key elements to convey: opportunity, growth, modern workplace. Style: Clean, corporate, with a touch of innovation. Dominant colors: blues, greys, with an accent color like teal or orange. Include abstract representations of collaboration or technology if appropriate. Avoid text clutter.'
+[2025-05-25 09:47:20] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-05-25 09:53:48] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-05-25 09:53:49] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-05-25 09:53:58] [AI_SUMMARY_SKIP] AI Summary generation skipped for job '2': API Key is placeholder or empty.
+[2025-05-25 09:54:02] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job '2'.
+[2025-05-25 09:54:02] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: '2') ready for review. AI Summary generated (length: 2159).
+[2025-05-25 09:54:02] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-05-25 09:54:04] [JOB_POST_SUCCESS] Job ID '1748147044_3107' (Title: '2') posted successfully by 'suthan@jobhunt.top'.
+[2025-05-25 09:54:07] [AI_IMAGE_ERROR] AI poster image generation FAILED for job ID '1748147044_3107'. Prompt: 'Create a professional and visually appealing poster for a job opening. Job Title: '2'. Company: 'Allitson'. Location: ''. Key elements to convey: opportunity, growth, modern workplace. Style: Clean, corporate, with a touch of innovation. Dominant colors: blues, greys, with an accent color like teal or orange. Include abstract representations of collaboration or technology if appropriate. Avoid text clutter.'
+[2025-05-25 09:54:07] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-05-25 09:55:44] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-05-25 09:55:52] [AI_SUMMARY_SKIP] AI Summary generation skipped for job '3': API Key is placeholder or empty.
+[2025-05-25 09:55:56] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job '3'.
+[2025-05-25 09:55:56] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: '3') ready for review. AI Summary generated (length: 2079).
+[2025-05-25 09:55:56] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-05-25 09:56:18] [JOB_POST_SUCCESS] Job ID '1748147178_9135' (Title: '3') posted successfully by 'suthan@jobhunt.top'.
+[2025-05-25 09:56:20] [AI_IMAGE_ERROR] AI poster image generation FAILED for job ID '1748147178_9135'. Prompt: 'Create a professional and visually appealing poster for a job opening. Job Title: '3'. Company: 'Etisalat'. Location: ''. Key elements to convey: opportunity, growth, modern workplace. Style: Clean, corporate, with a touch of innovation. Dominant colors: blues, greys, with an accent color like teal or orange. Include abstract representations of collaboration or technology if appropriate. Avoid text clutter.'
+[2025-05-25 09:56:20] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-05-25 09:56:57] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-05-25 09:57:05] [AI_SUMMARY_SKIP] AI Summary generation skipped for job '4': API Key is placeholder or empty.
+[2025-05-25 09:57:09] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job '4'.
+[2025-05-25 09:57:09] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: '4') ready for review. AI Summary generated (length: 1960).
+[2025-05-25 09:57:09] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-05-25 09:57:11] [JOB_POST_SUCCESS] Job ID '1748147231_4471' (Title: '4') posted successfully by 'suthan@jobhunt.top'.
+[2025-05-25 09:57:13] [AI_IMAGE_ERROR] AI poster image generation FAILED for job ID '1748147231_4471'. Prompt: 'Create a professional and visually appealing poster for a job opening. Job Title: '4'. Company: 'Etisalat'. Location: ''. Key elements to convey: opportunity, growth, modern workplace. Style: Clean, corporate, with a touch of innovation. Dominant colors: blues, greys, with an accent color like teal or orange. Include abstract representations of collaboration or technology if appropriate. Avoid text clutter.'
+[2025-05-25 09:57:13] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-05-25 09:57:23] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-05-25 10:02:31] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-05-25 10:02:33] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-05-25 10:02:42] [AI_SUMMARY_SKIP] AI Summary generation skipped for job '5': API Key is placeholder or empty.
+[2025-05-25 10:02:46] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job '5'.
+[2025-05-25 10:02:46] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: '5') ready for review. AI Summary generated (length: 2111).
+[2025-05-25 10:02:46] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-05-25 10:02:48] [JOB_POST_SUCCESS] Job ID '1748147568_1135' (Title: '5') posted successfully by 'suthan@jobhunt.top'.
+[2025-05-25 10:02:50] [AI_IMAGE_ERROR] AI poster image generation FAILED for job ID '1748147568_1135'. Prompt: 'Create a professional and visually appealing poster for a job opening. Job Title: '5'. Company: 'Etisalat'. Location: ''. Key elements to convey: opportunity, growth, modern workplace. Style: Clean, corporate, with a touch of innovation. Dominant colors: blues, greys, with an accent color like teal or orange. Include abstract representations of collaboration or technology if appropriate. Avoid text clutter.'
+[2025-05-25 10:02:50] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-05-25 10:11:50] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-05-25 10:11:52] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-05-25 10:11:59] [AI_SUMMARY_SKIP] AI Summary generation skipped for job '6': API Key is placeholder or empty.
+[2025-05-25 10:12:03] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job '6'.
+[2025-05-25 10:12:03] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: '6') ready for review. AI Summary generated (length: 2280).
+[2025-05-25 10:12:03] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-05-25 10:12:07] [JOB_POST_SUCCESS] Job ID '1748148127_2553' (Title: '6') posted successfully by 'suthan@jobhunt.top'.
+[2025-05-25 10:12:09] [AI_IMAGE_ERROR] AI poster image generation FAILED for job ID '1748148127_2553'. Prompt: 'Create a professional and visually appealing poster for a job opening. Job Title: '6'. Company: 'Etisalat'. Location: ''. Key elements to convey: opportunity, growth, modern workplace. Style: Clean, corporate, with a touch of innovation. Dominant colors: blues, greys, with an accent color like teal or orange. Include abstract representations of collaboration or technology if appropriate. Avoid text clutter.'
+[2025-05-25 10:12:09] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-05-25 10:12:22] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'logs'.
+[2025-05-25 10:12:22] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'logs' view.
+[2025-05-25 10:12:32] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'logs'.
+[2025-05-25 10:12:42] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'logs'.
+[2025-05-25 10:12:52] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'logs'.
+[2025-05-25 10:13:02] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'logs'.
+[2025-05-25 10:13:12] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'logs'.
+[2025-05-25 10:13:22] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'logs'.
+[2025-05-25 10:13:28] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-05-25 10:16:48] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-05-25 10:16:52] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-05-25 10:17:00] [AI_SUMMARY_SKIP] AI Summary generation skipped for job '7': API Key is placeholder or empty.
+[2025-05-25 10:17:05] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job '7'.
+[2025-05-25 10:17:05] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: '7') ready for review. AI Summary generated (length: 2139).
+[2025-05-25 10:17:05] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-05-25 10:17:07] [JOB_POST_SUCCESS] Job ID '1748148427_4581' (Title: '7') posted successfully by 'suthan@jobhunt.top'.
+[2025-05-25 10:17:09] [AI_IMAGE_ERROR] AI poster image generation FAILED for job ID '1748148427_4581'. Prompt: 'Create a professional and visually appealing poster for a job opening. Job Title: '7'. Company: 'Etisalat'. Location: 'Nagercoil'. Key elements to convey: opportunity, growth, modern workplace. Style: Clean, corporate, with a touch of innovation. Dominant colors: blues, greys, with an accent color like teal or orange. Include abstract representations of collaboration or technology if appropriate. Avoid text clutter.'
+[2025-05-25 10:17:09] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-05-25 10:17:42] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-05-25 10:17:56] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'whatsapp_profile'.
+[2025-05-25 10:17:56] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'whatsapp_profile' view.
+[2025-05-25 10:19:06] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-05-25 10:19:08] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-05-25 10:19:14] [AI_SUMMARY_SKIP] AI Summary generation skipped for job '8': API Key is placeholder or empty.
+[2025-05-25 10:19:17] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job '8'.
+[2025-05-25 10:19:17] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: '8') ready for review. AI Summary generated (length: 1630).
+[2025-05-25 10:19:17] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-05-25 10:19:19] [JOB_POST_SUCCESS] Job ID '1748148559_1664' (Title: '8') posted successfully by 'suthan@jobhunt.top'.
+[2025-05-25 10:19:21] [AI_IMAGE_ERROR] AI poster image generation FAILED for job ID '1748148559_1664'. Prompt: 'Create a professional and visually appealing poster for a job opening. Job Title: '8'. Company: 'Etisalat'. Location: 'Nagercoil'. Key elements to convey: opportunity, growth, modern workplace. Style: Clean, corporate, with a touch of innovation. Dominant colors: blues, greys, with an accent color like teal or orange. Include abstract representations of collaboration or technology if appropriate. Avoid text clutter.'
+[2025-05-25 10:19:21] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-05-25 10:20:50] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'whatsapp_profile'.
+[2025-05-25 10:20:50] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'whatsapp_profile' view.
+[2025-05-25 10:21:50] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-05-25 10:21:52] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-05-25 10:22:01] [AI_SUMMARY_SKIP] AI Summary generation skipped for job '9': API Key is placeholder or empty.
+[2025-05-25 10:22:06] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job '9'.
+[2025-05-25 10:22:06] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: '9') ready for review. AI Summary generated (length: 2228).
+[2025-05-25 10:22:06] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-05-25 10:22:08] [JOB_POST_SUCCESS] Job ID '1748148728_9268' (Title: '9') posted successfully by 'suthan@jobhunt.top'.
+[2025-05-25 10:22:10] [AI_IMAGE_ERROR] AI poster image generation FAILED for job ID '1748148728_9268'. Prompt: 'Create a professional and visually appealing poster for a job opening. Job Title: '9'. Company: 'Etisalat'. Location: ''. Key elements to convey: opportunity, growth, modern workplace. Style: Clean, corporate, with a touch of innovation. Dominant colors: blues, greys, with an accent color like teal or orange. Include abstract representations of collaboration or technology if appropriate. Avoid text clutter.'
+[2025-05-25 10:22:10] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-05-25 10:22:59] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'whatsapp_profile'.
+[2025-05-25 10:22:59] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'whatsapp_profile' view.
+[2025-05-25 10:24:29] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-05-25 10:24:31] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-05-25 10:24:39] [AI_SUMMARY_SKIP] AI Summary generation skipped for job '10': API Key is placeholder or empty.
+[2025-05-25 10:24:44] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job '10'.
+[2025-05-25 10:24:44] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: '10') ready for review. AI Summary generated (length: 2594).
+[2025-05-25 10:24:44] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-05-25 10:24:49] [JOB_POST_SUCCESS] Job ID '1748148889_1312' (Title: '10') posted successfully by 'suthan@jobhunt.top'.
+[2025-05-25 10:24:51] [AI_IMAGE_ERROR] AI poster image generation FAILED for job ID '1748148889_1312'. Prompt: 'Create a professional and visually appealing poster for a job opening. Job Title: '10'. Company: 'Etisalat'. Location: ''. Key elements to convey: opportunity, growth, modern workplace. Style: Clean, corporate, with a touch of innovation. Dominant colors: blues, greys, with an accent color like teal or orange. Include abstract representations of collaboration or technology if appropriate. Avoid text clutter.'
+[2025-05-25 10:24:51] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-05-25 10:30:13] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-05-25 10:30:14] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-05-25 10:30:20] [AI_SUMMARY_SKIP] AI Summary generation skipped for job '11': API Key is placeholder or empty.
+[2025-05-25 10:30:25] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job '11'.
+[2025-05-25 10:30:25] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: '11') ready for review. AI Summary generated (length: 2477).
+[2025-05-25 10:30:25] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-05-25 10:30:27] [JOB_POST_SUCCESS] Job ID '1748149227_9238' (Title: '11') posted successfully by 'suthan@jobhunt.top'.
+[2025-05-25 10:30:29] [AI_IMAGE_ERROR] AI poster image generation FAILED for job ID '1748149227_9238'. Prompt: 'Create a professional and visually appealing poster for a job opening. Job Title: '11'. Company: 'Etisalat'. Location: ''. Key elements to convey: opportunity, growth, modern workplace. Style: Clean, corporate, with a touch of innovation. Dominant colors: blues, greys, with an accent color like teal or orange. Include abstract representations of collaboration or technology if appropriate. Avoid text clutter.'
+[2025-05-25 10:30:29] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-05-25 10:35:36] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-05-25 10:35:38] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-05-25 10:35:45] [AI_SUMMARY_SKIP] AI Summary generation skipped for job '12': API Key is placeholder or empty.
+[2025-05-25 10:35:50] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job '12'.
+[2025-05-25 10:35:50] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: '12') ready for review. AI Summary generated (length: 2139).
+[2025-05-25 10:35:50] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-05-25 10:35:51] [JOB_POST_SUCCESS] Job ID '1748149551_4708' (Title: '12') posted successfully by 'suthan@jobhunt.top'.
+[2025-05-25 10:35:53] [AI_IMAGE_ERROR] AI poster image generation FAILED for job ID '1748149551_4708'. Prompt: 'Create a professional and visually appealing poster for a job opening. Job Title: '12'. Company: 'Allitson'. Location: ''. Key elements to convey: opportunity, growth, modern workplace. Style: Clean, corporate, with a touch of innovation. Dominant colors: blues, greys, with an accent color like teal or orange. Include abstract representations of collaboration or technology if appropriate. Avoid text clutter.'
+[2025-05-25 10:35:53] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-05-25 10:36:35] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'whatsapp_profile'.
+[2025-05-25 10:36:35] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'whatsapp_profile' view.
+[2025-05-25 10:37:29] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-05-25 10:37:32] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-05-25 10:37:47] [AI_SUMMARY_SKIP] AI Summary generation skipped for job '13': API Key is placeholder or empty.
+[2025-05-25 10:37:51] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job '13'.
+[2025-05-25 10:37:51] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: '13') ready for review. AI Summary generated (length: 2545).
+[2025-05-25 10:37:51] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-05-25 10:37:53] [JOB_POST_SUCCESS] Job ID '1748149673_7846' (Title: '13') posted successfully by 'suthan@jobhunt.top'.
+[2025-05-25 10:37:55] [AI_IMAGE_ERROR] AI poster image generation FAILED for job ID '1748149673_7846'. Prompt: 'Create a professional and visually appealing poster for a job opening. Job Title: '13'. Company: 'Etisalat'. Location: ''. Key elements to convey: opportunity, growth, modern workplace. Style: Clean, corporate, with a touch of innovation. Dominant colors: blues, greys, with an accent color like teal or orange. Include abstract representations of collaboration or technology if appropriate. Avoid text clutter.'
+[2025-05-25 10:37:55] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-05-25 10:40:35] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-05-25 10:40:37] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-05-25 10:40:45] [AI_SUMMARY_SKIP] AI Summary generation skipped for job '14': API Key is placeholder or empty.
+[2025-05-25 10:40:49] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job '14'.
+[2025-05-25 10:40:49] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: '14') ready for review. AI Summary generated (length: 2485).
+[2025-05-25 10:40:49] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-05-25 10:40:52] [JOB_POST_SUCCESS] Job ID '1748149852_9946' (Title: '14') posted successfully by 'suthan@jobhunt.top'.
+[2025-05-25 10:40:54] [AI_IMAGE_ERROR] AI poster image generation FAILED for job ID '1748149852_9946'. Prompt: 'Create a professional and visually appealing poster for a job opening. Job Title: '14'. Company: 'Allitson'. Location: ''. Key elements to convey: opportunity, growth, modern workplace. Style: Clean, corporate, with a touch of innovation. Dominant colors: blues, greys, with an accent color like teal or orange. Include abstract representations of collaboration or technology if appropriate. Avoid text clutter.'
+[2025-05-25 10:40:54] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.

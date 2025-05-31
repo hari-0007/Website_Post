@@ -1,4 +1,5 @@
 <?php
+// filepath: c:\Users\Public\Job_Post\admin\message_actions.php
 
 // admin/message_actions.php - Handles Feedback Message Actions
 
@@ -14,8 +15,12 @@ $feedbackFilename = __DIR__ . '/../data/feedback.json';
 // config.php defines file paths ($feedbackFilename will be overridden if defined there)
 // feedback_helpers.php contains load/saveFeedbackMessages functions
 require_once __DIR__ . '/includes/config.php';
-require_once __DIR__ . '/includes/feedback_helpers.php';
+require_once __DIR__ . '/includes/feedback_helpers.php'; // Assuming this contains toggle_message_read_status
 
+
+// CORS (only for development - restrict origin in production!)
+// header('Access-Control-Allow-Origin: *');
+// header('Content-Type: application/json'); // Default content type for AJAX responses
 
 // Check if the user is logged in. If not, return a JSON error for AJAX calls.
 if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
@@ -38,7 +43,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
 $_SESSION['admin_status'] = ['message' => '', 'type' => ''];
 
 // Get the action and potentially message IDs from the request
-$action = $_POST['action'] ?? $_GET['action'] ?? null; // Use $_REQUEST or check both POST and GET
+$action = $_POST['action'] ?? $_GET['action'] ?? null;
 $messageIds = $_POST['message_ids'] ?? null; // Array of IDs for bulk actions
 $messageId = $_POST['message_id'] ?? $_GET['id'] ?? null; // Single ID for detail or toggle
 
@@ -63,45 +68,149 @@ if (!is_array($feedbackMessages)) {
     }
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
-    $action = $_POST['action'];
-    $messageId = $_POST['message_id'] ?? null;
-
-    if ($action === 'mark_read' && $messageId) {
-        foreach ($feedbackMessages as &$message) {
-            if ($message['id'] === $messageId) {
-                $message['read'] = true;
-                saveFeedbackMessages($feedbackMessages, $feedbackFilename);
-                echo json_encode(['success' => true, 'message' => 'Message marked as read.']);
-                exit;
-            }
-        }
-        echo json_encode(['success' => false, 'message' => 'Message not found.']);
-        exit;
-    }
-}
 
 // --- Handle Actions ---
 switch ($action) {
+    case 'toggle_flag':
+        // This action is triggered by AJAX when the flag button is clicked
+        // It expects to return JSON response
+        if (empty($_SERVER['HTTP_X_REQUESTED_WITH']) || strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) !== 'xmlhttprequest') {
+            header('HTTP/1.1 403 Forbidden');
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'message' => 'Direct access denied.']);
+            exit;
+        }
+        header('Content-Type: application/json');
+
+        if (!$messageId) {
+            echo json_encode(['success' => false, 'message' => 'No message ID provided for flag toggle.']);
+            exit;
+        }
+
+        $messageFoundAndUpdated = false;
+        $isFlagged = false;
+
+        foreach ($feedbackMessages as &$msg) { // Iterate through the flat array
+            if (isset($msg['id']) && $msg['id'] === $messageId) {
+                $msg['flagged'] = !($msg['flagged'] ?? false); // Toggle
+                $isFlagged = $msg['flagged'];
+                $messageFoundAndUpdated = true;
+                break;
+            }
+        }
+        unset($msg);
+
+        if ($messageFoundAndUpdated) {
+            if (saveFeedbackMessages($feedbackMessages, $feedbackFilename)) {
+                echo json_encode(['success' => true, 'message' => 'Flag status updated.', 'flagged' => $isFlagged]);
+            } else {
+                error_log("Admin Message Action Error: Could not write to feedback.json after toggling flag: " . $feedbackFilename);
+                echo json_encode(['success' => false, 'message' => 'Error saving updated feedback data.']);
+            }
+        } else {
+             // Enhanced logging for when a message ID is not found during AJAX flag toggle
+            $sampleIds = [];
+            if (is_array($feedbackMessages) && !empty($feedbackMessages)) {
+                $sampleIds = array_slice(array_map(fn($m) => $m['id'] ?? 'NO_ID', array_slice($feedbackMessages, 0, 10)), 0, 5);
+            }
+            error_log("[MESSAGE_ACTION_ERROR] AJAX {$action}: Message ID '{$messageId}' not found. Searched in " . count($feedbackMessages) . " messages. Sample loaded IDs: [" . implode(", ", $sampleIds) . "]");
+            echo json_encode(['success' => false, 'message' => 'Error: Message with specified ID not found.']);
+        }
+        exit;
+
+    case 'add_command':
+        if (empty($_SERVER['HTTP_X_REQUESTED_WITH']) || strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) !== 'xmlhttprequest') {
+            header('HTTP/1.1 403 Forbidden');
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'message' => 'Direct access denied.']);
+            exit;
+        }
+        header('Content-Type: application/json');
+
+        $commandText = trim($_POST['command_text'] ?? '');
+
+        if (!$messageId || empty($commandText)) {
+            echo json_encode(['success' => false, 'message' => 'Message ID or command text missing.']);
+            exit;
+        }
+
+        $messageFound = false;
+        $updatedCommands = [];
+
+        foreach ($feedbackMessages as &$msg) {
+            if (isset($msg['id']) && $msg['id'] === $messageId) {
+                if (!isset($msg['commands']) || !is_array($msg['commands'])) {
+                    $msg['commands'] = []; // Initialize if not present or not an array
+                }
+                $msg['commands'][] = $commandText; // Add the new command
+                $updatedCommands = $msg['commands'];
+                $messageFound = true;
+                break;
+            }
+        }
+        unset($msg);
+
+        if ($messageFound) {
+            if (saveFeedbackMessages($feedbackMessages, $feedbackFilename)) {
+                echo json_encode(['success' => true, 'message' => 'Command added successfully.', 'commands' => $updatedCommands]);
+            } else {
+                error_log("Admin Message Action Error: Could not write to feedback.json after adding command: " . $feedbackFilename);
+                echo json_encode(['success' => false, 'message' => 'Error saving updated feedback data.']);
+            }
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Message not found.']);
+        }
+        exit;
+
     case 'mark_read':
     case 'mark_unread':
-        // These actions are typically triggered by a form submission with multiple IDs
-        // They expect to redirect back to the messages view
+        // This can be called via AJAX (from modal open) or form submission (bulk)
+        $isAjaxRequest = (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest');
+        $targetStatus = ($action === 'mark_read'); // true for read, false for unread
+        $updatedCount = 0;
 
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && is_array($messageIds) && !empty($messageIds)) {
-            $updatedCount = 0;
-            $targetStatus = ($action === 'mark_read'); // true for read, false for unread
-
-            foreach ($feedbackMessages as &$message) { // Use reference to modify original array
+        if ($isAjaxRequest && $messageId) { // Single message update via AJAX
+            header('Content-Type: application/json');
+            $messageFound = false;
+            foreach ($feedbackMessages as &$message) {
+                if (isset($message['id']) && $message['id'] === $messageId) {
+                    if (($message['read'] ?? false) !== $targetStatus) {
+                        $message['read'] = $targetStatus;
+                        $updatedCount++;
+                    }
+                    $messageFound = true;
+                    break;
+                }
+            }
+            unset($message);
+            if ($messageFound && $updatedCount > 0) {
+                if (saveFeedbackMessages($feedbackMessages, $feedbackFilename)) {
+                    echo json_encode(['success' => true, 'message' => 'Message status updated.']);
+                } else {
+                    echo json_encode(['success' => false, 'message' => 'Error saving message status.']);
+                }
+            } elseif ($messageFound) { // Found but no change needed
+                echo json_encode(['success' => true, 'message' => 'Message status already set.']);
+            } else { // Message not found
+                // Enhanced logging for when a message ID is not found during AJAX mark_read/unread
+                $sampleIds = [];
+                if (is_array($feedbackMessages) && !empty($feedbackMessages)) {
+                    $sampleIds = array_slice(array_map(fn($m) => $m['id'] ?? 'NO_ID', array_slice($feedbackMessages, 0, 10)), 0, 5);
+                }
+                error_log("[MESSAGE_ACTION_ERROR] AJAX {$action}: Message ID '{$messageId}' not found. Searched in " . count($feedbackMessages) . " messages. Sample loaded IDs: [" . implode(", ", $sampleIds) . "]");
+                echo json_encode(['success' => false, 'message' => 'Message not found.']);
+            }
+            exit;
+        } elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && is_array($messageIds) && !empty($messageIds)) { // Bulk update via form
+            foreach ($feedbackMessages as &$message) {
                 if (isset($message['id']) && in_array($message['id'], $messageIds)) {
-                    // Only update if the status is changing
                     if (($message['read'] ?? false) !== $targetStatus) {
                          $message['read'] = $targetStatus;
                          $updatedCount++;
                     }
                 }
             }
-            unset($message); // Break the reference
+            unset($message);
 
             if ($updatedCount > 0) {
                 if (saveFeedbackMessages($feedbackMessages, $feedbackFilename)) {
@@ -110,22 +219,20 @@ switch ($action) {
                         'type' => 'success'
                     ];
                 } else {
-                    error_log("Admin Message Action Error: Could not write to feedback.json after marking status: " . $feedbackFilename);
                     $_SESSION['admin_status'] = ['message' => 'Error saving updated feedback data.', 'type' => 'error'];
                 }
             } else {
                 $_SESSION['admin_status'] = ['message' => 'No messages needed status update.', 'type' => 'info'];
             }
-
         } else {
-             // Invalid request for mark_read/unread action
             $_SESSION['admin_status'] = ['message' => 'Invalid request for message status update.', 'type' => 'warning'];
         }
 
-        // Redirect back to the messages view
-        header('Location: dashboard.php?view=messages');
-        exit;
-        break;
+        if (!$isAjaxRequest) {
+            header('Location: dashboard.php?view=messages');
+            exit;
+        }
+        break; 
 
     case 'delete_messages':
         // This action is typically triggered by a form submission with multiple IDs
@@ -154,12 +261,12 @@ switch ($action) {
                      $_SESSION['admin_status'] = ['message' => 'Error saving updated feedback data after deletion.', 'type' => 'error'];
                  }
             } else {
-                 $_SESSION['admin_status'] = ['message' => 'No messages were deleted.', 'type' => 'info'];
+                 $_SESSION['admin_status'] = ['message' => 'No messages were deleted (perhaps they were already removed or IDs were invalid).', 'type' => 'info'];
             }
 
         } else {
             // Invalid request for delete action
-            $_SESSION['admin_status'] = ['message' => 'Invalid request for message deletion.', 'type' => 'warning'];
+            $_SESSION['admin_status'] = ['message' => 'Invalid request for message deletion. No messages selected or invalid method.', 'type' => 'warning'];
         }
 
         // Redirect back to the messages view
@@ -167,109 +274,20 @@ switch ($action) {
         exit;
         break;
 
-    case 'get_message_detail':
-        // Ensure it's an AJAX request
-        if (empty($_SERVER['HTTP_X_REQUESTED_WITH']) || strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) !== 'xmlhttprequest') {
-            header('HTTP/1.1 403 Forbidden');
-            header('Content-Type: application/json');
-            echo json_encode(['success' => false, 'message' => 'Direct access denied.']);
-            exit;
-        }
-
-        header('Content-Type: application/json');
-
-        if (!$messageId) {
-            echo json_encode(['success' => false, 'message' => 'No message ID provided.']);
-            exit;
-        }
-
-        $foundMessage = null;
-        foreach ($feedbackMessages as $message) {
-            if (isset($message['id']) && $message['id'] === $messageId) {
-                $foundMessage = $message;
-                break;
-            }
-        }
-
-        if ($foundMessage) {
-            // Ensure the name field is not overwritten
-            $foundMessage['received_on'] = date('Y-m-d H:i', $foundMessage['timestamp'] ?? 0);
-            $foundMessage['message_text'] = $foundMessage['message'] ?? '';
-
-            // Remove unnecessary fields
-            unset($foundMessage['timestamp']);
-            unset($foundMessage['message']);
-
-            echo json_encode(['success' => true, 'message' => 'Message details fetched.', 'message' => $foundMessage]);
-        } else {
-            echo json_encode(['success' => false, 'message' => 'Message not found.']);
-        }
-        exit;
-        break;
-
-    case 'toggle_read_status':
-        // This action is triggered by AJAX from footer.php when the toggle button is clicked
-        // It expects to return JSON response
-
-         // Ensure it's an AJAX request
-        if (empty($_SERVER['HTTP_X_REQUESTED_WITH']) || strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) !== 'xmlhttprequest') {
-            header('HTTP/1.1 403 Forbidden'); // Send a 403 status
-            header('Content-Type: application/json');
-            echo json_encode(['success' => false, 'message' => 'Direct access denied.']);
-            exit;
-        }
-
-        // Ensure Content-Type is application/json for the response
-        header('Content-Type: application/json');
-
-         error_log("Admin Message Action Debug: Received toggle_read_status request for ID: " . ($messageId ?? 'null')); // Log the requested ID
-
-
-        if (!$messageId) {
-            error_log("Admin Message Action Error: No message ID provided for status toggle.");
-            echo json_encode(['success' => false, 'message' => 'No message ID provided for status toggle.']);
-            exit;
-        }
-
-        $messageFoundAndUpdated = false;
-        $newStatusText = 'Unknown'; // Default status text
-
-        // Find the message in the array by reference and toggle its status
-        foreach ($feedbackMessages as &$message) {
-            if (isset($message['id']) && $message['id'] === $messageId) {
-                $message['read'] = !($message['read'] ?? false); // Toggle the boolean status
-                $newStatusText = ($message['read'] ?? false) ? 'Read' : 'Unread'; // Determine new text
-                $messageFoundAndUpdated = true;
-                break; // Stop once updated
-            }
-        }
-        unset($message); // Break the reference
-
-        if ($messageFoundAndUpdated) {
-            if (saveFeedbackMessages($feedbackMessages, $feedbackFilename)) {
-                echo json_encode(['success' => true, 'message' => 'Status updated.', 'new_status' => $newStatusText]);
-            } else {
-                error_log("Admin Message Action Error: Could not write to feedback.json after toggling status: " . $feedbackFilename);
-                echo json_encode(['success' => false, 'message' => 'Error saving updated feedback data.']);
-            }
-        } else {
-             error_log("Admin Message Action Error: Message with ID " . ($messageId ?? 'null') . " not found for status toggle.");
-             echo json_encode(['success' => false, 'message' => 'Error: Message with specified ID not found.']);
-        }
-        exit; // Stop execution after JSON response
-        break;
+    // The 'get_message_detail' and 'toggle_read_status' cases were from an older structure
+    // and are likely redundant if the current 'mark_read'/'mark_unread' handles AJAX for single messages
+    // and the modal in messages_view.php populates details from the client-side `feedbackMessagesData`.
+    // If they are still needed for a specific reason, they would need to be adapted to the flat $feedbackMessages structure.
 
     default:
         // If no valid action was provided or no messages selected for actions (and not an AJAX toggle request)
-        // This handles cases where message_actions.php is accessed directly without a valid action,
-        // or a form was submitted with no checkboxes selected for mark/delete.
-        if (!empty($action)) { // If an action was provided but not handled above
+        if (!empty($action)) { 
              $_SESSION['admin_status'] = ['message' => 'Invalid or unhandled message action: ' . htmlspecialchars($action), 'type' => 'warning'];
              error_log("Admin Message Action Warning: Invalid or unhandled action received: " . $action);
-        } else if ($_SERVER['REQUEST_METHOD'] === 'POST') { // If it was a POST but no action or IDs
+        } else if ($_SERVER['REQUEST_METHOD'] === 'POST') { 
              $_SESSION['admin_status'] = ['message' => 'No action specified or no messages selected.', 'type' => 'warning'];
              error_log("Admin Message Action Warning: POST request received with no action.");
-        } else { // Generic GET access without action
+        } else { 
              $_SESSION['admin_status'] = ['message' => 'Invalid access to message actions.', 'type' => 'warning'];
              error_log("Admin Message Action Warning: Direct GET access without action.");
         }

@@ -49,6 +49,13 @@ $feedbackFilename = __DIR__ . '/../../data/feedback.json';  // Path to data/feed
 // $logsDirectory = __DIR__ . '/../../logs';
 
 
+// --- Cookie Names (Centralized) ---
+define('COOKIE_CONSENT_STATUS_NAME', 'cookie_consent_status');
+define('USER_INTERESTS_COOKIE_NAME', 'user_job_interests');
+define('USER_VIEWED_JOB_IDS_COOKIE_NAME', 'user_viewed_job_ids');
+define('USER_UNIQUE_ID_COOKIE_NAME', 'user_unique_site_id'); // For unique user identification
+define('MAX_USER_INTERESTS', 5); // Example, if used elsewhere for interests
+
 // --- Site Specifics ---
 // Your website URL (used in generated messages, meta tags, etc.)
 // This might be the same as APP_BASE_URL without the protocol for some uses, or just the domain.

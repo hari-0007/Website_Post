@@ -61,4 +61,58 @@ function saveFeedbackMessages($messages, $filename) {
     return true;
 }
 
+/**
+ * Groups feedback messages from a flat array by email and sorts them.
+ *
+ * @param array $flatMessages A flat array of feedback message objects.
+ * @return array An associative array where keys are email addresses.
+ *               Each email address key points to an array containing:
+ *               - 'messages': An array of feedback message objects from that email, sorted by timestamp (newest first).
+ *               - 'latest_timestamp': The timestamp of the most recent message from this email.
+ *               - 'names': An array of unique names associated with this email from the feedback.
+ *               The top-level array (email groups) is also sorted by 'latest_timestamp' (newest groups first).
+ */
+function group_feedback_by_email(array $flatMessages) {
+    $groupedByEmail = [];
+
+    foreach ($flatMessages as $submission) {
+        if (!is_array($submission) || !isset($submission['email'])) {
+            error_log("feedback_helpers.php (group_feedback_by_email): Malformed submission or missing email: " . print_r($submission, true));
+            continue;
+        }
+
+        $emailKey = strtolower(trim($submission['email']));
+        if (empty($emailKey)) {
+            $emailKey = 'unknown_email@system.local'; // Group messages with no email
+        }
+
+        if (!isset($groupedByEmail[$emailKey])) {
+            $groupedByEmail[$emailKey] = ['messages' => [], 'latest_timestamp' => 0, 'names' => []];
+        }
+
+        $groupedByEmail[$emailKey]['messages'][] = $submission;
+
+        $currentName = isset($submission['name']) ? trim($submission['name']) : 'Anonymous';
+        if (!empty($currentName) && !in_array($currentName, $groupedByEmail[$emailKey]['names'])) {
+            $groupedByEmail[$emailKey]['names'][] = $currentName;
+        }
+
+        $currentSubmissionTimestamp = (isset($submission['timestamp']) && is_numeric($submission['timestamp'])) ? (int)$submission['timestamp'] : 0;
+
+        if ($currentSubmissionTimestamp > $groupedByEmail[$emailKey]['latest_timestamp']) {
+            $groupedByEmail[$emailKey]['latest_timestamp'] = $currentSubmissionTimestamp;
+        }
+    }
+
+    // Sort messages within each group by timestamp (newest first)
+    foreach ($groupedByEmail as &$groupData) {
+        usort($groupData['messages'], fn($a, $b) => ($b['timestamp'] ?? 0) <=> ($a['timestamp'] ?? 0));
+    }
+    unset($groupData);
+
+    // Sort email groups by the latest message timestamp (newest group first)
+    uasort($groupedByEmail, fn($a, $b) => ($b['latest_timestamp'] ?? 0) <=> ($a['latest_timestamp'] ?? 0));
+
+    return $groupedByEmail;
+}
 ?>

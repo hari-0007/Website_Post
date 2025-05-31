@@ -1,5 +1,192 @@
 [
     {
+        "id": "1748663398_7150",
+        "name": "hari",
+        "email": "jobinfo.abroad@gmail.com",
+        "message": "Suthan",
+        "timestamp": 1748663398,
+        "read": false,
+        "flagged": false,
+        "user_site_id": "fbeed9b903a94ec2f01e00706aa8ca27",
+        "ai_analysis": {
+            "emotion_label": "neutral",
+            "emoji": "\ud83d\ude10",
+            "sticker_id": "sticker_neutral.png"
+        },
+        "detected_emotion_emoji": "\ud83d\ude10",
+        "commands": []
+    },
+    {
+        "id": "1748663287_6449",
+        "name": "Arihara suthan",
+        "email": "s.ariharasuthan@gmail.com",
+        "message": "hi",
+        "timestamp": 1748663287,
+        "read": false,
+        "flagged": false,
+        "user_site_id": "fbeed9b903a94ec2f01e00706aa8ca27",
+        "ai_analysis": {
+            "emotion_label": "greeting",
+            "emoji": "\ud83d\udc4b",
+            "sticker_id": "sticker_greeting.png"
+        },
+        "detected_emotion_emoji": "\ud83d\udc4b",
+        "commands": []
+    },
+    {
+        "id": "1748663205_8809",
+        "name": "hari",
+        "email": "jobinfo.abroad@gmail.com",
+        "message": "joy",
+        "timestamp": 1748663205,
+        "read": false,
+        "flagged": false,
+        "user_site_id": "fbeed9b903a94ec2f01e00706aa8ca27",
+        "ai_analysis": {
+            "emotion_label": "neutral",
+            "emoji": "\ud83d\ude10",
+            "sticker_id": "sticker_neutral.png"
+        },
+        "detected_emotion_emoji": "\ud83d\ude10",
+        "commands": []
+    },
+    {
+        "id": "1748663155_9382",
+        "name": "Arihara suthan",
+        "email": "s.ariharasuthan@gmail.com",
+        "message": "Thanks, I'm very happy",
+        "timestamp": 1748663155,
+        "read": false,
+        "flagged": false,
+        "user_site_id": "fbeed9b903a94ec2f01e00706aa8ca27",
+        "ai_analysis": {
+            "emotion_label": "positive",
+            "emoji": "\ud83d\ude0a",
+            "sticker_id": "sticker_positive.png"
+        },
+        "detected_emotion_emoji": "\ud83d\ude0a",
+        "commands": []
+    },
+    {
+        "id": "1748661987_1546",
+        "name": "Ari",
+        "email": "broad@gmail.com",
+        "message": "Suthan",
+        "timestamp": 1748661987,
+        "read": false,
+        "flagged": false,
+        "user_site_id": "fbeed9b903a94ec2f01e00706aa8ca27",
+        "ai_analysis": {
+            "emotion_label": "neutral",
+            "emoji": "\ud83d\ude10",
+            "sticker_id": "sticker_neutral.png"
+        },
+        "detected_emotion_emoji": "\ud83d\ude10",
+        "commands": []
+    },
+    {
+        "id": "1748661435_9808",
+        "name": "hari",
+        "email": "info.abroad@gmail.com",
+        "message": "Suthan",
+        "timestamp": 1748661435,
+        "read": true,
+        "flagged": false,
+        "user_site_id": "fbeed9b903a94ec2f01e00706aa8ca27",
+        "ai_analysis": {
+            "emotion_label": "neutral",
+            "emoji": "\ud83d\ude10",
+            "sticker_id": "sticker_neutral.png"
+        },
+        "detected_emotion_emoji": "\ud83d\ude10",
+        "commands": []
+    },
+    {
+        "id": "1748661406_3962",
+        "name": "Suthan",
+        "email": "ss@gmail.com",
+        "message": "hari",
+        "timestamp": 1748661406,
+        "read": false,
+        "flagged": false,
+        "user_site_id": "fbeed9b903a94ec2f01e00706aa8ca27",
+        "ai_analysis": {
+            "emotion_label": "neutral",
+            "emoji": "\ud83d\ude10",
+            "sticker_id": "sticker_neutral.png"
+        },
+        "detected_emotion_emoji": "\ud83d\ude10",
+        "commands": []
+    },
+    {
+        "id": "1748661391_2737",
+        "name": "Arihara suthan",
+        "email": "uthan@gmail.com",
+        "message": "hiii",
+        "timestamp": 1748661391,
+        "read": true,
+        "flagged": true,
+        "user_site_id": "fbeed9b903a94ec2f01e00706aa8ca27",
+        "ai_analysis": {
+            "emotion_label": "neutral",
+            "emoji": "\ud83d\ude10",
+            "sticker_id": "sticker_neutral.png"
+        },
+        "detected_emotion_emoji": "\ud83d\ude10",
+        "commands": []
+    },
+    {
+        "id": "1748661233_9644",
+        "name": "hari",
+        "email": "jj@gmail.com",
+        "message": "Suthan",
+        "timestamp": 1748661233,
+        "read": false,
+        "flagged": false,
+        "user_site_id": "fbeed9b903a94ec2f01e00706aa8ca27",
+        "ai_analysis": {
+            "emotion_label": "neutral",
+            "emoji": "\ud83d\ude10",
+            "sticker_id": "sticker_neutral.png"
+        },
+        "detected_emotion_emoji": "\ud83d\ude10",
+        "commands": []
+    },
+    {
+        "id": "1748661206_2183",
+        "name": "Arihara suthan",
+        "email": "s.ariharasuthan@gmail.com",
+        "message": "hiii",
+        "timestamp": 1748661206,
+        "read": false,
+        "flagged": false,
+        "user_site_id": "fbeed9b903a94ec2f01e00706aa8ca27",
+        "ai_analysis": {
+            "emotion_label": "neutral",
+            "emoji": "\ud83d\ude10",
+            "sticker_id": "sticker_neutral.png"
+        },
+        "detected_emotion_emoji": "\ud83d\ude10",
+        "commands": []
+    },
+    {
+        "id": "1748659043_9026",
+        "name": "Arihara suthan",
+        "email": "s.ariharasuthan@gmail.com",
+        "message": "hiii",
+        "timestamp": 1748659043,
+        "read": false,
+        "flagged": false,
+        "user_site_id": "15f7baaee6905b172eb218e86c303eef",
+        "ai_analysis": {
+            "emotion_label": "neutral",
+            "emoji": "\ud83d\ude10",
+            "sticker_id": "sticker_neutral.png"
+        },
+        "detected_emotion_emoji": "\ud83d\ude10",
+        "commands": []
+    },
+    {
         "id": "1748658033_1063",
         "name": "hari",
         "email": "jobinfo.abroad@gmail.com",
@@ -56,7 +243,7 @@
         "email": "s.ariharasuthan@gmail.com",
         "message": "hi",
         "timestamp": 1748657187,
-        "read": false,
+        "read": true,
         "flagged": false,
         "user_site_id": "15f7baaee6905b172eb218e86c303eef",
         "ai_analysis": {
@@ -65,7 +252,9 @@
             "sticker_id": "sticker_greeting.png"
         },
         "detected_emotion_emoji": "\ud83d\udc4b",
-        "commands": []
+        "commands": [
+            "hello"
+        ]
     },
     {
         "id": "1748656097_3473",

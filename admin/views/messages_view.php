@@ -51,6 +51,44 @@ $grouped_feedback = group_feedback_by_email($allMessagesFlat);
 // The $allMessagesFlat variable is kept as it's used by the JavaScript modal
 // to look up message details by ID.
 ?>
+<?php
+// Helper functions for star rating - PHP side
+function get_emotion_score_php($emotion_label) {
+    $scores = [
+        'very_negative' => -2, 'problem_report' => -1.8, 'angry' => -2,
+        'sad' => -1.5, 'disappointed' => -1.5, 'fear_anxiety' => -1.2,
+        'urgent' => -0.5, // Urgent might not be strictly negative in terms of sentiment for rating
+        'disagreement' => -1,
+        'confused' => -0.5,
+        'neutral' => 0, 'question_help' => 0, 'apology' => 0, 'greeting' => 0, 'farewell' => 0, 'surprise_shock' => 0,
+        'suggestion_idea' => 0.5,
+        'positive' => 1, 'agreement' => 1,
+        'grateful' => 1.5, 'laughing' => 1.5,
+        'very_positive' => 2, 'celebration' => 2,
+    ];
+    return $scores[strtolower(trim($emotion_label ?? 'neutral'))] ?? 0;
+}
+
+function calculate_star_rating_php($average_score) {
+    if ($average_score <= -1.5) return 1;
+    if ($average_score <= -0.75) return 2;
+    if ($average_score < 0.75) return 3;
+    if ($average_score < 1.5) return 4;
+    return 5;
+}
+
+function render_stars_php($rating) {
+    $starsHtml = '<span class="star-rating" title="Avg. Rating: ' . round($rating,0) . '/5">';
+    for ($i = 1; $i <= 5; $i++) {
+        $starsHtml .= ($i <= $rating) ? '⭐' : '☆';
+    }
+    $starsHtml .= '</span>';
+    return $starsHtml;
+}
+
+?>
+
+
 
 <div class="view-container">
     <h3>Feedback Conversations</h3>
@@ -88,22 +126,30 @@ $grouped_feedback = group_feedback_by_email($allMessagesFlat);
                 // Create a more robust ID for the card, especially if emails can have special characters
                 $cardIdSuffix = htmlspecialchars(md5($email)); // Using md5 of email for a consistent ID
 
-                // Get emotion emoji from the latest message in the group
-                $latestMessageEmotionEmoji = '😐'; // Default neutral emoji
-                // $latestMessageStickerId = null;
+                // Calculate average score and star rating for the conversation
+                $totalScore = 0;
+                $messageCountForRating = 0;
+                $conversationStarRatingHtml = render_stars_php(3); // Default to 3 stars
+
                 if (!empty($groupData['messages'])) {
-                    $latestMessageInGroup = $groupData['messages'][0]; // Messages are sorted newest first
-                    if (isset($latestMessageInGroup['ai_analysis']['emoji']) && !empty($latestMessageInGroup['ai_analysis']['emoji'])) {
-                        $latestMessageEmotionEmoji = htmlspecialchars($latestMessageInGroup['ai_analysis']['emoji']);
-                    } elseif (isset($latestMessageInGroup['detected_emotion_emoji']) && !empty($latestMessageInGroup['detected_emotion_emoji'])) { // Fallback
-                        $latestMessageEmotionEmoji = htmlspecialchars($latestMessageInGroup['detected_emotion_emoji']);
+                    foreach ($groupData['messages'] as $conv_msg_for_rating) {
+                        $emotionLabelForScore = $conv_msg_for_rating['ai_analysis']['emotion_label'] ?? 'neutral';
+                        $totalScore += get_emotion_score_php($emotionLabelForScore);
+                        $messageCountForRating++;
+                    }
+                    if ($messageCountForRating > 0) {
+                        $averageScore = $totalScore / $messageCountForRating;
+                        $starRatingValue = calculate_star_rating_php($averageScore);
+                        $conversationStarRatingHtml = render_stars_php($starRatingValue);
+                    } else {
+                         $conversationStarRatingHtml = render_stars_php(3); // Default if no messages somehow
                     }
                 }
             ?>
              <div class="email-group card <?php echo $conversationIsFlagged ? 'conversation-is-flagged' : ''; echo $allRead ? ' read' : ' unread'; ?>" data-email="<?php echo htmlspecialchars($email); ?>" id="conv-card-<?php echo $cardIdSuffix; ?>">
                  <div class="card-header" onclick="toggleConversation('<?php echo $cardIdSuffix; // Use the generated ID for toggling ?>', this)" style="cursor: pointer;">
                     <div class="header-content">
-                        <h5 class="email-title">Conversation with: <?php echo htmlspecialchars($email); ?> <span class="conversation-emoji"><?= $latestMessageEmotionEmoji ?></span></h5>
+                        <h5 class="email-title">Conversation with: <?php echo htmlspecialchars($email); ?> <span class="conversation-rating"><?php echo $conversationStarRatingHtml; ?></span></h5>
                          <?php if (!empty($groupData['names'])): ?>
                             <small class="text-muted">(Associated Names: <?php echo htmlspecialchars(implode(', ', array_unique($groupData['names']))); ?>)</small>
                         <?php endif; ?>
@@ -133,7 +179,7 @@ $grouped_feedback = group_feedback_by_email($allMessagesFlat);
                             <div class="message-header">
                                 <div class="message-info">
                                     <span class="message-from"><strong>From:</strong> <?php echo htmlspecialchars($message['name'] ?? 'N/A'); ?>
-                                        <span class="message-emotion-emoji" title="<?= htmlspecialchars(ucfirst(str_replace('_', ' ', $currentMessageEmotionLabel))) ?>"><?= htmlspecialchars($currentMessageEmoji) ?></span>
+                                        <span class="message-emotion-emoji" title="<?php echo htmlspecialchars(ucfirst(str_replace('_', ' ', $currentMessageEmotionLabel))); ?>"><?php echo htmlspecialchars($currentMessageEmoji); ?></span>
                                     </span>
                                     <span class="message-date"><strong>Date:</strong> <?php echo isset($message['timestamp']) ? date('Y-m-d H:i:s', $message['timestamp']) : 'N/A'; ?></span>
                                 </div>
@@ -149,17 +195,13 @@ $grouped_feedback = group_feedback_by_email($allMessagesFlat);
                              <div class="message-content">
                                 <?php echo nl2br(htmlspecialchars(substr($message['message'] ?? '', 0, 150))) . (strlen($message['message'] ?? '') > 150 ? '...' : ''); ?>
                             </div>
-                            <?php if ($currentMessageStickerId): ?>
-                                <div class="message-sticker-placeholder" title="Sticker: <?= htmlspecialchars($currentMessageEmotionLabel) ?>">
-                                    <img src="<?= APP_BASE_URL ?>admin/assets/images/stickers/<?= htmlspecialchars($currentMessageStickerId) ?>" alt="<?= htmlspecialchars($currentMessageEmotionLabel) ?> sticker" class="message-sticker-image">
-                                </div>
-                            <?php endif; ?>
+                            
                             <?php if (isset($message['commands']) && !empty($message['commands'])): ?>
                                 <div class="message-item-commands-display">
                                     <strong>Commands:</strong>
                                     <ul>
                                         <?php foreach ($message['commands'] as $command): ?>
-                                            <li><?= htmlspecialchars($command) ?></li>
+                                            <li><?php echo htmlspecialchars($command); ?></li>
                                         <?php endforeach; ?>
                                     </ul>
                                 </div>
@@ -282,6 +324,11 @@ $grouped_feedback = group_feedback_by_email($allMessagesFlat);
     .conversation-emoji {
         font-size: 1em; /* Adjust size as needed */
         margin-left: 8px;
+    }
+    .star-rating {
+        font-size: 1em; /* Adjust size as needed */
+        margin-left: 8px;
+        color: #ffc107; /* Gold color for stars */
     }
 
 
@@ -605,7 +652,7 @@ $grouped_feedback = group_feedback_by_email($allMessagesFlat);
  
 
 <script>
-    var feedbackMessagesData = <?= json_encode($allMessagesFlat ?? []); ?>;
+    var feedbackMessagesData = <?php echo json_encode($allMessagesFlat ?? []); ?>;
     const modalStatusArea = document.getElementById('modalStatusArea');
 
     function displayModalStatus(message, type) {
@@ -807,15 +854,11 @@ $grouped_feedback = group_feedback_by_email($allMessagesFlat);
             commandsDisplayDiv.appendChild(ul);
 
             // Append to message item (e.g., before the sticker placeholder or at the end)
-            const stickerPlaceholder = messageItemElement.querySelector('.message-sticker-placeholder');
             const lastElement = messageItemElement.children[messageItemElement.children.length -1]; // find a suitable place to insert
-            if (stickerPlaceholder) {
-                messageItemElement.insertBefore(commandsDisplayDiv, stickerPlaceholder);
-            } else if (lastElement) {
+            if (lastElement) { // Simplified: always try to insert after the last known element if no specific placeholder
                  lastElement.insertAdjacentElement('afterend', commandsDisplayDiv);
-            }
-             else {
-                messageItemElement.appendChild(commandsDisplayDiv);
+            } else { // Fallback if no children, though unlikely for a message item
+            messageItemElement.appendChild(commandsDisplayDiv);
             }
         }
 
@@ -921,6 +964,376 @@ $grouped_feedback = group_feedback_by_email($allMessagesFlat);
         }
     }
 </script>
+
+<script>
+let lastKnownMessageTimestamp = <?php
+    $initialLatestTimestamp = 0;
+    if (!empty($allMessagesFlat)) { // $allMessagesFlat should be available from your PHP
+        foreach($allMessagesFlat as $msg) {
+            if (isset($msg['timestamp']) && $msg['timestamp'] > $initialLatestTimestamp) {
+                $initialLatestTimestamp = $msg['timestamp'];
+            }
+        }
+    }
+    // Fallback to current time if no messages, or 0 if you prefer to fetch all on first poll
+    echo $initialLatestTimestamp > 0 ? $initialLatestTimestamp : 0;
+?>;
+
+const pollingInterval = 10000; // Poll every 10 seconds (10000 milliseconds)
+let isPollingActive = true; // Control polling
+
+// Helper function to escape HTML characters
+function escapeHTML(str) {
+    if (typeof str !== 'string') return str;
+    return str.replace(/[&<>"']/g, function (match) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[match];
+    });
+}
+
+// Helper function to mimic PHP's ucfirst
+function ucfirst(str) {
+    if (typeof str !== 'string' || str.length === 0) return '';
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
+// Helper function to mimic PHP's nl2br
+function nl2br(str) {
+    if (typeof str !== 'string') return '';
+    return str.replace(/(?:\r\n|\r|\n)/g, '<br>');
+}
+
+// Placeholder for MD5 function (if you need to create new conversation cards dynamically)
+// You can use a library like blueimp-md5: <script src="https://cdn.jsdelivr.net/npm/blueimp-md5@2.19.0/js/md5.min.js">
+
+// Or implement a simple one if your card IDs don't strictly need cryptographic MD5.
+// For now, we'll focus on updating existing cards.
+
+function generateCardIdSuffix(email) {
+    // This is a very simple hash, not a true MD5. Replace with a proper one if needed.
+    let hash = 0;
+    for (let i = 0; i < email.length; i++) {
+        const char = email.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash |= 0; // Convert to 32bit integer
+    }
+    return 'js' + Math.abs(hash).toString(16); // Prefix with 'js' to avoid conflicts if PHP md5 is different
+}
+
+// Helper functions for star rating - JavaScript side
+function getEmotionScoreJS(emotionLabel) {
+    const scores = {
+        'very_negative': -2, 'problem_report': -1.8, 'angry': -2,
+        'sad': -1.5, 'disappointed': -1.5, 'fear_anxiety': -1.2,
+        'urgent': -0.5,
+        'disagreement': -1,
+        'confused': -0.5,
+        'neutral': 0, 'question_help': 0, 'apology': 0, 'greeting': 0, 'farewell': 0, 'surprise_shock': 0,
+        'suggestion_idea': 0.5,
+        'positive': 1, 'agreement': 1,
+        'grateful': 1.5, 'laughing': 1.5,
+        'very_positive': 2, 'celebration': 2
+    };
+    return scores[(emotionLabel || 'neutral').toLowerCase().trim()] || 0;
+}
+
+function calculateStarRatingJS(averageScore) {
+    if (averageScore <= -1.5) return 1;
+    if (averageScore <= -0.75) return 2;
+    if (averageScore < 0.75) return 3;
+    if (averageScore < 1.5) return 4;
+    return 5;
+}
+
+function renderStarsJS(rating) {
+    let starsHtml = `<span class="star-rating" title="Avg. Rating: ${Math.round(rating)}/5">`;
+    for (let i = 1; i <= 5; i++) {
+        starsHtml += (i <= rating) ? '⭐' : '☆';
+    }
+    starsHtml += '</span>';
+    return starsHtml;
+}
+// End Helper functions for star rating - JS side
+
+
+function renderNewConversationCardHTML(email, groupData) {
+    const cardIdSuffix = generateCardIdSuffix(email); // Use the same JS-based ID generation
+    const latestMessageInGroup = groupData.messages && groupData.messages.length > 0 ? groupData.messages[0] : null;
+    let latestEmoji = '😐';
+    if (latestMessageInGroup) {
+        latestEmoji = latestMessageInGroup.ai_analysis && latestMessageInGroup.ai_analysis.emoji 
+                      ? latestMessageInGroup.ai_analysis.emoji 
+                      : (latestMessageInGroup.detected_emotion_emoji || '😐');
+    }
+
+    let conversationStarRatingHtml = renderStarsJS(3); // Default
+    if (groupData.messages && groupData.messages.length > 0) {
+        let totalScore = 0;
+        groupData.messages.forEach(msg => {
+            const emotionLabelForScore = msg.ai_analysis && msg.ai_analysis.emotion_label ? msg.ai_analysis.emotion_label : 'neutral';
+            totalScore += getEmotionScoreJS(emotionLabelForScore);
+        });
+        const averageScore = totalScore / groupData.messages.length;
+        const starRatingValue = calculateStarRatingJS(averageScore);
+        conversationStarRatingHtml = renderStarsJS(starRatingValue);
+    }
+
+
+    let messagesHtml = '';
+    if (groupData.messages && groupData.messages.length > 0) {
+        // Ensure messages are sorted newest first for rendering order
+        groupData.messages.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+        groupData.messages.forEach(message => {
+            messagesHtml += renderNewMessageItemHTML(message);
+        });
+    }
+
+    let associatedNamesHtml = '';
+    if (groupData.names && groupData.names.length > 0) {
+        associatedNamesHtml = `<small class="text-muted">(Associated Names: ${escapeHTML(groupData.names.join(', '))})</small>`;
+    }
+
+    // New conversations are typically unread and not flagged by default
+    return `
+        <div class="email-group card unread" data-email="${escapeHTML(email)}" id="conv-card-${cardIdSuffix}">
+            <div class="card-header" onclick="toggleConversation('${cardIdSuffix}', this)" style="cursor: pointer;">
+                <div class="header-content">
+                    <h5 class="email-title">Conversation with: ${escapeHTML(email)} <span class="conversation-rating">${conversationStarRatingHtml}</span></h5>
+                    ${associatedNamesHtml}
+                </div>
+                <div class="header-actions">
+                    <span class="message-count">Total Messages: ${groupData.messages ? groupData.messages.length : 0}</span>
+                    <span class="last-message">Last Message: ${groupData.latest_timestamp ? new Date(groupData.latest_timestamp * 1000).toLocaleString() : 'N/A'}</span>
+                </div>
+            </div>
+            <div class="card-body conversation" id="conversation-${cardIdSuffix}" style="display: none;">
+                <ul class="messages-list">${messagesHtml}</ul>
+            </div>
+        </div>`;
+}
+
+function renderNewMessageItemHTML(message) {
+    const readStatusClass = (message.read ? 'message-read' : 'message-unread');
+    const flaggedClass = (message.flagged ? 'message-is-flagged' : '');
+    const emotionEmoji = message.ai_analysis && message.ai_analysis.emoji ? message.ai_analysis.emoji : (message.detected_emotion_emoji || '😐');
+        const emotionLabel = message.ai_analysis && message.ai_analysis.emotion_label ? message.ai_analysis.emotion_label.replace(/_/g, ' ') : 'neutral'; // Keep for emoji title
+    const appBaseUrl = '<?php echo APP_BASE_URL; ?>'; // Get from PHP
+
+    let stickerHtml = '';
+
+    let commandsHtml = '';
+    if (message.commands && message.commands.length > 0) {
+        commandsHtml = '<div class="message-item-commands-display"><strong>Commands:</strong><ul>';
+        message.commands.forEach(cmd => {
+            commandsHtml += `<li>${escapeHTML(cmd)}</li>`;
+        });
+        commandsHtml += '</ul></div>';
+    }
+
+    return `
+        <li class="feedback-message-item ${readStatusClass} ${flaggedClass}" data-message-id="${escapeHTML(message.id || '')}" onclick="openMessageModal('${escapeHTML(message.id || '')}', this)" style="cursor:pointer;">
+            <div class="message-header">
+                <div class="message-info">
+                    <span class="message-from"><strong>From:</strong> ${escapeHTML(message.name || 'N/A')}
+                        <span class="message-emotion-emoji" title="${escapeHTML(ucfirst(emotionLabel))}">${escapeHTML(emotionEmoji)}</span>
+                    </span>
+                    <span class="message-date"><strong>Date:</strong> ${message.timestamp ? new Date(message.timestamp * 1000).toLocaleString() : 'N/A'}</span>
+                </div>
+                <div class="message-actions">
+                    <span class="status-badge ${message.read ? 'status-read' : 'status-unread'}">
+                        ${message.read ? 'Read' : 'Unread'}
+                    </span>
+                    <button class="flag-button ${message.flagged ? 'is-flagged-btn' : ''}" onclick="event.stopPropagation(); toggleFlagJs('${escapeHTML(message.id || '')}', this, '${escapeHTML(message.email || '')}')">
+                        ${message.flagged ? 'Unflag' : 'Flag'}
+                    </button>
+                </div>
+            </div>
+            <div class="message-content">
+                ${nl2br(escapeHTML(message.message ? message.message.substring(0, 150) : ''))}${message.message && message.message.length > 150 ? '...' : ''}
+            </div>
+            ${commandsHtml}
+        </li>`;
+}
+
+function fetchNewMessages() {
+    if (!isPollingActive) return;
+
+    fetch(`get_new_feedback.php?last_timestamp=${lastKnownMessageTimestamp}`, { cache: "no-store" })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success && data.new_messages_grouped && Object.keys(data.new_messages_grouped).length > 0) {
+                const messagesContainer = document.querySelector('.messages-container');
+                if (!messagesContainer) {
+                    console.error("'.messages-container' not found in DOM.");
+                    return;
+                }
+
+                // Sort email groups by latest_timestamp (newest conversation first)
+                // The PHP already sorts groups, but if JS needs to re-sort or handle order:
+                const emailGroups = Object.entries(data.new_messages_grouped)
+                    .sort(([,a], [,b]) => (b.latest_timestamp || 0) - (a.latest_timestamp || 0));
+
+                emailGroups.forEach(([email, groupData]) => {
+                    // const cardIdSuffix = generateCardIdSuffix(email); // Old method, inconsistent with PHP's md5
+                    // let conversationCard = document.getElementById(`conv-card-${cardIdSuffix}`); // Old lookup
+                    let conversationCard = document.querySelector(`.email-group.card[data-email="${escapeHTML(email)}"]`); // New, more robust lookup
+                    let messagesListUl;
+
+                    if (!conversationCard) {
+                        // --- Dynamically create and prepend the new conversation card ---
+                        console.log("New conversation detected for:", email, "- Dynamically creating card.");
+                        const newCardHtml = renderNewConversationCardHTML(email, groupData);
+                        messagesContainer.insertAdjacentHTML('afterbegin', newCardHtml); // Prepend new card
+                        
+                        // Add new messages to the global JS data store anyway
+                        groupData.messages.forEach(newMessage => {
+                            if (!feedbackMessagesData.find(m => m.id === newMessage.id)) {
+                                feedbackMessagesData.unshift(newMessage); // Add to start (newest)
+                            }
+                        });                        
+                        // The new card is added, subsequent logic for updating existing cards will be skipped for this iteration.
+                        // The overall unread count will be updated at the end of fetchNewMessages.
+                        // No 'return' here, let it proceed to update lastKnownMessageTimestamp etc.
+                    }
+
+                    // --- Adding messages to an existing conversation card ---
+                    messagesListUl = conversationCard.querySelector('.messages-list');
+                    if (messagesListUl) {
+                        // Sort messages within this group (newest first) before prepending
+                        groupData.messages.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+                        
+                        let newMessagesAddedToThisCard = 0;
+                        groupData.messages.forEach(newMessage => {
+                            // Add to global JS data store if not already present
+                            if (!feedbackMessagesData.find(m => m.id === newMessage.id)) {
+                                feedbackMessagesData.unshift(newMessage); // Add to start (newest)
+                            }
+
+                            // Check if message already in DOM to prevent duplicates
+                            if (!messagesListUl.querySelector(`.feedback-message-item[data-message-id="${newMessage.id}"]`)) {
+                                const messageHtml = renderNewMessageItemHTML(newMessage);
+                                messagesListUl.insertAdjacentHTML('afterbegin', messageHtml); // Prepend new message
+                                newMessagesAddedToThisCard++;
+                            }
+                        });
+
+                        if (newMessagesAddedToThisCard > 0) {
+                            // Update card header
+                            const headerContent = conversationCard.querySelector('.card-header .header-content');
+                            const headerActions = conversationCard.querySelector('.card-header .header-actions');
+                            if (headerContent && headerActions) {
+                                const currentTotal = parseInt(headerActions.querySelector('.message-count').textContent.match(/\d+/)[0]) || 0;
+                                headerActions.querySelector('.message-count').textContent = `Total Messages: ${currentTotal + newMessagesAddedToThisCard}`;
+                                
+                                // Update last message time (use the latest from the fetched groupData)
+                                if (groupData.latest_timestamp) {
+                                     headerActions.querySelector('.last-message').textContent = `Last Message: ${new Date(groupData.latest_timestamp * 1000).toLocaleString()}`;
+                                }
+
+                                // Update conversation star rating
+                                let totalScore = 0;
+                                let msgCountForRating = 0;
+                                feedbackMessagesData.forEach(msg => {
+                                    if (msg.email && msg.email.toLowerCase().trim() === email.toLowerCase().trim()) {
+                                        const emotionLabelForScore = msg.ai_analysis && msg.ai_analysis.emotion_label ? msg.ai_analysis.emotion_label : 'neutral';
+                                        totalScore += getEmotionScoreJS(emotionLabelForScore);
+                                        msgCountForRating++;
+                                    }
+                                });
+                                const averageScore = msgCountForRating > 0 ? totalScore / msgCountForRating : 0;
+                                const starRatingValue = calculateStarRatingJS(averageScore);
+                                const ratingSpan = headerContent.querySelector('.conversation-rating'); // Changed from .conversation-emoji
+                                if(ratingSpan) {
+                                    ratingSpan.innerHTML = renderStarsJS(starRatingValue);
+                                }
+                            }
+
+                            // Update overall read/unread status of the card
+                            // A new message makes the card unread unless it was explicitly marked read by another action
+                            let allMessagesInConvRead = true;
+                            const allMessageItemsInCard = messagesListUl.querySelectorAll('.feedback-message-item');
+                            allMessageItemsInCard.forEach(itemLi => {
+                                if (itemLi.classList.contains('message-unread')) {
+                                    allMessagesInConvRead = false;
+                                }
+                            });
+                            // More robust: check feedbackMessagesData for this email
+                            allMessagesInConvRead = true; // Re-evaluate based on the master data
+                            feedbackMessagesData.forEach(msg => {
+                                if (msg.email && msg.email.toLowerCase().trim() === email.toLowerCase().trim() && !msg.read) {
+                                    allMessagesInConvRead = false;
+                                }
+                            });
+
+                            conversationCard.classList.toggle('read', allMessagesInConvRead);
+                            conversationCard.classList.toggle('unread', !allMessagesInConvRead);
+
+                            // If the conversation card was for this email, move it to the top of messagesContainer
+                            if (messagesContainer.firstChild !== conversationCard) {
+                                messagesContainer.prepend(conversationCard);
+                            }
+                        }
+                    }
+                });
+                // Update the timestamp for the next poll
+                if (data.latest_overall_timestamp > lastKnownMessageTimestamp) {
+                    lastKnownMessageTimestamp = data.latest_overall_timestamp;
+                }
+                // Optional: Update overall unread count in the main navigation
+                updateOverallUnreadCount();
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching new messages:', error);
+            // Optionally, display a subtle error to the user or stop polling on repeated errors
+        })
+        .finally(() => {
+            if (isPollingActive) {
+                setTimeout(fetchNewMessages, pollingInterval); // Schedule next poll
+            }
+        });
+}
+
+function updateOverallUnreadCount() {
+    // This function would find the unread count badge in your main navigation
+    // and update it based on the `feedbackMessagesData` array.
+    let unreadCount = 0;
+    feedbackMessagesData.forEach(msg => {
+        if (!msg.read) {
+            unreadCount++;
+        }
+    });
+    const unreadBadgeElement = document.querySelector('.admin-nav a[href="?view=messages"] .unread-badge');
+    if (unreadBadgeElement) {
+        unreadBadgeElement.textContent = unreadCount > 0 ? unreadCount : '';
+        unreadBadgeElement.style.display = unreadCount > 0 ? 'inline-block' : 'none';
+    }
+}
+
+
+// Start polling when the page is ready
+document.addEventListener('DOMContentLoaded', function() {
+    if (typeof fetchNewMessages === "function") {
+        setTimeout(fetchNewMessages, pollingInterval); // Start the polling
+        console.log("Live message polling started.");
+    }
+
+    // Initial update of overall unread count based on page load
+    updateOverallUnreadCount();
+});
+
+// Call this function if you want to stop polling, e.g., on page unload or if user logs out via AJAX
+function stopMessagePolling() {
+    isPollingActive = false;
+    console.log("Live message polling stopped.");
+}
+
+// Example: window.addEventListener('beforeunload', stopMessagePolling);
+
+</script>
 <?php
-ob_end_flush();
+ob_end_flush(); // Send the buffered output
 ?>

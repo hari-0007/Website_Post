@@ -40,7 +40,7 @@ $allRegionalManagerRoles = ['India_Manager', 'Middle_East_Manager', 'USA_Manager
 error_log("--- [CRITICAL_DEBUG] dashboard.php: Top of script. Raw GET: " . print_r($_GET, true)); // Log raw GET
 
 // Determine the requested view
-$requestedView = $_GET['view'] ?? ($loggedIn ? 'dashboard' : 'login'); // Default to dashboard if logged in, login if not
+$requestedView = $_GET['view'] ?? ($loggedIn ? 'dashboard_overview' : 'login'); // Default to dashboard_overview if logged in, login if not
 $requestedAction = $_GET['action'] ?? null; // For handling specific actions routed through dashboard.php (like register_form)
 error_log("--- [DEBUG] dashboard.php: Page Load Start ---");
 error_log("[DEBUG] dashboard.php: Raw GET parameters: " . print_r($_GET, true));
@@ -53,7 +53,7 @@ error_log("[CRITICAL_DEBUG] dashboard.php: Just before \$allowedViews check. \$r
 
 if ($loggedIn && $requestedView !== 'login') { // Ensure we don't try to validate 'login' if somehow requested while logged in
     if (!in_array($requestedView, $allowedViews)) {
-            error_log("[ERROR_DEBUG] dashboard.php: Invalid view '" . $requestedView . "' requested for logged-in user. Allowed views: " . implode(', ', $allowedViews) . ". Defaulting to dashboard.");
+            error_log("[ERROR_DEBUG] dashboard.php: Invalid view '" . htmlspecialchars($requestedView) . "' requested for logged-in user. Allowed views: " . implode(', ', $allowedViews) . ". Defaulting to 'dashboard_overview'.");
         // If view is invalid for logged-in user, default to dashboard without an error
         $requestedView = 'dashboard_overview';
             // It's possible the "invalid view specified" message comes from a part of your code that *displays* this error
@@ -251,67 +251,8 @@ require_once __DIR__ . '/partials/header.php';
 </style>
 
     <div class="container">
-        <h2>Admin Dashboard</h2>
-        <div class="admin-nav">
-            <?php $displayName = $_SESSION['admin_display_name'] ?? ($_SESSION['admin_username'] ?? 'Admin'); ?>
-            <a href="?view=dashboard_overview" class="<?= $loggedIn && (strpos($requestedView, 'dashboard_') === 0 || $requestedView === 'dashboard') ? 'active' : '' ?>">Dashboard</a>
-            <a href="?view=manage_jobs" class="<?= $loggedIn && ($requestedView === 'manage_jobs' || $requestedView === 'edit_job') ? 'active' : '' ?>">Manage Jobs</a>
-            <?php if ($loggedInUserRole === 'super_admin' || in_array($loggedInUserRole, $allRegionalAdminRoles)): ?>
-                <a href="?view=reported_jobs" class="<?= $loggedIn && $requestedView === 'reported_jobs' ? 'active' : '' ?>">Reported Jobs</a>
-            <?php endif; ?>
-            <?php /* Removed Post New Job Tab: <a href="dashboard.php?view=post_job" class="<?= $loggedIn && $requestedView === 'post_job' ? 'active' : '' ?>">Post New Job</a> */ ?>
-            <?php if ($loggedInUserRole === 'super_admin' || in_array($loggedInUserRole, $allRegionalAdminRoles)): ?>
-                            <a href="?view=messages">
-                    Messages
-                    <?php if (isset($unreadMessagesCount) && $unreadMessagesCount > 0): ?>
-                        <span class="unread-badge"><?= htmlspecialchars($unreadMessagesCount) ?></span>
-                    <?php endif; ?>
-                </a>
-                <a href="?view=achievements" class="<?= $loggedIn && $requestedView === 'achievements' ? 'active' : '' ?>">Achievements</a>
-
-                <a href="?view=generate_message" class="<?= $loggedIn && $requestedView === 'generate_message' ? 'active' : '' ?>">Generate Post</a>
-            <?php endif; ?>
-            <?php if ($loggedInUserRole === 'super_admin'): // Logs tab for Super Admin only ?>
-                <a href="?view=logs" class="<?= $loggedIn && $requestedView === 'logs' ? 'active' : '' ?>">Logs</a>
-            <?php endif; ?>
-            
-            <div class="profile-dropdown">
-                <a href="javascript:void(0);"><?= htmlspecialchars($displayName) ?> ▼</a>
-                <div class="profile-dropdown-content">
-                    <a href="dashboard.php?view=profile" class="<?= $loggedIn && $requestedView === 'profile' ? 'active' : '' ?>">Manage Profile</a>
-                    <?php if ($loggedInUserRole === 'super_admin' || in_array($loggedInUserRole, $allRegionalAdminRoles)): ?>
-                        <a href="?view=whatsapp_profile" class="<?= $loggedIn && $requestedView === 'whatsapp_profile' ? 'active' : '' ?>">WhatsApp</a>
-                    <?php endif; ?>
-                    <?php 
-                    // User Manager link
-                    if ($loggedInUserRole === 'super_admin' || in_array($loggedInUserRole, $allRegionalAdminRoles) || in_array($loggedInUserRole, $allRegionalManagerRoles)): 
-                    ?>
-                         <a href="dashboard.php?view=manage_users" class="<?= $loggedIn && $requestedView === 'manage_users' ? 'active' : '' ?>">User Manager</a>
-                    <?php endif; ?>
-                    <?php if ($loggedInUserRole === 'super_admin' || in_array($loggedInUserRole, $allRegionalAdminRoles)): ?>
-                        <a href="?view=server_management" class="<?= $loggedIn && $requestedView === 'server_management' ? 'active' : '' ?>">Server Info & Git</a>
-                    <?php endif; ?>
-                    <a href="auth.php?action=logout">Logout</a> <?php // Logout link ?>
-                </div>
-            </div>
-        </div>
-
         <?php
-        // Sub-navigation for Dashboard sections
-        if ($loggedIn && (strpos($requestedView, 'dashboard_') === 0 || $requestedView === 'dashboard')) :
-            // If main view is 'dashboard', default sub-view to 'dashboard_overview'
-            $currentDashboardSubView = ($requestedView === 'dashboard') ? 'dashboard_overview' : $requestedView;
-        ?>
-            <div class="sub-nav">
-                <a href="?view=dashboard_overview" class="<?= $currentDashboardSubView === 'dashboard_overview' ? 'active' : '' ?>">Overview</a>
-                <a href="?view=dashboard_service_one" class="<?= $currentDashboardSubView === 'dashboard_service_one' ? 'active' : '' ?>">Service Info</a>
-                <a href="?view=dashboard_user_info" class="<?= $currentDashboardSubView === 'dashboard_user_info' ? 'active' : '' ?>">User Stats</a>
-                <a href="?view=dashboard_job_stats" class="<?= $currentDashboardSubView === 'dashboard_job_stats' ? 'active' : '' ?>">Job Stats</a>
-                <a href="?view=dashboard_service_two" class="<?= $currentDashboardSubView === 'dashboard_service_two' ? 'active' : '' ?>">Server Metrics</a>
-                <a href="?view=dashboard_visitors_info" class="<?= $currentDashboardSubView === 'dashboard_visitors_info' ? 'active' : '' ?>">Visitors Info</a>
-                <a href="?view=dashboard_qoe" class="<?= $currentDashboardSubView === 'dashboard_qoe' ? 'active' : '' ?>">QOE</a>
-            </div>
-        <?php endif; ?>
+         ?>
 
         <?php
         // --- Status Message Area ---

@@ -9,24 +9,56 @@ $serverMemoryData = $serverMemoryData ?? [];
 $shouldLoadChartJsForServiceTwo = !empty($serverMetricsLabels);
 ?>
 <div class="dashboard-content">
-    <h3>Service Metrics</h3>
+    <h2 class="view-main-title">Server Metrics</h2>
 
     <?php if ($shouldLoadChartJsForServiceTwo): ?>
     <div class="dashboard-section server-monitoring-charts">
-        <h4>Server Monitoring (Last <?= count($serverMetricsLabels) ?> Data Points)</h4>
+        <h4 class="section-title">Server Monitoring (Last <?= count($serverMetricsLabels) ?> Data Points)</h4>
         <div class="chart-container" style="height: 300px; margin-bottom: 20px;">
-            <h3>CPU Usage (%)</h3>
+            <h5 class="chart-title-inline">CPU Usage (%)</h5>
             <canvas id="serviceCpuChart"></canvas> <!-- Unique ID -->
         </div>
         <div class="chart-container" style="height: 300px;">
-            <h3>Memory Usage (%)</h3>
+            <h5 class="chart-title-inline">Memory Usage (%)</h5>
             <canvas id="serviceMemoryChart"></canvas> <!-- Unique ID -->
         </div>
     </div>
     <?php else: ?>
-        <p class="dashboard-section">No server monitoring data available yet. Ensure the collection script is running and populating <code>data/server_metrics_history.json</code>.</p>
+        <div class="dashboard-section">
+            <h4 class="section-title">Server Monitoring</h4>
+            <p class="no-data-message">No server monitoring data available yet. Ensure the collection script is running and populating <code>data/server_metrics_history.json</code>.</p>
+        </div>
     <?php endif; ?>
 </div>
+
+<style>
+    .view-main-title {
+        margin-top: 0;
+        margin-bottom: 25px;
+        color: var(--primary-color);
+        font-size: 1.75em;
+        font-weight: 600;
+        padding-bottom: 15px;
+        border-bottom: 2px solid var(--primary-color-lighter);
+    }
+    .section-title {
+        margin-top: 0;
+        margin-bottom: 15px;
+        color: var(--text-color-light);
+        font-size: 1.2em;
+        font-weight: 500;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--border-color);
+    }
+    .chart-title-inline { /* For titles directly above charts if not using .chart-container h4 */
+        margin-top: 0;
+        margin-bottom: 10px;
+        font-size: 1.1em;
+        color: var(--text-color-light);
+        font-weight: 500;
+    }
+    /* .dashboard-section, .chart-container, .no-data-message are assumed to be styled globally */
+</style>
 
 <?php if ($shouldLoadChartJsForServiceTwo): ?>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -46,8 +78,8 @@ $shouldLoadChartJsForServiceTwo = !empty($serverMetricsLabels);
                     datasets: [{
                         label: 'CPU Usage (%)',
                         data: serverCpuData,
-                        borderColor: 'rgba(255, 99, 132, 1)',
-                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderColor: 'rgba(239, 68, 68, 1)', /* Theme error color */
+                        backgroundColor: 'rgba(239, 68, 68, 0.3)',
                         fill: true, tension: 0.1
                     }]
                 },
@@ -65,8 +97,8 @@ $shouldLoadChartJsForServiceTwo = !empty($serverMetricsLabels);
                     datasets: [{
                         label: 'Memory Usage (%)',
                         data: serverMemoryData,
-                        borderColor: 'rgba(54, 162, 235, 1)',
-                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgba(59, 130, 246, 1)', /* Theme primary color */
+                        backgroundColor: 'rgba(59, 130, 246, 0.3)',
                         fill: true, tension: 0.1
                     }]
                 },

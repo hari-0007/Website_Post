@@ -91,7 +91,7 @@ function render_stars_php($rating) {
 
 
 <div class="view-container">
-    <h3>Feedback Conversations</h3>
+    <h2 class="view-main-title">Feedback Conversations</h2>
 
     <!-- Search Messages Option -->
     <div class="search-container">
@@ -99,7 +99,7 @@ function render_stars_php($rating) {
     </div>
 
     <?php if (empty($grouped_feedback)): ?>
-        <p>No feedback messages found.</p>
+        <p class="no-data-message">No feedback messages found.</p>
     <?php else: ?>
         <div class="messages-container">
         <?php foreach ($grouped_feedback as $email => $groupData): ?>
@@ -217,7 +217,7 @@ function render_stars_php($rating) {
         <!-- Message Detail Modal HTML -->
         <div id="messageDetailModal" class="modal" style="display: none;">
             <div class="modal-content">
-                <h3>Message Details</h3>
+                <h3 class="modal-title">Message Details</h3>
                 <div id="modalStatusArea"></div>
                 <div class="message-details-content">
                     <p><strong>From:</strong> <span id="detailName"></span> &lt;<span id="detailEmail"></span>&gt;</p>
@@ -238,8 +238,8 @@ function render_stars_php($rating) {
                     </div>
                 </div>
                 <div class="modal-actions">
-                    <a id="replyLink" href="#" class="button" style="background-color: #007bff;">Reply via Email</a>
-                    <button class="button" style="background-color: #6c757d;" onclick="closeMessageModal()">Close</button>
+                    <a id="replyLink" href="#" class="button">Reply via Email</a>
+                    <button class="button button-secondary" onclick="closeMessageModal()">Close</button>
                 </div>
             </div>
         </div>
@@ -248,8 +248,17 @@ function render_stars_php($rating) {
 
 <style>
     /* Styles for Conversation View */
-    .view-container {
+    .view-container { /* This class might be too generic, consider .messages-view-container */
         padding: 20px;
+    }
+    .view-main-title { /* Consistent main title for views */
+        margin-top: 0;
+        margin-bottom: 25px;
+        color: var(--primary-color);
+        font-size: 1.75em;
+        font-weight: 600;
+        padding-bottom: 15px;
+        border-bottom: 2px solid var(--primary-color-lighter);
     }
 
     /* Style for the search container */
@@ -259,25 +268,25 @@ function render_stars_php($rating) {
 
     .search-container input[type="text"] {
         width: 100%;
-        padding: 10px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
+        padding: .5rem .75rem; /* Match global form input style */
+        border: 1px solid var(--border-color); /* Use theme variable */
+        border-radius: var(--border-radius); /* Use theme variable */
         box-sizing: border-box; /* Ensures padding doesn't affect width */
+        font-size: 0.95rem;
     }
 
     .messages-container {
         display: flex;
         flex-direction: column;
-        gap: 20px;
+        gap: 15px; /* Slightly reduced gap */
     }
 
     .email-group.card {
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-color); /* Use theme variable */
+        border-radius: var(--border-radius); /* Use theme variable */
+        box-shadow: var(--box-shadow-sm); /* Use theme variable */
         transition: box-shadow 0.3s ease;
     }
-
     .email-group.card.conversation-is-flagged .card-header {
         background-color: #fff3cd; /* Light yellow for flagged conversation header */
     }
@@ -287,9 +296,9 @@ function render_stars_php($rating) {
     }
 
     .card-header {
-        background-color: #f7f7f7;
+        background-color: var(--body-bg); /* Use theme variable */
         padding: 15px;
-        border-bottom: 1px solid #ddd;
+        border-bottom: 1px solid var(--border-color); /* Use theme variable */
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -304,22 +313,22 @@ function render_stars_php($rating) {
     }
     .header-content .text-muted {
         font-size: 0.85em;
-        color: #6c757d;
+        color: var(--text-muted); /* Use theme variable */
     }
 
     .email-title {
         font-size: 1.1rem;
         font-weight: bold;
         margin: 0;
-        color: #333;
+        color: var(--text-color); /* Use theme variable */
     }
     .email-group.card.read .email-title { /* If all messages in group are read */
         font-weight: normal;
-        color: #555;
+        color: var(--text-muted); /* Use theme variable */
     }
     .email-group.card.unread .email-title { /* If at least one message is unread */
         font-weight: bold;
-        color: #005fa3; /* Highlight unread conversations */
+        color: var(--primary-color); /* Use theme variable */
     }
     .conversation-emoji {
         font-size: 1em; /* Adjust size as needed */
@@ -328,15 +337,15 @@ function render_stars_php($rating) {
     .star-rating {
         font-size: 1em; /* Adjust size as needed */
         margin-left: 8px;
-        color: #ffc107; /* Gold color for stars */
+        color: var(--warning-color); /* Use theme variable */
     }
 
 
     .header-actions {
         display: flex;
         gap: 15px;
-        font-size: 0.9rem;
-        color: #777;
+        font-size: 0.85rem; /* Slightly smaller */
+        color: var(--text-muted); /* Use theme variable */
     }
 
     .card-body {
@@ -350,11 +359,11 @@ function render_stars_php($rating) {
     }
 
     .feedback-message-item {
-        border: 1px solid #e0e0e0;
-        background-color: #fff;
+        border: 1px solid var(--border-color); /* Use theme variable */
+        background-color: var(--card-bg); /* Use theme variable */
         padding: 15px;
         margin-bottom: 10px;
-        border-radius: 5px;
+        border-radius: var(--border-radius); /* Use theme variable */
         transition: background-color 0.2s ease, border-left-color 0.3s ease;
     }
 
@@ -364,23 +373,22 @@ function render_stars_php($rating) {
     }
 
     .feedback-message-item:hover {
-        background-color: #f9f9f9;
+        background-color: var(--body-bg); /* Use theme variable */
     }
 
     .feedback-message-item.message-unread {
-        border-left: 4px solid #007bff;
+        border-left: 4px solid var(--primary-color); /* Use theme variable */
     }
     .feedback-message-item.message-unread .message-from strong {
         font-weight: bold; /* Ensure unread message sender is bold */
     }
 
-
     .feedback-message-item.message-read {
-        border-left: 4px solid #6c757d;
+        border-left: 4px solid var(--secondary-color); /* Use theme variable */
     }
     .feedback-message-item.message-read .message-from strong {
         font-weight: normal; /* Normal weight for read messages */
-        color: #555;
+        color: var(--text-muted); /* Use theme variable */
     }
     .feedback-message-item.message-read .message-date {
         color: #888;
@@ -401,12 +409,12 @@ function render_stars_php($rating) {
 
     .message-from {
         /* font-weight: bold; */ /* Handled by .message-read/.message-unread */
-        color: #333;
+        color: var(--text-color); /* Use theme variable */
     }
 
     .message-date {
         font-size: 0.85rem;
-        color: #777;
+        color: var(--text-muted); /* Use theme variable */
     }
     .message-emotion-emoji {
         font-size: 0.9em; /* Slightly smaller than text */
@@ -436,7 +444,7 @@ function render_stars_php($rating) {
     }
 
     .message-content {
-        background-color: #f8f9fa;
+        background-color: var(--body-bg); /* Use theme variable */
         padding: 10px;
         border-radius: 5px;
         white-space: pre-wrap;
@@ -461,12 +469,12 @@ function render_stars_php($rating) {
 
     .status-unread {
         color: #fff;
-        background-color: #007bff;
+        background-color: var(--primary-color); /* Use theme variable */
     }
 
     .status-read {
         color: #fff;
-        background-color: #6c757d;
+        background-color: var(--secondary-color); /* Use theme variable */
     }
 
     .action-link {
@@ -477,14 +485,14 @@ function render_stars_php($rating) {
     .flag-button {
         padding: 3px 8px;
         font-size: 0.8em;
-        border: 1px solid #ccc;
-        background-color: #f0f0f0;
+        border: 1px solid var(--border-color); /* Use theme variable */
+        background-color: var(--body-bg); /* Use theme variable */
         cursor: pointer;
         border-radius: 3px;
     }
     .flag-button.is-flagged-btn {
-        background-color: #ffc107; /* Yellow for flagged */
-        border-color: #ffc107;
+        background-color: var(--warning-color); /* Use theme variable */
+        border-color: var(--warning-color); /* Use theme variable */
         color: #333;
     }
 
@@ -504,10 +512,10 @@ function render_stars_php($rating) {
     }
 
     .modal-content {
-        background-color: #fff;
+        background-color: var(--card-bg); /* Use theme variable */
         padding: 20px;
-        border-radius: 10px; /* Slightly more rounded */
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        border-radius: var(--border-radius); /* Use theme variable */
+        box-shadow: var(--box-shadow); /* Use theme variable */
         width: 90%;
         max-width: 700px;
         max-height: 90vh;
@@ -516,30 +524,31 @@ function render_stars_php($rating) {
         flex-direction: column; /* Stack content vertically */
     }
 
-    .modal-content h3 {
+    .modal-title { /* For h3 inside modal */
         margin-top: 0;
-        color: #0056b3;
-        border-bottom: 1px solid #eee;
+        color: var(--primary-color-darker); /* Use theme variable */
+        border-bottom: 1px solid var(--border-color); /* Use theme variable */
         padding-bottom: 10px;
+        margin-bottom: 15px; /* Space after title */
     }
     .message-details-content {
         padding: 15px 0; /* Add some padding */
         font-size: 0.95rem;
         line-height: 1.6;
-        color: #333;
+        color: var(--text-color); /* Use theme variable */
         flex-grow: 1; /* Allow this section to take available space */
     }
     .message-details-content p {
         margin-bottom: 12px; /* Consistent spacing for paragraphs */
     }
     .message-details-content strong {
-        color: #0056b3; /* Highlight labels */
+        color: var(--primary-color-darker); /* Use theme variable */
     }
     .message-body-container {
         margin-top: 15px;
         padding: 15px;
-        background-color: #f9f9f9; /* Light background for message body */
-        border-radius: 6px;
+        background-color: var(--body-bg); /* Use theme variable */
+        border-radius: var(--border-radius); /* Use theme variable */
     }
 
     .modal-actions {
@@ -551,9 +560,6 @@ function render_stars_php($rating) {
     .modal-actions .button {
         padding: 8px 15px;
         font-size: 0.85rem;
-    }
-    .modal-actions .button[style*="background-color: #007bff;"] { /* Reply button */
-        background-color: #007bff !important; /* Ensure specificity */
     }
 
     /* Responsive Design */
@@ -589,8 +595,8 @@ function render_stars_php($rating) {
         font-size: 0.9em;
         text-align: center;
     }
-    .modal-status-message.success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb;}
-    .modal-status-message.error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb;}
+    .modal-status-message.success { background-color: var(--success-bg); color: var(--success-text); border: 1px solid var(--success-border);}
+    .modal-status-message.error { background-color: var(--error-bg); color: var(--error-text); border: 1px solid var(--error-border);}
 
 
     /* Style for collapsed conversations */
@@ -600,27 +606,27 @@ function render_stars_php($rating) {
     .message-item-commands-display {
         margin-top: 8px;
         padding-top: 8px;
-        border-top: 1px dashed #eee;
+        border-top: 1px dashed var(--border-color); /* Use theme variable */
         font-size: 0.85em;
-        color: #555;
+        color: var(--text-muted); /* Use theme variable */
     }
     .message-item-commands-display strong {
-        color: #333;
+        color: var(--text-color); /* Use theme variable */
     }
     .message-item-commands-display ul {
         list-style: disc; margin-left: 20px; padding-left: 0; margin-top: 3px; margin-bottom: 0;
     }
 
     .message-commands-container {
-        margin-top: 15px;
+        margin-top: 20px; /* More space */
         padding-top: 10px;
-        border-top: 1px solid #eee;
+        border-top: 1px solid var(--border-color); /* Use theme variable */
     }
 
     .message-commands-container h4 {
         margin-bottom: 5px;
         font-size: 0.95em;
-        color: #333;
+        color: var(--text-color); /* Use theme variable */
         margin-top: 0; /* Reset top margin for h4 inside this container */
     }
 
@@ -631,22 +637,22 @@ function render_stars_php($rating) {
     }
 
     #detailCommandsList li {
-        background-color: #f0f0f0; /* Light grey background for command items */
+        background-color: var(--body-bg); /* Use theme variable */
         padding: 6px 10px;
         margin-bottom: 5px; /* Space between command items */
-        border-radius: 4px;
-        color: #444;
+        border-radius: var(--border-radius); /* Use theme variable */
+        color: var(--text-color-light); /* Use theme variable */
     }
 
     .add-command-form { margin-top: 10px; display: flex; gap: 10px; }
-    .add-command-form input[type="text"] { flex-grow: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+    .add-command-form input[type="text"] { flex-grow: 1; padding: 8px; border: 1px solid var(--border-color); border-radius: var(--border-radius); }
     .add-command-form button {
         padding: 8px 12px;
-        background-color: #28a745; /* Green for "Add" */
+        background-color: var(--success-color); /* Use theme variable */
         color: white;
     }
     .add-command-form button:hover {
-        background-color: #218838;
+        background-color: var(--success-color-darker); /* Assuming you'd add this variable */
     }
 </style>
  

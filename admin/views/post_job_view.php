@@ -1,6 +1,5 @@
 <?php
 
-// admin/views/post_job_view.php - Displays the form for posting a new job
 // admin/views/post_job_view.php - Form for posting a new job, with review step
 
 // This file is included by dashboard.php when $requestedView is 'post_job'.
@@ -25,26 +24,31 @@ $formActionValue = $isReviewMode ? "final_post" : "initial_post";
 
 ?>
 <style>
+    /* Styles specific to post_job_view.php, ensuring alignment with global theme */
+    .view-main-title.post-job-title { /* Specific for this view's title */
+        margin-top: 0;
+        margin-bottom: 25px; /* Consistent bottom margin */
+        color: var(--primary-color);
+        font-size: 1.75em;
+        font-weight: 600;
+        padding-bottom: 15px; /* Consistent padding */
+        border-bottom: 2px solid var(--primary-color-lighter); /* Consistent border */
+        text-align: center; /* Center the main title for forms */
+    }
     .post-job-container {
         max-width: 700px; /* Wider for more content */
         margin: 20px auto;
         padding: 20px 25px;
-        background-color: #ffffff;
-        border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        background-color: var(--card-bg); /* Use theme variable */
+        border-radius: var(--border-radius); /* Use theme variable */
+        box-shadow: var(--box-shadow); /* Use theme variable for a more prominent shadow for forms */
     }
 
-    .post-job-container h3 { /* Changed from h1 for better semantic structure within dashboard */
-        text-align: center;
-        color: #0056b3; /* Primary color */
-        margin-top: 0;
-        margin-bottom: 10px;
-        font-size: 1.6rem;
-    }
+    /* .post-job-container h3 is replaced by .view-main-title */
 
-    .post-job-container p.form-description {
+    .post-job-container p.form-description { /* This class is commented out in HTML, but styling it just in case */
         text-align: center;
-        color: #555;
+        color: var(--text-muted); /* Use theme variable */
         margin-bottom: 25px;
         font-size: 0.95rem;
     }
@@ -54,81 +58,70 @@ $formActionValue = $isReviewMode ? "final_post" : "initial_post";
     .styled-form label {
         display: block;
         font-weight: 600;
-        color: #333;
+        color: var(--text-color-light); /* Match global form label */
         margin-bottom: 6px;
         font-size: 0.9rem;
     }
     .styled-form input[type="text"],
     .styled-form input[type="email"],
     .styled-form input[type="number"],
+    .styled-form input[type="password"], /* Added for completeness */
     .styled-form textarea,
     .styled-form select {
+        /* Fully align with global form input styles from header.php */
         width: 100%;
-        padding: 10px 12px;
-        border: 1px solid #ced4da;
-        border-radius: 5px;
+        padding: .5rem .75rem; /* Match global */
+        border: 1px solid var(--border-color); /* Match global */
+        border-radius: var(--border-radius); /* Match global */
         font-size: 0.95rem;
-        color: #495057;
-        background-color: #fdfdfd;
-        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        color: var(--text-color); /* Match global */
+        background-color: #fff; /* Match global */
+        transition: border-color .2s ease-in-out, box-shadow .2s ease-in-out; /* Match global */
+        appearance: none; /* Match global */
+        line-height: 1.5; /* Match global */
+        font-weight: 400; /* Match global */
     }
     .styled-form input[type="text"]:focus,
     .styled-form input[type="email"]:focus,
     .styled-form input[type="number"]:focus,
+    .styled-form input[type="password"]:focus,
     .styled-form textarea:focus,
     .styled-form select:focus {
-        border-color: #0056b3;
+        /* Fully align with global focus styles */
+        border-color: var(--primary-color-lighter);
         outline: none;
-        box-shadow: 0 0 0 0.2rem rgba(0, 86, 179, 0.2);
+        box-shadow: 0 0 0 .2rem var(--primary-color-lighter);
         background-color: #fff;
     }
     .styled-form textarea {
         resize: vertical;
         min-height: 100px;
     }
-    .styled-form .button { /* Re-using .button style if defined globally, or define here */
-        padding: 10px 18px;
-        background-color: #0056b3;
-        color: #fff;
-        border: none;
-        border-radius: 5px;
-        font-size: 1rem;
-        font-weight: 500;
-        cursor: pointer;
-        transition: background-color 0.2s ease, transform 0.1s ease;
-        display: inline-block; /* For proper button behavior */
-        width: auto; /* Don't force full width unless intended */
-    }
-    .styled-form .button:hover {
-        background-color: #00418a;
-        transform: translateY(-1px);
-    }
-    .styled-form .button:active {
-        background-color: #003775;
-        transform: translateY(0);
-    }
+    /* .styled-form .button will inherit from global .button style in header.php */
+    /* Ensure the button in the form has class="button" */
+
     .required {
-        color: #dc3545; /* Red for required fields */
+        color: var(--error-color); /* Use theme error color */
         font-weight: bold;
         margin-left: 2px;
     }
     /* Styles for the AI summary review section */
     .ai-summary-review-section {
-        border: 1px solid #0056b3;
+        border: 1px solid var(--primary-color-lighter); /* Use theme variable */
         padding: 15px;
         margin-top: 20px;
         margin-bottom: 20px;
-        border-radius: 5px;
-        background-color: #eef2f7;
+        border-radius: var(--border-radius); /* Use theme variable */
+        background-color: var(--info-bg); /* Use theme info background for a subtle highlight */
     }
     .ai-summary-review-section label {
-        color: #0056b3;
+        color: var(--info-text); /* Use theme info text color */
         font-size: 1rem;
     }
 </style>
 
 <div class="post-job-container">
-    <h3><?= htmlspecialchars($pageTitle) ?></h3>
+    <h2 class="view-main-title post-job-title"><?= htmlspecialchars($pageTitle) ?></h2>
     <!-- <p class="form-description">
         <?php if ($isReviewMode): ?>
             Please review all details below, edit the AI-generated summary if needed, and then click "Confirm and Post Job".
@@ -237,3 +230,25 @@ $formActionValue = $isReviewMode ? "final_post" : "initial_post";
         <button type="submit" class="button"><?= htmlspecialchars($submitButtonText) ?></button>
     </form>
 </div>
+
+<script>
+    function toggleCustomExperience(selectElement) {
+        const customExperienceInput = document.getElementById('custom_experience');
+        if (selectElement.value === 'other') {
+            customExperienceInput.style.display = 'block';
+            customExperienceInput.required = true; // Make it required if "Other" is selected
+        } else {
+            customExperienceInput.style.display = 'none';
+            customExperienceInput.required = false; // Not required if another option is selected
+            customExperienceInput.value = ''; // Clear the value if not "Other"
+        }
+    }
+
+    // Initialize on page load in case the form is pre-filled with "Other"
+    document.addEventListener('DOMContentLoaded', function() {
+        const experienceSelect = document.getElementById('experience');
+        if (experienceSelect) { // Ensure the element exists (it might not if in review mode and fields are hidden)
+            toggleCustomExperience(experienceSelect);
+        }
+    });
+</script>

@@ -45,10 +45,10 @@ if (function_exists('disk_free_space') && function_exists('disk_total_space')) {
 ?>
 
 <div class="dashboard-content server-management-content">
-    <h3>Server Status & Management</h3>
+    <h2 class="view-main-title">Server Status & Management</h2>
 
     <div class="dashboard-section">
-        <h4>Server Information</h4>
+        <h4 class="section-title">Server Information</h4>
         <ul class="info-list">
             <li><strong>PHP Version:</strong> <?= htmlspecialchars($serverPhpVersion) ?></li>
             <li><strong>Server Software:</strong> <?= htmlspecialchars($serverSoftware) ?></li>
@@ -59,7 +59,7 @@ if (function_exists('disk_free_space') && function_exists('disk_total_space')) {
         </ul>
     </div>
 
-    <div class="management-toggles" style="padding: 15px 0; border-bottom: 1px solid #eee; margin-bottom: 15px;">
+    <div class="management-toggles">
         <!-- The WhatsApp toggle button is removed as WhatsApp now has its own page -->
         <!-- You might want a general "Server Management" page that then links to "WhatsApp Profile" and "Git Management" -->
         <!-- Or keep this as a combined page, and the dashboard link directly shows the WhatsApp part -->
@@ -85,8 +85,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     <div id="gitManagementDetails" style="display: none;">
         <div class="dashboard-section">
-            <h4>Git Backup Configuration</h4>
-            <form action="server_actions.php" method="POST" class="form-container compact-form">
+            <h4 class="section-title">Git Backup Configuration</h4>
+            <form action="server_actions.php" method="POST" class="styled-form compact-form">
                 <input type="hidden" name="action" value="save_git_config">
 
                 <div class="form-group">
@@ -121,14 +121,14 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
 
         <div class="dashboard-section">
-            <h4>Data Management Actions</h4>
+            <h4 class="section-title">Data Management Actions</h4>
             <form action="server_actions.php" method="POST" style="display: inline-block; margin-right: 10px;">
                 <input type="hidden" name="action" value="trigger_backup">
-                <button type="submit" class="button success">Backup Data to GitHub</button>
+                <button type="submit" class="button button-success">Backup Data to GitHub</button>
             </form>
             <form action="server_actions.php" method="POST" style="display: inline-block;">
                 <input type="hidden" name="action" value="trigger_restore">
-                <button type="submit" class="button warning" onclick="return confirm('WARNING: This will overwrite local data with the latest backup from GitHub. This action cannot be undone. Are you absolutely sure?')">Restore Data from GitHub</button>
+                <button type="submit" class="button button-warning" onclick="return confirm('WARNING: This will overwrite local data with the latest backup from GitHub. This action cannot be undone. Are you absolutely sure?')">Restore Data from GitHub</button>
             </form>
             <p style="margin-top:10px;"><small>Note: Backup and Restore actions require the above Git configuration to be correctly set and server-side shell scripts (`backup_data_to_github.sh`, `restore_data_from_github.sh`) to be in place and executable.</small></p>
         </div>
@@ -136,18 +136,78 @@ document.addEventListener('DOMContentLoaded', function() {
 
 </div> <!-- This closes div.dashboard-content.server-management-content -->
 <style>
-.info-list { list-style: none; padding-left: 0; }
-.info-list li { padding: 5px 0; border-bottom: 1px dashed #eee; }
-.info-list li:last-child { border-bottom: none; }
-.compact-form .form-group {
-    margin-bottom: 15px;
-}
-.compact-form label {
-    font-weight: bold;
-    display: block;
-    margin-bottom: 5px;
-}
-.compact-form input[type="text"], .compact-form input[type="email"] {
-    width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;
-}
+    .view-main-title { /* Consistent main title for views */
+        margin-top: 0;
+        margin-bottom: 25px;
+        color: var(--primary-color);
+        font-size: 1.75em;
+        font-weight: 600;
+        padding-bottom: 15px;
+        border-bottom: 2px solid var(--primary-color-lighter);
+    }
+    .section-title { /* Consistent section titles */
+        margin-top: 0;
+        margin-bottom: 15px;
+        color: var(--text-color-light);
+        font-size: 1.2em;
+        font-weight: 500;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--border-color);
+    }
+    .dashboard-section { /* Ensure consistent section styling */
+        background-color: var(--card-bg);
+        padding: 20px;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow-sm);
+        border: 1px solid var(--border-color);
+        margin-bottom: 20px;
+    }
+    .info-list { 
+        list-style: none; 
+        padding-left: 0; 
+        font-size: 0.95rem;
+    }
+    .info-list li { 
+        padding: 8px 0; 
+        border-bottom: 1px dashed var(--border-color); 
+    }
+    .info-list li:last-child { 
+        border-bottom: none; 
+    }
+    .info-list li strong {
+        color: var(--text-color);
+        min-width: 180px; /* Align values */
+        display: inline-block;
+    }
+
+    .management-toggles {
+        padding: 15px 0; 
+        border-bottom: 1px solid var(--border-color); 
+        margin-bottom: 20px; /* Increased margin */
+    }
+    .management-toggles .button {
+        /* Inherits global .button style */
+    }
+
+    /* Form styling within this view */
+    .styled-form .form-group { /* Use .styled-form class for forms */
+        margin-bottom: 1rem; /* Consistent with global */
+    }
+    .styled-form label {
+        /* Inherits global form label style */
+    }
+    .styled-form input[type="text"], 
+    .styled-form input[type="email"] {
+        /* Inherits global form input styles */
+    }
+    .styled-form .form-text.text-muted { /* Style for small helper text */
+        font-size: 0.85em;
+        color: var(--text-muted);
+        display: block;
+        margin-top: 0.25rem;
+    }
+    .styled-form .button {
+        /* Inherits global button styles */
+        margin-top: 10px; /* Add some space if it's the last element in a form group */
+    }
 </style>

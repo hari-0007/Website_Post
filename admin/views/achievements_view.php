@@ -13,10 +13,10 @@ $shouldLoadChartJsForAchievements = !empty($quarterlyUserEarningsLabels) && !emp
 ?>
 
 <div class="dashboard-content achievements-view-content">
-    <h3>User Achievements</h3>
+    <h2 class="view-main-title">User Achievements</h2>
 
     <div class="dashboard-section quarterly-user-earnings-section">
-        <h4>User Earnings (Last 3 Months)</h4>
+        <h4 class="section-title">User Earnings (Last 3 Months)</h4>
         <?php if (!empty($quarterlyUserEarningsData) && !empty($quarterlyUserEarningsLabels)): ?>
             <div class="chart-container" style="height: 400px;"> <!-- Adjust height as needed -->
                 <canvas id="achievementsQuarterlyUserEarningsChart"></canvas> <!-- Unique ID for this chart instance -->
@@ -43,15 +43,30 @@ $shouldLoadChartJsForAchievements = !empty($quarterlyUserEarningsLabels) && !emp
 </div>
 
 <style>
-    /* Add any specific styles for achievements-view-content if needed */
-    .achievements-view-content h3 {
-        color: #005fa3;
+    .view-main-title { /* Consistent main title for views */
         margin-top: 0;
-        margin-bottom: 20px;
+        margin-bottom: 25px;
+        color: var(--primary-color);
+        font-size: 1.75em;
+        font-weight: 600;
         padding-bottom: 10px;
-        border-bottom: 1px solid #e0e0e0;
+        border-bottom: 2px solid var(--primary-color-lighter);
     }
-    /* Assuming .dashboard-section, .chart-container, .no-data-message are globally styled */
+    .section-title { /* Consistent section titles */
+        margin-top: 0;
+        margin-bottom: 15px;
+        color: var(--text-color-light);
+        font-size: 1.2em;
+        font-weight: 500;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--border-color);
+    }
+    /* .dashboard-section, .chart-container, .no-data-message are assumed to be styled globally
+       or via styles in dashboard_overview_view.php or header.php.
+       If not, ensure they use var(--card-bg), var(--border-color), etc.
+       For example:
+       .dashboard-section { background-color: var(--card-bg); border: 1px solid var(--border-color); padding: 20px; border-radius: var(--border-radius); box-shadow: var(--box-shadow-sm); margin-bottom: 20px; }
+       .chart-container { background-color: var(--card-bg); border: 1px solid var(--border-color); padding: 1.5rem; border-radius: var(--border-radius); box-shadow: var(--box-shadow-sm); margin-top: 1.5rem; } */
 </style>
 
 <?php if ($shouldLoadChartJsForAchievements): ?>

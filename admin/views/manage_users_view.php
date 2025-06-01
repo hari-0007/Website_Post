@@ -18,11 +18,11 @@ $canCreateUserGroupManager = ($loggedInUserRole === 'super_admin' || $loggedInUs
 $canCreateUser = ($loggedInUserRole === 'super_admin' || $loggedInUserRole === 'admin' || $loggedInUserRole === 'user_group_manager'); // Assuming user group managers can create basic users
 
 ?>
-<h3>User Manager</h3>
+<h2 class="view-main-title">User Manager</h2>
 
 <?php if ($loggedInUserRole === 'super_admin' || $loggedInUserRole === 'admin'): // Only Super Admins and Admins can create users ?>
     <div class="user-form-section">
-        <h3>Create New User</h3>
+        <h4 class="section-title">Create New User</h4>
         <?php // Display status messages specific to user creation if available (handled in dashboard.php) ?>
         <form method="POST" action="user_actions.php">
             <input type="hidden" name="action" value="create_user">
@@ -60,7 +60,7 @@ $canCreateUser = ($loggedInUserRole === 'super_admin' || $loggedInUserRole === '
 <?php endif; ?>
 
 <div class="user-list-section">
-    <h3>All Users</h3>
+    <h4 class="section-title">All Users</h4>
     <?php if (empty($users)): ?>
         <p>No users found in the system.</p>
     <?php else: ?>
@@ -168,7 +168,7 @@ $canCreateUser = ($loggedInUserRole === 'super_admin' || $loggedInUserRole === '
                             // Display Delete button (for active or disabled users, not pending)
                             if ($canDeleteThisUser && ($targetUserStatus === 'active' || $targetUserStatus === 'disabled')) {
                                 echo '<a href="user_actions.php?action=delete_user&username=' . urlencode($targetUsername) . '"
-                                   onclick="return confirm(\'Are you sure you want to permanently delete user: ' . addslashes($userDisplayName) . '?\');"
+                                   onclick="return confirm(\'Are you sure you want to permanently delete user: ' . addslashes($userDisplayName) . '? This action cannot be undone.\');"
                                    class="button delete small">Delete</a>';
                             }
                             ?>
@@ -184,121 +184,131 @@ $canCreateUser = ($loggedInUserRole === 'super_admin' || $loggedInUserRole === '
 </div>
 
 <style>
-    /* Basic styles for User Manager view */
-    .user-form-section, .user-list-section {
-        background: #fff;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        margin-bottom: 20px;
+    .view-main-title { /* Consistent main title for views */
+        margin-top: 0;
+        margin-bottom: 25px;
+        color: var(--primary-color);
+        font-size: 1.75em;
+        font-weight: 600;
+        padding-bottom: 15px;
+        border-bottom: 2px solid var(--primary-color-lighter);
     }
-
-    .user-form-section h3, .user-list-section h3 {
+    .section-title { /* Consistent section titles */
         margin-top: 0;
         margin-bottom: 15px;
-        color: #005fa3;
-        border-bottom: 1px solid #eee;
+        color: var(--text-color-light);
+        font-size: 1.2em;
+        font-weight: 500;
         padding-bottom: 10px;
+        border-bottom: 1px solid var(--border-color);
     }
 
-    .user-table {
+    .user-form-section, .user-list-section {
+        background: var(--card-bg); /* Use theme variable */
+        padding: 20px;
+        border-radius: var(--border-radius); /* Use theme variable */
+        box-shadow: var(--box-shadow-sm); /* Use theme variable */
+        margin-bottom: 25px; /* Consistent margin */
+    }
+
+    /* Table styles - aiming for .professional-table look from header.php */
+    .user-table { /* Align with .professional-table */
         width: 100%;
         border-collapse: collapse;
         margin-top: 15px;
+        font-size: 0.9rem;
+        color: var(--text-color-light);
     }
 
     .user-table th, .user-table td {
-        border: 1px solid #ddd;
-        padding: 10px;
+        padding: .75rem 1rem; /* Match professional-table */
+        border-bottom: 1px solid var(--border-color); /* Match professional-table */
         text-align: left;
+        vertical-align: middle;
     }
 
     .user-table th {
-        background-color: #f2f2f2;
-        font-weight: bold;
+        background-color: var(--body-bg); /* Match professional-table */
+        color: var(--text-color-light); /* Match professional-table */
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        border-bottom-width: 2px; /* Match professional-table */
     }
 
     .user-table tr:nth-child(even) {
-        background-color: #f9f9f9;
+        /* background-color: #f9f9f9; */ /* Optional, can be removed for cleaner look if card has bg */
     }
 
     .user-table tr:hover {
-        background-color: #e9e9e9;
+        background-color: #f5f7f8; /* Match professional-table */
+    }
+    .user-table tbody tr:last-child td {
+        border-bottom: 0;
     }
 
-    .user-table td.actions a.button {
+    .user-table td.actions .button { /* General styling for buttons in actions column */
         margin-right: 5px; /* Adjust spacing */
-        padding: 5px 10px; /* Adjust padding */
-        font-size: 0.9em; /* Adjust font size */
+        /* font-size and padding are handled by .button.small */
     }
-
     .user-table td.actions .button.small {
         padding: 3px 8px;
         font-size: 0.85em;
     }
 
-    .user-table td.actions a.edit {
-         background-color: #ffc107;
-         color: #212529;
+    .user-table td.actions .button.edit { /* Specific style for edit button */
+         background-color: var(--secondary-color); /* Use theme secondary */
+         border-color: var(--secondary-color);
+         color: #fff;
     }
-    .user-table td.actions a.edit:hover {
-         background-color: #e0a800;
+    .user-table td.actions .button.edit:hover {
+         background-color: var(--secondary-color-darker);
+         border-color: var(--secondary-color-darker);
     }
-     .user-table td.actions a.delete {
-         background-color: #dc3545;
-         color: white;
+     .user-table td.actions .button.delete { /* Specific style for delete button */
+         background-color: var(--error-color); /* Use theme error */
+         border-color: var(--error-color);
      }
-     .user-table td.actions a.delete:hover {
-         background-color: #c82333;
+     .user-table td.actions .button.delete:hover {
+         background-color: #c0392b; /* Darker Alizarin from header.php */
      }
     .user-table td.actions .button.success {
-        background-color: #28a745; color: white;
+        /* Inherits from global .button.button-success */
     }
     .user-table td.actions .button.success:hover {
-        background-color: #218838;
+        /* Inherits from global .button.button-success:hover */
     }
     .user-table td.actions .button.warning {
-        background-color: #ffc107; color: #212529;
+        /* Inherits from global .button.button-warning */
     }
     .user-table td.actions .button.warning:hover {
-        background-color: #e0a800;
+        /* Inherits from global .button.button-warning:hover */
     }
     .user-table td.actions .button.danger { /* For reject button */
-        background-color: #dc3545; color: white;
+        /* Inherits from global .button.button-danger */
     }
     .user-table td.actions .button.danger:hover {
-        background-color: #c82333;
+        /* Inherits from global .button.button-danger:hover */
      }
 
+    /* Form section styling */
     .user-form-section label {
-        display: block;
-        margin-bottom: 5px;
-        font-weight: bold;
+        /* Inherits global form label style from header.php */
     }
 
     .user-form-section input[type="text"],
+    .user-form-section input[type="email"], /* Added for consistency */
     .user-form-section input[type="password"],
     .user-form-section select {
-        width: 100%;
-        padding: 8px;
-        margin-bottom: 15px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        box-sizing: border-box;
+        /* Inherits global form input/select styles from header.php */
     }
 
     .user-form-section button.button {
-        padding: 10px 20px;
-        background-color: #005fa3;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 1rem;
-        transition: background-color 0.3s ease;
+        /* Inherits global .button style from header.php */
+        margin-top: 10px; /* Add some space above the button */
     }
     .user-form-section button.button:hover {
-        background-color: #004577;
+        /* Inherits global .button:hover style */
     }
 
     /* Status Badges */
@@ -312,16 +322,16 @@ $canCreateUser = ($loggedInUserRole === 'super_admin' || $loggedInUserRole === '
         display: inline-block;
     }
     .status-active {
-        background-color: #28a745; /* Green */
+        background-color: var(--success-color); /* Use theme variable */
     }
     .status-pending_approval {
-        background-color: #ffc107; /* Yellow */
-        color: #212529; /* Dark text for yellow */
+        background-color: var(--warning-color); /* Use theme variable */
+        color: #fff; /* White text for better contrast on orange */
     }
     .status-disabled {
-        background-color: #6c757d; /* Grey/Muted Red */
+        background-color: var(--error-color); /* Use theme variable */
     }
     .status-unknown {
-        background-color: #343a40; /* Dark Grey */
+        background-color: var(--secondary-color); /* Use theme variable */
     }
 </style>

@@ -45,19 +45,19 @@ $pagedJobs = array_slice($filteredJobs, $startIndex, $jobsPerPage);
 
 ?>
 <header class="manage-jobs-header">
-    <h3 class="manage-jobs-title">Manage Jobs</h3>
+    <h2 class="view-main-title manage-jobs-title">Manage Jobs</h2>
     <div class="manage-jobs-header-actions">
         <form method="GET" action="dashboard.php" class="search-filter-form">
             <input type="hidden" name="view" value="manage_jobs">
-            <input type="text" name="search" placeholder="Search jobs" value="<?= htmlspecialchars($_GET['search'] ?? '') ?>" class="search-input" >
-            <input type="date" name="start_date" value="<?= htmlspecialchars($_GET['start_date'] ?? '') ?>" class="filter-input" aria-label="Start Date">
-            <input type="date" name="end_date" value="<?= htmlspecialchars($_GET['end_date'] ?? '') ?>" class="filter-input" aria-label="End Date">
-            <button type="submit" class="button filter-button">Filter</button>
+            <input type="text" name="search" placeholder="Search jobs..." value="<?= htmlspecialchars($_GET['search'] ?? '') ?>" class="search-input form-input-control" >
+            <input type="date" name="start_date" value="<?= htmlspecialchars($_GET['start_date'] ?? '') ?>" class="filter-input form-input-control" aria-label="Start Date">
+            <input type="date" name="end_date" value="<?= htmlspecialchars($_GET['end_date'] ?? '') ?>" class="filter-input form-input-control" aria-label="End Date">
+            <button type="submit" class="button button-secondary filter-button">Filter</button>
         </form>
         <!-- <button id="postNewJobBtn" class="button post-job-btn">
             + Post New Job
         </button> -->
-        <a href="dashboard.php?view=post_job" class="button post-new-job-button">Post New Job</a>
+        <a href="dashboard.php?view=post_job" class="button post-new-job-button">+ Post New Job</a>
     </div>
 </header>
 
@@ -65,9 +65,10 @@ $pagedJobs = array_slice($filteredJobs, $startIndex, $jobsPerPage);
     <thead>
         <tr>
             <th>Title</th>
-            <th>Company</th>
+            <th class="optional-column">Company</th>
             <th>Location</th>
-            <th>Actions</th>
+            <th class="optional-column">Posted On</th>
+            <th class="actions-column">Actions</th>
         </tr>
     </thead>
     <tbody>
@@ -75,11 +76,14 @@ $pagedJobs = array_slice($filteredJobs, $startIndex, $jobsPerPage);
             <?php foreach ($pagedJobs as $job): ?>
                 <tr>
                     <td><?= htmlspecialchars($job['title'] ?? 'N/A') ?></td>
-                    <td><?= htmlspecialchars($job['company'] ?? 'N/A') ?></td>
+                    <td class="optional-column"><?= htmlspecialchars($job['company'] ?? 'N/A') ?></td>
                     <td><?= htmlspecialchars($job['location'] ?? 'N/A') ?></td>
-                    <td>
-                        <a href="dashboard.php?view=edit_job&id=<?= urlencode($job['id']) ?>">Edit</a>
-                        <a href="job_actions.php?action=delete_job&id=<?= urlencode($job['id']) ?>" onclick="return confirm('Are you sure?')">Delete</a>
+                    <td class="optional-column">
+                        <?= htmlspecialchars(date('M d, Y', strtotime($job['posted_at'] ?? $job['posted_on'] ?? 'now'))) ?>
+                    </td>
+                    <td class="actions-column">
+                        <a href="dashboard.php?view=edit_job&id=<?= urlencode($job['id']) ?>" class="button button-small button-edit">Edit</a>
+                        <a href="job_actions.php?action=delete_job&id=<?= urlencode($job['id']) ?>" class="button button-small button-danger" onclick="return confirm('Are you sure you want to delete this job? This action cannot be undone.')">Delete</a>
                     </td>
                 </tr>
             <?php endforeach; ?>
@@ -94,24 +98,24 @@ $pagedJobs = array_slice($filteredJobs, $startIndex, $jobsPerPage);
 <!-- Pagination Controls -->
 <div class="pagination">
     <?php if ($currentPage > 1): ?>
-        <a href="dashboard.php?view=manage_jobs&page=<?= $currentPage - 1 ?>">&laquo; Previous</a>
+        <a href="dashboard.php?view=manage_jobs&page=<?= $currentPage - 1 ?>&search=<?= urlencode($search) ?>&start_date=<?= urlencode($startDate) ?>&end_date=<?= urlencode($endDate) ?>">&laquo; Previous</a>
     <?php endif; ?>
 
     <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-        <a href="dashboard.php?view=manage_jobs&page=<?= $i ?>" class="<?= $i === $currentPage ? 'active' : '' ?>">
+        <a href="dashboard.php?view=manage_jobs&page=<?= $i ?>&search=<?= urlencode($search) ?>&start_date=<?= urlencode($startDate) ?>&end_date=<?= urlencode($endDate) ?>" class="<?= $i === $currentPage ? 'active' : '' ?>">
             <?= $i ?>
         </a>
     <?php endfor; ?>
 
     <?php if ($currentPage < $totalPages): ?>
-        <a href="dashboard.php?view=manage_jobs&page=<?= $currentPage + 1 ?>">Next &raquo;</a>
+        <a href="dashboard.php?view=manage_jobs&page=<?= $currentPage + 1 ?>&search=<?= urlencode($search) ?>&start_date=<?= urlencode($startDate) ?>&end_date=<?= urlencode($endDate) ?>">Next &raquo;</a>
     <?php endif; ?>
 </div>
 
 <div id="postJobModal" class="modal">
     <div class="modal-content">
         <span class="close" id="closePostJobModal">&times;</span>
-        <h3>Post New Job</h3>
+        <h3 class="modal-title">Post New Job</h3>
         <div id="postJobFormContainer" class="modal-body-content">
             <p>Loading form...</p>
         </div>
@@ -119,19 +123,25 @@ $pagedJobs = array_slice($filteredJobs, $startIndex, $jobsPerPage);
 </div>
 
 <style>
+    .view-main-title.manage-jobs-title { /* Specific for this view's title */
+        margin-top: 0;
+        margin-bottom: 0; /* Header will handle bottom margin */
+        color: var(--primary-color);
+        font-size: 1.75em;
+        font-weight: 600;
+        padding-bottom: 0; /* No border/padding here, part of header */
+        border-bottom: none;
+    }
     /* Styles for the Manage Jobs header section */
     .manage-jobs-header {
-        margin-bottom: 20px;
+        margin-bottom: 25px; /* Consistent bottom margin */
         display: flex;
         justify-content: space-between;
         align-items: center;
         flex-wrap: wrap; /* Allow wrapping for responsiveness */
         gap: 15px; /* Add some gap for wrapped items */
-    }
-
-    .manage-jobs-title {
-        margin: 0;
-        /* Consider matching the h3 style from .modal-content h3 if consistency is desired */
+        padding-bottom: 15px; /* Space below header content */
+        border-bottom: 1px solid var(--border-color); /* Separator line */
     }
 
     .manage-jobs-header-actions {
@@ -140,51 +150,65 @@ $pagedJobs = array_slice($filteredJobs, $startIndex, $jobsPerPage);
         align-items: center;
         flex-wrap: wrap; /* Allow actions to wrap as well */
     }
-    /* Enhance the table appearance */
+    /* Table styles - aiming for .professional-table look from header.php */
     table {
         width: 100%;
         border-collapse: collapse;
         margin-top: 20px;
         font-size: 0.9rem;
-        color: #333;
+        color: var(--text-color-light); /* Use theme variable */
+        background-color: var(--card-bg); /* Use theme variable */
+        border: 1px solid var(--border-color); /* Use theme variable */
+        border-radius: var(--border-radius); /* Use theme variable */
+        box-shadow: var(--box-shadow-sm); /* Use theme variable */
     }
 
     table thead {
-        background-color: #f8f9fa;
+        background-color: var(--body-bg); /* Use theme variable */
         text-align: left;
     }
 
     table thead th {
         padding: 12px 15px;
-        border-bottom: 2px solid #dee2e6;
-        font-weight: bold;
+        border-bottom: 2px solid var(--border-color); /* Use theme variable */
+        font-weight: 600;
+        color: var(--text-color); /* Use theme variable */
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
     }
 
     table tbody tr {
-        border-bottom: 1px solid #dee2e6;
+        border-bottom: 1px solid var(--border-color); /* Use theme variable */
+    }
+    table tbody tr:last-child {
+        border-bottom: none;
     }
 
-    table tbody tr:nth-child(even) {
-        background-color: #f9f9f9; /* Alternating row colors */
-    }
+    /* table tbody tr:nth-child(even) { background-color: #f9f9f9; } */ /* Optional: remove for cleaner look if card has bg */
 
     table tbody tr:hover {
-        background-color: #f1f1f1; /* Highlight row on hover */
+        background-color: #f5f7f8; /* Use theme variable or a very light hover */
     }
 
     table tbody td {
         padding: 10px 15px;
+        vertical-align: middle;
     }
 
     /* Style the action links */
-    table tbody td a {
-        color: #007bff;
+    table tbody td a.button-small { /* Target specific action buttons */
+        /* color: var(--primary-color); Use button styles */
         text-decoration: none;
         margin-right: 10px;
+        padding: .375rem .75rem; /* Smaller padding for action buttons */
+        font-size: 0.85rem;
     }
+    table tbody td a.button-edit { background-color: var(--secondary-color); border-color: var(--secondary-color); }
+    table tbody td a.button-edit:hover { background-color: var(--secondary-color-darker); border-color: var(--secondary-color-darker); }
 
-    table tbody td a:hover {
-        text-decoration: underline;
+    .actions-column {
+        text-align: right; /* Align actions to the right */
+        white-space: nowrap;
     }
 
     /* Pagination styles */
@@ -198,19 +222,19 @@ $pagedJobs = array_slice($filteredJobs, $startIndex, $jobsPerPage);
         margin: 0 5px;
         padding: 8px 12px;
         text-decoration: none;
-        color: #007bff;
-        border: 1px solid #ddd;
-        border-radius: 4px;
+        color: var(--primary-color); /* Use theme variable */
+        border: 1px solid var(--border-color); /* Use theme variable */
+        border-radius: var(--border-radius); /* Use theme variable */
     }
 
     .pagination a.active {
-        background-color: #007bff;
+        background-color: var(--primary-color); /* Use theme variable */
         color: #fff;
-        border-color: #007bff;
+        border-color: var(--primary-color); /* Use theme variable */
     }
 
     .pagination a:hover {
-        background-color: #0056b3;
+        background-color: var(--primary-color-darker); /* Use theme variable */
         color: #fff;
     }
 
@@ -232,13 +256,13 @@ $pagedJobs = array_slice($filteredJobs, $startIndex, $jobsPerPage);
     }
 
     .modal-content {
-        background-color: #fefefe;
+        background-color: var(--card-bg); /* Use theme variable */
         margin: auto;
         padding: 20px;
-        border: 1px solid #888;
+        border: 1px solid var(--border-color); /* Use theme variable */
         width: 90%;
         max-width: 600px;
-        border-radius: 8px;
+        border-radius: var(--border-radius); /* Use theme variable */
         box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         position: relative;
         display: flex;
@@ -247,10 +271,10 @@ $pagedJobs = array_slice($filteredJobs, $startIndex, $jobsPerPage);
         overflow-y: auto; /* Add scroll to modal content */
     }
 
-    .modal-content h3 {
+    .modal-title { /* For h3 inside modal */
         margin-top: 0;
-        color: #005fa3;
-        border-bottom: 1px solid #eee;
+        color: var(--primary-color-darker); /* Use theme variable */
+        border-bottom: 1px solid var(--border-color); /* Use theme variable */
         padding-bottom: 10px;
         margin-bottom: 15px;
     }
@@ -280,134 +304,118 @@ $pagedJobs = array_slice($filteredJobs, $startIndex, $jobsPerPage);
 
 
     /* Styles for elements *within* the loaded form */
-    /* These styles target elements inside the container where the form is loaded */
+    /* These styles target elements inside #postJobFormContainer */
     #postJobFormContainer label {
         display: block;
-        margin-bottom: 5px;
-        font-weight: bold;
+        margin-bottom: .5rem;
+        font-weight: 500; color: var(--text-color-light); /* Match global form label */
     }
 
     #postJobFormContainer input[type="text"],
     #postJobFormContainer input[type="email"],
     #postJobFormContainer input[type="number"],
-    #postJobFormContainer textarea {
-        width: calc(100% - 18px); /* Adjust for padding and border */
-        padding: 8px;
-        margin-bottom: 15px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
+    #postJobFormContainer input[type="password"], /* Added for completeness */
+    #postJobFormContainer textarea,
+    #postJobFormContainer select { /* Added for completeness */
+        /* Fully align with global form input styles from header.php */
+        display: block;
+        width: 100%;
+        padding: .5rem .75rem;
+        font-size: 0.95rem;
+        font-weight: 400; /* Match global */
+        line-height: 1.5; /* Match global */
+        color: var(--text-color); /* Match global */
+        background-color: #fff; /* Match global */
+        background-clip: padding-box; /* Match global */
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius);
+        appearance: none; /* Match global */
+        transition: border-color .2s ease-in-out, box-shadow .2s ease-in-out; /* Match global */
+        margin-bottom: 1rem;
     }
-
-    #postJobFormContainer button[type="submit"] {
-        background-color: #007bff;
+    #postJobFormContainer input:focus,
+    #postJobFormContainer textarea:focus,
+    #postJobFormContainer select:focus { /* Added focus styles */
+        border-color: var(--primary-color-lighter);
+        outline: 0;
+        box-shadow: 0 0 0 .2rem var(--primary-color-lighter);
+    }
+    #postJobFormContainer button[type="submit"] { /* Match global .button style */
+        display: inline-block;
+        font-weight: 500;
         color: white;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 4px;
+        text-align: center;
+        background-color: var(--primary-color);
+        border: 1px solid var(--primary-color);
+        padding: .5rem 1rem;
+        font-size: 0.9rem;
+        line-height: 1.5;
+        border-radius: var(--border-radius);
+        text-decoration: none;
         cursor: pointer;
-        font-size: 1em;
-        margin-top: 10px; /* Add some space above the submit button */
+        margin-top: 10px;
     }
-
     #postJobFormContainer button[type="submit"]:hover {
-        background-color: #0056b3;
+        background-color: var(--primary-color-darker);
+        border-color: var(--primary-color-darker);
     }
 
-    /* Add styles for any status messages within the form if job_actions returns HTML with messages */
-    /* Or rely on the main page status area if job_actions redirects */
-     .status-message { /* Reuse status message styles if defined globally */
-         padding: 10px;
-         margin-bottom: 10px;
-         border-radius: 4px;
-         font-weight: bold;
-     }
-
-     .status-message.success {
-         background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb;
-     }
-     .status-message.error {
-         background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb;
-     }
-
-    .button {
-        background-color: #007bff;
-        color: white;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 1rem;
-    }
-
-    .button:hover {
-        background-color: #0056b3;
-    }
+    /* .button is styled globally in header.php */
 
     /* Search and Filter Form */
     .search-filter-form {
         display: flex;
-        gap: 8px;
+        gap: 10px; /* Increased gap */
         align-items: center;
     }
 
-    .search-input, .filter-input {
-        padding: 6px 8px; /* Smaller padding */
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        font-size: 0.85rem; /* Smaller font size */
-        width: 120px; /* Small width */
+    .form-input-control { /* Class for search/filter inputs to match global form style */
+        padding: .5rem .75rem;
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius);
+        font-size: 0.9rem; /* Consistent font size */
     }
+    .search-input { width: 180px; } /* Specific width for search */
+    .filter-input { width: 130px; } /* Specific width for date filters */
 
-    .filter-button {
-        background-color: #007bff;
-        color: white;
-        padding: 6px 12px; /* Smaller padding */
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 0.85rem; /* Smaller font size */
-        transition: background-color 0.3s ease;
-    }
-
-    .filter-button:hover {
-        background-color: #0056b3;
+    .filter-button { /* Match global .button.button-secondary */
+        /* padding: 6px 12px; font-size: 0.85rem; */ /* Already styled by .button */
     }
 
     /* Post New Job Button */
-    .post-job-btn {
-        background-color: #28a745; /* Professional green color */
-        color: white;
-        padding: 8px 15px; /* Smaller padding */
-        border: none;
-        border-radius: 5px; /* Rounded corners */
-        cursor: pointer;
-        font-size: 0.85rem; /* Smaller font size */
-        font-weight: bold;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
-        transition: all 0.3s ease; /* Smooth transition for hover effects */
+    .post-new-job-button { /* Match global .button style, potentially with a success color */
+        /* background-color: var(--success-color); 
+           border-color: var(--success-color); */
+        /* Default .button style is primary, which is fine too */
+        font-weight: 500; /* Ensure consistent weight */
     }
-
-    .post-job-btn:hover {
-        background-color: #218838; /* Darker green on hover */
-        box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15); /* Slightly larger shadow */
-        transform: translateY(-2px); /* Lift the button slightly */
-    }
-
-    .post-job-btn:active {
-        background-color: #1e7e34; /* Even darker green when clicked */
-        box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2); /* Smaller shadow */
-        transform: translateY(1px); /* Push the button down slightly */
+    .post-new-job-button:hover {
+        /* background-color: var(--success-color-darker); 
+           border-color: var(--success-color-darker); */
     }
 
     /* Responsive Design for Search and Filter Section */
-    @media (max-width: 768px) {
-        .search-filter-form {
-            flex-wrap: wrap; /* Allow wrapping on smaller screens */
-            gap: 10px;
+    @media (max-width: 992px) { /* Adjust breakpoint if needed */
+        .manage-jobs-header {
+            flex-direction: column;
+            align-items: flex-start;
         }
-
-        .search-input, .filter-input, .filter-button, .post-job-btn {
+        .search-filter-form {
+            flex-wrap: wrap; 
+            width: 100%; /* Take full width on smaller screens */
+        }
+        .search-input, .filter-input, .filter-button, .post-new-job-button {
+            width: calc(50% - 5px); /* Two items per row approx */
+            margin-bottom: 10px;
+        }
+        .search-input { width: 100%; } /* Search full width */
+    }
+    @media (max-width: 768px) {
+        .search-input, .filter-input, .filter-button, .post-new-job-button {
             width: 100%; /* Full width for smaller screens */
+        }
+        .optional-column {
+            display: none; /* Hide less critical columns on small screens */
         }
     }
 </style>
@@ -429,6 +437,7 @@ $pagedJobs = array_slice($filteredJobs, $startIndex, $jobsPerPage);
             .then(response => response.text())
             .then(html => {
                 postJobFormContainer.innerHTML = html;
+                // If the loaded form has its own JS, it might need re-execution or specific handling
             })
             .catch(error => {
                 console.error('Error loading job post form:', error);
@@ -446,6 +455,16 @@ $pagedJobs = array_slice($filteredJobs, $startIndex, $jobsPerPage);
     }
 
     // Add event listeners for the button and modal close
-    document.getElementById('postNewJobBtn').addEventListener('click', openPostJobModal);
+    // The button with id="postNewJobBtn" was removed in favor of a direct link.
+    // If you reinstate a button with that ID, uncomment the next line.
+    // document.getElementById('postNewJobBtn').addEventListener('click', openPostJobModal); 
     document.getElementById('closePostJobModal').addEventListener('click', closePostJobModal);
+
+    // Close modal if clicked outside of modal-content
+    window.addEventListener('click', function(event) {
+        const postJobModal = document.getElementById('postJobModal');
+        if (event.target == postJobModal) {
+            closePostJobModal();
+        }
+    });
 </script>

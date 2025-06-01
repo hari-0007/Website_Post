@@ -69,7 +69,7 @@ $displayTotalMessagesCount = count($feedbackMessages);
 ?>
 
 <div class="dashboard-content">
-    <!-- <h3>Dashboard Overview</h3> -->
+    <h2 class="dashboard-main-title">Dashboard Overview</h2> <!-- Changed from h3 to h2 for semantic hierarchy, styled below -->
     <?php
     if (!($loggedInUserRole === 'super_admin' || in_array($loggedInUserRole, $allRegionalAdminRoles ?? []))) {
         echo "<p class='user-specific-stats-note'><em>Displaying job statistics for posts made by you.</em></p>";
@@ -394,14 +394,14 @@ if ($shouldLoadChartJsForOverview): ?>
 
 <style>
     /* Add or ensure these styles are in your admin_styles.css or embedded here */
-    .dashboard-content > h3 { /* Main Dashboard Title */
+    .dashboard-main-title { /* Styles for the main H2 title of the overview page */
         margin-top: 0;
-        margin-bottom: 20px;
-        color: #005fa3;
-        font-size: 1.8rem;
-        font-weight: 500;
-        padding-bottom: 10px;
-        border-bottom: 1px solid #e0e0e0;
+        margin-bottom: 25px; /* Consistent with h2 global style */
+        color: var(--primary-color); /* Use theme primary color */
+        font-size: 1.75em; /* Slightly larger for main page title */
+        font-weight: 600;
+        padding-bottom: 15px; /* Consistent padding */
+        border-bottom: 2px solid var(--primary-color-lighter); /* Consistent border */
     }
     .user-specific-stats-note {
         font-style: italic;
@@ -411,17 +411,17 @@ if ($shouldLoadChartJsForOverview): ?>
     }
     
     .dashboard-section {
-        background-color: #ffffff; /* Cleaner white background for sections */
-        padding: 20px; /* Increased padding */
-        border: 1px solid #e0e0e0; /* Softer border */
-        border-radius: 6px; /* Slightly more rounded */
+        background-color: var(--card-bg); 
+        padding: 20px; 
+        border: 1px solid var(--border-color); 
+        border-radius: var(--border-radius); 
         box-shadow: 0 2px 4px rgba(0,0,0,0.05); /* Subtle shadow for depth */
         margin-bottom: 20px;
     }
     .dashboard-section h4 {
         margin-top: 0;
         margin-bottom: 10px;
-        color: #005fa3;
+        color: var(--text-color-light); /* Use a lighter text color for section headers */
         font-size: 1.1rem; /* Consistent font size for section titles */
         font-weight: 500; 
         padding-bottom: 10px; /* Add padding below title */
@@ -434,7 +434,7 @@ if ($shouldLoadChartJsForOverview): ?>
     }
     .compact-list li, .activity-list li, .info-list li {
         padding: 5px 0;
-        border-bottom: 1px dashed #eee;
+        border-bottom: 1px dashed var(--border-color); /* Use theme border color */
         font-size: 0.95rem; /* Slightly larger for readability */
     }
     .activity-list li {
@@ -444,7 +444,7 @@ if ($shouldLoadChartJsForOverview): ?>
         transition: background-color 0.2s ease-in-out; /* Smooth hover transition */
     }
     .activity-list li:hover {
-        background-color: #f9f9f9; /* Subtle hover background */
+        background-color: var(--body-bg); /* Subtle hover background using theme color */
     }
     .compact-list li:last-child, .activity-list li:last-child, .info-list li:last-child {
         border-bottom: none;
@@ -452,7 +452,7 @@ if ($shouldLoadChartJsForOverview): ?>
     .activity-list small {
         display: block;
         color: #555; /* Slightly darker for better contrast */
-        font-size: 0.85em; /* Slightly larger small text */
+        font-size: 0.8em; /* Standard small text */
         margin-top: 4px; /* Space below the main text line */
     }
     .dashboard-columns {
@@ -466,7 +466,7 @@ if ($shouldLoadChartJsForOverview): ?>
         min-width: 300px; /* Minimum width before wrapping */
     }
     .activity-list li strong {
-        color: #333; /* Darker text for primary information */
+        color: var(--text-color); /* Use theme text color */
         font-weight: 500; /* Ensure good emphasis */
     }
     .user-performance-section h4, .leaderboard-section h4, .most-viewed-jobs-section h4, .most-shared-jobs-section h4, .server-info-section h4, .server-monitoring-charts h4 {
@@ -487,15 +487,15 @@ if ($shouldLoadChartJsForOverview): ?>
     .performance-column {
         flex: 1;
         min-width: 200px; /* Adjust as needed */
-        background: #f9f9f9;
+        background: var(--body-bg); /* Use theme body background */
         padding: 10px;
-        border-radius: 4px;
+        border-radius: var(--border-radius);
     }
     .performance-column h5 {
         margin-top: 0;
         margin-bottom: 8px;
         font-size: 0.95rem; /* Slightly smaller for sub-sections */
-        color: #444; /* Softer color */
+        color: var(--text-color-light); /* Softer color */
         font-weight: 500;
     }
     .performance-list {
@@ -522,7 +522,7 @@ if ($shouldLoadChartJsForOverview): ?>
         justify-content: space-between;
         align-items: center;
         padding: 12px 5px 12px 0; /* Vertical padding, right padding for content, no left (handled by number) */
-        border-bottom: 1px solid #f0f0f0; /* Lighter separator */
+        border-bottom: 1px solid var(--border-color); /* Use theme border color */
         font-size: 0.95rem;
         transition: background-color 0.2s ease-in-out;
         line-height: 1.4;
@@ -542,23 +542,23 @@ if ($shouldLoadChartJsForOverview): ?>
 
     .leaderboard-list li:hover {
         background-color: #f8f9fa; /* Light hover effect */
+        /* Or use var(--body-bg) for consistency if desired */
     }
 
     .leaderboard-name {
         flex-grow: 1;
         margin-right: 10px; /* Space between name and count badge */
-        color: #343a40; /* Darker text for title */
+        color: var(--text-color); 
         font-weight: 500;
     }
 
     .leaderboard-name small {
         display: block; /* Company on a new line */
         font-size: 0.85em;
-        color: #6c757d; /* Muted color for company */
+        color: var(--text-muted); /* Muted color for company */
         margin-top: 4px;
         font-weight: 400; /* Normal weight for company */
     }
-
     .leaderboard-count {
         font-size: 0.88em; /* Slightly smaller, clear text */
         font-weight: 600;
@@ -575,16 +575,16 @@ if ($shouldLoadChartJsForOverview): ?>
         padding: 6px 12px;
         font-size: 0.85em;
         color: #fff;
-        background-color: #007bff; /* Primary button color */
+        background-color: var(--primary-color); /* Use theme primary color */
         border: none;
-        border-radius: 4px;
+        border-radius: var(--border-radius);
         text-decoration: none;
         text-align: center;
         cursor: pointer;
         transition: background-color 0.2s ease-in-out;
         white-space: nowrap;
         flex-shrink: 0; /* Prevent button from shrinking */
-    }
+    }    
     .leaderboard-action-button:hover {
         background-color: #0056b3; /* Darker shade on hover */
         color: #fff;
@@ -600,38 +600,38 @@ if ($shouldLoadChartJsForOverview): ?>
 
     .stat-card {
         padding: 15px;
-        background-color: #ffffff;
-        border: 1px solid #e0e0e0;
-        border-radius: 6px;
+        background-color: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius);
         text-align: center;
         box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     }
-    .stat-card.status-pending { background-color: #fff8e1; border-left: 5px solid #ffc107; }
-    .stat-card.status-pending p { color: #c77c00; }
-    .stat-card.status-active { background-color: #e8f5e9; border-left: 5px solid #4caf50; }
-    .stat-card.status-active p { color: #388e3c; }
-    .stat-card.status-disabled { background-color: #fce4ec; border-left: 5px solid #e91e63; }
-    .stat-card.status-disabled p { color: #ad1457; }
+    .stat-card.status-pending { background-color: var(--warning-bg); border-left: 4px solid var(--warning-color); }
+    .stat-card.status-pending p { color: var(--warning-text); }
+    .stat-card.status-active { background-color: var(--success-bg); border-left: 4px solid var(--success-color); }
+    .stat-card.status-active p { color: var(--success-text); }
+    .stat-card.status-disabled { background-color: var(--error-bg); border-left: 4px solid var(--error-color); } /* Using error for disabled for strong visual cue */
+    .stat-card.status-disabled p { color: var(--error-text); }
 
     .stat-card h4 {
         margin-top: 0;
         margin-bottom: 10px;
         font-size: 1rem; 
-        color: #555;
+        color: var(--text-muted); /* Use muted text for stat card titles */
     }
 
     .stat-card p {
         font-size: 1.8rem; /* Larger font for the number */
         font-weight: bold;
-        color: #007bff; /* Primary color */
+        color: var(--text-color); /* Use standard text color for numbers, status cards have colored text */
         margin: 0;
     }
 
     .chart-container {
         margin-top: 20px;
         padding: 15px;
-        background-color: #ffffff;
-        border: 1px solid #e0e0e0;
+        background-color: var(--card-bg);
+        border: 1px solid var(--border-color);
         border-radius: 6px;
         box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     }
@@ -643,16 +643,16 @@ if ($shouldLoadChartJsForOverview): ?>
     .chart-container h3 {
         margin-top: 0;
         margin-bottom: 15px;
-        font-size: 1.15rem; /* Adjusted title for charts */
-        color: #444;
-        border-bottom: 1px solid #eee;
+        font-size: 1.2em; /* Consistent with other sub-section titles */
+        color: var(--text-color-light);
+        border-bottom: 1px solid var(--border-color);
         padding-bottom: 10px;
         font-weight: 500;
     }
 
     /* Ensure canvas has a defined height if maintainAspectRatio is false */
     #visitorsChart, #jobPostsChart, #serverCpuChart, #serverMemoryChart {
-        height: 300px !important; /* Example height, !important to override potential conflicts */
+        height: 280px !important; /* Slightly reduced default chart height */
         width: 100% !important;
     }
     .no-data-message {

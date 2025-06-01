@@ -17,7 +17,7 @@ $displayTotalJobsCount = count($allJobs);
 $shouldLoadChartJsForJobStats = !empty($graphLabels) && !empty($graphData);
 ?>
 <div class="dashboard-content job-stats-view-content">
-    <h3>Job Statistics</h3>
+    <h2 class="view-main-title">Job Statistics</h2>
 
     <div class="stats-grid">
         <div class="stat-card">
@@ -44,23 +44,38 @@ $shouldLoadChartJsForJobStats = !empty($graphLabels) && !empty($graphData);
 
     <?php if ($shouldLoadChartJsForJobStats): ?>
     <div class="dashboard-section">
-        <h4>Daily Job Posts (Last 30 Days)</h4>
+        <h4 class="section-title">Daily Job Posts (Last 30 Days)</h4>
         <div class="chart-container" style="height: 350px;">
             <canvas id="jobStatsPostsChart"></canvas>
         </div>
     </div>
     <?php else: ?>
     <div class="dashboard-section">
-        <p class="no-data-message">No daily job posting data available to display a chart.</p>
+        <h4 class="section-title">Daily Job Posts (Last 30 Days)</h4>
+        <p class="no-data-message">No data available to display chart.</p>
     </div>
     <?php endif; ?>
 
-    </div>
 </div>
 
 <style>
-    .job-stats-view-content h3 {
-        color: #005fa3; margin-top: 0; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #e0e0e0;
+    .view-main-title { /* Consistent main title for views */
+        margin-top: 0;
+        margin-bottom: 25px;
+        color: var(--primary-color);
+        font-size: 1.75em;
+        font-weight: 600;
+        padding-bottom: 15px;
+        border-bottom: 2px solid var(--primary-color-lighter);
+    }
+    .section-title { /* Consistent section titles */
+        margin-top: 0;
+        margin-bottom: 15px;
+        color: var(--text-color-light);
+        font-size: 1.2em;
+        font-weight: 500;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--border-color);
     }
     /* .stats-grid, .stat-card, .dashboard-section, .chart-container, .no-data-message, .data-table
        are assumed to be styled globally or in dashboard_overview_view.php styles */
@@ -84,8 +99,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 datasets: [{
                     label: 'Daily Job Posts',
                     data: jobGraphData,
-                    backgroundColor: 'rgba(40, 167, 69, 0.7)',
-                    borderColor: 'rgba(40, 167, 69, 1)',
+                    backgroundColor: 'rgba(59, 130, 246, 0.6)', /* Using a shade of primary blue */
+                    borderColor: 'rgba(59, 130, 246, 1)',
                     borderWidth: 1
                 }]
             },

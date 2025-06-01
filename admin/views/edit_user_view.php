@@ -52,7 +52,7 @@ $isEditingSelf = ($loggedInUsername === $targetUsername);
 ?>
 
 <div class="form-container">
-    <h3>Edit User (Email: <?php echo htmlspecialchars($targetUsername); ?>)</h3>
+    <h2 class="view-main-title edit-user-title">Edit User: <span class="username-highlight"><?php echo htmlspecialchars($targetUsername); ?></span></h2>
 
     <form action="user_actions.php" method="POST" id="editUserForm">
         <input type="hidden" name="action" value="update_user">
@@ -60,23 +60,23 @@ $isEditingSelf = ($loggedInUsername === $targetUsername);
 
         <div class="form-group">
             <label for="display_name">Display Name:</label>
-            <input type="text" id="display_name" name="display_name" value="<?php echo htmlspecialchars($targetDisplayName); ?>" required>
+            <input type="text" id="display_name" name="display_name" value="<?php echo htmlspecialchars($targetDisplayName); ?>" required class="form-control">
         </div>
 
         <div class="form-group">
             <label for="password">New Password (optional):</label>
-            <input type="password" id="password" name="password" placeholder="Leave blank to keep current password">
+            <input type="password" id="password" name="password" placeholder="Leave blank to keep current password" class="form-control">
         </div>
 
         <div class="form-group">
             <label for="confirm_password">Confirm New Password:</label>
-            <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm if changing password">
+            <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm if changing password" class="form-control">
         </div>
 
         <?php if ($canChangeRole && !$isEditingSelf): // Users cannot change their own role via this form ?>
             <div class="form-group">
                 <label for="role">Role:</label>
-                <select id="role" name="role">
+                <select id="role" name="role" class="form-control">
                     <?php foreach ($allPossibleRoles as $roleValue): ?>
                         <?php
                         // Determine if this role option should be enabled/disabled
@@ -119,9 +119,10 @@ $isEditingSelf = ($loggedInUsername === $targetUsername);
             <input type="hidden" name="role" value="<?php echo htmlspecialchars($targetRole); ?>">
             <p>Role: <?php echo htmlspecialchars(ucfirst(str_replace('_', ' ', $targetRole))); ?> (Cannot be changed here<?php echo $isEditingSelf ? ' for self' : ''; ?>)</p>
         <?php endif; ?>
-
-        <button type="submit" class="button">Update User</button>
-        <a href="dashboard.php?view=manage_users" class="button secondary">Cancel</a>
+        <div class="form-actions">
+            <button type="submit" class="button">Update User</button>
+            <a href="dashboard.php?view=manage_users" class="button button-secondary">Cancel</a>
+        </div>
     </form>
     <?php
     // --- User Status Toggle Section ---
@@ -144,22 +145,76 @@ $isEditingSelf = ($loggedInUsername === $targetUsername);
         $actionValue = $isCurrentlyActive ? 'deactivate_user_from_edit' : 'activate_user_from_edit';
         $buttonText = $isCurrentlyActive ? 'Deactivate User' : 'Activate User';
         $buttonClass = $isCurrentlyActive ? 'warning' : 'success';
+        // Use button-danger for deactivate, button-success for activate
+        $buttonThemeClass = $isCurrentlyActive ? 'button-danger' : 'button-success';
     ?>
-    <div class="form-container" style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 20px;">
-        <h4>User Account Status</h4>
+    <div class="user-status-section" style="margin-top: 30px; border-top: 1px solid var(--border-color); padding-top: 20px;">
+        <h4 class="section-title-minor">User Account Status</h4>
         <p>Current Status: <span class="status-badge status-<?= strtolower(htmlspecialchars($targetStatus)) ?>"><?= htmlspecialchars(ucfirst(str_replace('_', ' ', $targetStatus))) ?></span></p>
         <form action="user_actions.php" method="POST" id="toggleUserStatusForm">
             <input type="hidden" name="action" value="<?= $actionValue ?>">
             <input type="hidden" name="username_to_toggle" value="<?php echo htmlspecialchars($targetUsername); ?>">
             <input type="hidden" name="redirect_to_edit" value="true"> <?php // To redirect back to this edit page ?>
-            <button type="submit" class="button <?= $buttonClass ?>"><?= $buttonText ?></button>
+            <button type="submit" class="button <?= $buttonThemeClass ?>"><?= $buttonText ?></button>
         </form>
     </div>
     <?php elseif ($isEditingSelf): ?>
-        <p style="margin-top: 20px;">Current Status: <span class="status-badge status-<?= strtolower(htmlspecialchars($targetStatus)) ?>"><?= htmlspecialchars(ucfirst(str_replace('_', ' ', $targetStatus))) ?></span> (Cannot change own status)</p>
+        <div class="user-status-section" style="margin-top: 30px; border-top: 1px solid var(--border-color); padding-top: 20px;">
+            <h4 class="section-title-minor">User Account Status</h4>
+            <p>Current Status: <span class="status-badge status-<?= strtolower(htmlspecialchars($targetStatus)) ?>"><?= htmlspecialchars(ucfirst(str_replace('_', ' ', $targetStatus))) ?></span> (Cannot change own status)</p>
+        </div>
     <?php elseif (in_array($targetStatus, ['active', 'disabled', 'inactive'])): ?>
-        <p style="margin-top: 20px;">Current Status: <span class="status-badge status-<?= strtolower(htmlspecialchars($targetStatus)) ?>"><?= htmlspecialchars(ucfirst(str_replace('_', ' ', $targetStatus))) ?></span></p>
+        <div class="user-status-section" style="margin-top: 30px; border-top: 1px solid var(--border-color); padding-top: 20px;">
+            <h4 class="section-title-minor">User Account Status</h4>
+            <p>Current Status: <span class="status-badge status-<?= strtolower(htmlspecialchars($targetStatus)) ?>"><?= htmlspecialchars(ucfirst(str_replace('_', ' ', $targetStatus))) ?></span></p>
+        </div>
     <?php endif; ?>
 
 </div>
-</div>
+
+<style>
+    .view-main-title.edit-user-title { /* Specific for this view's title */
+        margin-top: 0;
+        margin-bottom: 25px;
+        color: var(--primary-color);
+        font-size: 1.75em;
+        font-weight: 600;
+        padding-bottom: 15px;
+        border-bottom: 2px solid var(--primary-color-lighter);
+    }
+    .edit-user-title .username-highlight {
+        color: var(--text-color-light); /* Softer color for the username part */
+        font-weight: 500;
+    }
+    .form-container { /* Main container for the form */
+        /* Styles for .form-container can be inherited if it's similar to .post-job-container,
+           or defined here if it needs to be distinct. Assuming it's similar to .post-job-container. */
+        max-width: 600px;
+        margin: 20px auto;
+        padding: 25px;
+        background-color: var(--card-bg);
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+    }
+    /* Form elements will inherit global styles from header.php if they have class="form-control" or similar,
+       or if targeted by form input[type=...] selectors. */
+    .form-group { margin-bottom: 1rem; }
+    .form-control { /* Add this class to your inputs/selects to pick up global styles */
+        /* This class is a placeholder; global styles in header.php should target input types directly */
+    }
+    .form-actions {
+        margin-top: 1.5rem;
+        display: flex;
+        gap: 10px;
+    }
+    .section-title-minor { /* For sub-headings like "User Account Status" */
+        font-size: 1.1em;
+        color: var(--text-color-light);
+        margin-bottom: 0.75rem;
+        font-weight: 500;
+    }
+    /* Status badge styles are assumed to be global or defined in reported_jobs_view.php */
+    .status-badge.status-active { background-color: var(--success-color); }
+    .status-badge.status-disabled, .status-badge.status-inactive { background-color: var(--error-color); }
+    .status-badge.status-pending-approval { background-color: var(--warning-color); color: #fff; }
+</style>

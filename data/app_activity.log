@@ -1955,3 +1955,505 @@
 [2025-05-31 09:19:47] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'messages' view.
 [2025-05-31 09:19:48] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'messages'.
 [2025-05-31 09:19:48] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'messages' view.
+[2025-05-31 09:24:42] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'messages'.
+[2025-05-31 09:24:42] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'messages' view.
+[2025-05-31 09:24:53] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'whatsapp_profile'.
+[2025-05-31 09:24:53] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'whatsapp_profile' view.
+[2025-05-31 09:25:04] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'reported_jobs'.
+[2025-05-31 09:25:04] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'reported_jobs' view.
+[2025-05-31 09:25:07] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'messages'.
+[2025-05-31 09:25:07] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'messages' view.
+[2025-05-31 09:26:07] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'reported_jobs'.
+[2025-05-31 09:26:07] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'reported_jobs' view.
+[2025-05-31 09:26:12] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-05-31 09:26:20] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'messages'.
+[2025-05-31 09:26:20] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'messages' view.
+[2025-06-01 06:00:53] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'reported_jobs'.
+[2025-06-01 06:00:53] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'reported_jobs' view.
+[2025-06-01 06:03:03] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'generate_message'.
+[2025-06-01 06:03:06] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'logs'.
+[2025-06-01 06:03:07] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'logs' view.
+[2025-06-01 06:03:17] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'logs'.
+[2025-06-01 06:03:27] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'logs'.
+[2025-06-01 06:03:37] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'logs'.
+[2025-06-01 06:03:47] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'logs'.
+[2025-06-01 06:03:57] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'logs'.
+[2025-06-01 06:04:07] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'logs'.
+[2025-06-01 06:04:17] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'logs'.
+[2025-06-01 06:04:27] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'logs'.
+[2025-06-01 06:04:37] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'logs'.
+[2025-06-01 06:05:09] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'logs'.
+[2025-06-01 06:06:09] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'logs'.
+[2025-06-01 06:07:09] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'logs'.
+[2025-06-01 06:08:09] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'logs'.
+[2025-06-01 06:09:09] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'logs'.
+[2025-06-01 06:09:28] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'logs'.
+[2025-06-01 06:09:31] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-06-01 06:09:54] [AUTH_INFO] User 'suthan@jobhunt.top' logged out.
+[2025-06-01 06:09:57] [AUTH_SUCCESS] User 'suthan@jobhunt.top' logged in successfully. Role: 'super_admin'.
+[2025-06-01 06:09:57] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-06-01 06:11:57] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'profile'.
+[2025-06-01 06:11:57] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'profile' view.
+[2025-06-01 06:12:03] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'settings'.
+[2025-06-01 06:12:03] [INVALID_VIEW_ERROR] User 'suthan@jobhunt.top' attempted to access invalid view: 'settings'.
+[2025-06-01 06:13:59] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'settings'.
+[2025-06-01 06:13:59] [INVALID_VIEW_ERROR] User 'suthan@jobhunt.top' attempted to access invalid view: 'settings'.
+[2025-06-01 06:14:00] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'settings'.
+[2025-06-01 06:14:00] [INVALID_VIEW_ERROR] User 'suthan@jobhunt.top' attempted to access invalid view: 'settings'.
+[2025-06-01 06:14:12] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_service_one'.
+[2025-06-01 06:14:12] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_service_one' view.
+[2025-06-01 06:14:13] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-06-01 06:18:43] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-06-01 06:20:37] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-06-01 06:21:21] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-06-01 06:23:18] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-06-01 06:24:52] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-06-01 06:27:25] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-06-01 06:27:27] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-06-01 06:27:39] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-06-01 06:31:06] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'messages'.
+[2025-06-01 06:31:06] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'messages' view.
+[2025-06-01 06:33:07] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'messages'.
+[2025-06-01 06:33:07] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'messages' view.
+[2025-06-01 06:33:12] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-06-01 06:35:49] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-06-01 06:39:36] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-06-01 06:39:47] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'messages'.
+[2025-06-01 06:39:47] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'messages' view.
+[2025-06-01 06:44:15] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'messages'.
+[2025-06-01 06:44:15] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'messages' view.
+[2025-06-01 06:46:05] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'messages'.
+[2025-06-01 06:46:05] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'messages' view.
+[2025-06-01 06:46:58] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'messages'.
+[2025-06-01 06:46:58] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'messages' view.
+[2025-06-01 06:51:13] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'messages'.
+[2025-06-01 06:51:13] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'messages' view.
+[2025-06-01 06:51:23] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'messages'.
+[2025-06-01 06:51:23] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'messages' view.
+[2025-06-01 06:51:41] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'messages'.
+[2025-06-01 06:51:41] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'messages' view.
+[2025-06-01 06:55:57] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'messages'.
+[2025-06-01 06:55:57] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'messages' view.
+[2025-06-01 07:10:30] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'messages'.
+[2025-06-01 07:10:30] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'messages' view.
+[2025-06-01 07:10:34] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'messages'.
+[2025-06-01 07:10:34] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'messages' view.
+[2025-06-01 07:11:26] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'messages'.
+[2025-06-01 07:11:26] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'messages' view.
+[2025-06-01 07:31:14] [AUTH_SUCCESS] User 'suthan@jobhunt.top' logged in successfully. Role: 'super_admin'.
+[2025-06-01 07:31:14] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-06-01 07:37:27] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-06-01 07:37:28] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-06-01 07:37:54] [AUTH_SUCCESS] User 'suthan@jobhunt.top' logged in successfully. Role: 'super_admin'.
+[2025-06-01 07:37:54] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-06-01 07:40:45] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-06-01 07:42:53] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-06-01 07:44:18] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-06-01 07:45:17] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-06-01 07:46:43] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-06-01 07:46:45] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-06-01 07:49:33] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-06-01 07:50:54] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-06-01 07:53:39] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-06-01 07:55:21] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-06-01 07:55:53] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-06-01 07:56:59] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-06-01 07:59:12] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-06-01 08:00:35] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-06-01 08:01:04] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-06-01 08:01:11] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-06-01 08:03:33] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-06-01 08:03:40] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_service_one'.
+[2025-06-01 08:03:40] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_service_one' view.
+[2025-06-01 08:03:46] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_user_info'.
+[2025-06-01 08:03:46] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_user_info' view.
+[2025-06-01 08:03:46] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_service_two' view.
+[2025-06-01 08:03:47] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_job_stats'.
+[2025-06-01 08:03:47] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_job_stats' view.
+[2025-06-01 08:03:49] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_service_two'.
+[2025-06-01 08:03:49] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_service_two' view.
+[2025-06-01 08:03:54] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_visitors_info'.
+[2025-06-01 08:03:54] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_visitors_info' view.
+[2025-06-01 08:04:00] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-06-01 08:04:02] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'messages'.
+[2025-06-01 08:04:02] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'messages' view.
+[2025-06-01 08:04:09] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-06-01 08:04:23] [AUTH_INFO] User 'suthan@jobhunt.top' logged out.
+[2025-06-01 08:04:31] [AUTH_FAILURE] Failed login attempt for username/email: 'admin@jobhunt.top'
+[2025-06-01 08:04:34] [AUTH_SUCCESS] User 'suthan@jobhunt.top' logged in successfully. Role: 'super_admin'.
+[2025-06-01 08:04:34] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-06-01 08:06:01] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_qoe'.
+[2025-06-01 08:06:01] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_qoe' view.
+[2025-06-01 08:07:15] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_qoe'.
+[2025-06-01 08:07:15] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_qoe' view.
+[2025-06-01 08:07:26] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-06-01 08:08:48] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-06-01 08:09:53] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_visitors_info'.
+[2025-06-01 08:09:53] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_visitors_info' view.
+[2025-06-01 08:10:37] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_visitors_info'.
+[2025-06-01 08:10:37] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_visitors_info' view.
+[2025-06-01 08:10:39] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-06-01 08:14:50] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-06-01 08:14:55] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-06-01 08:15:23] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_visitors_info'.
+[2025-06-01 08:15:23] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_visitors_info' view.
+[2025-06-01 08:15:27] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-06-01 08:15:29] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_service_one'.
+[2025-06-01 08:15:29] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_service_one' view.
+[2025-06-01 08:15:30] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_user_info'.
+[2025-06-01 08:15:30] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_user_info' view.
+[2025-06-01 08:15:30] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_service_two' view.
+[2025-06-01 08:15:32] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_job_stats'.
+[2025-06-01 08:15:32] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_job_stats' view.
+[2025-06-01 08:15:33] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_service_two'.
+[2025-06-01 08:15:33] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_service_two' view.
+[2025-06-01 08:15:35] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_visitors_info'.
+[2025-06-01 08:15:35] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_visitors_info' view.
+[2025-06-01 08:15:36] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_qoe'.
+[2025-06-01 08:15:36] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_qoe' view.
+[2025-06-01 08:15:50] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'logs'.
+[2025-06-01 08:15:50] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'logs' view.
+[2025-06-01 08:16:00] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'logs'.
+[2025-06-01 08:16:03] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'generate_message'.
+[2025-06-01 08:16:05] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'achievements'.
+[2025-06-01 08:16:20] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_users'.
+[2025-06-01 08:16:20] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'manage_users' view.
+[2025-06-01 08:16:27] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-06-01 08:16:27] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-06-01 08:16:44] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-06-01 08:16:44] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-06-01 08:16:53] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'whatsapp_profile'.
+[2025-06-01 08:16:53] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'whatsapp_profile' view.
+[2025-06-01 08:16:56] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'profile'.
+[2025-06-01 08:16:56] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'profile' view.
+[2025-06-01 08:17:22] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'profile'.
+[2025-06-01 08:17:22] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'profile' view.
+[2025-06-01 08:17:25] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-06-01 08:17:38] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'reported_jobs'.
+[2025-06-01 08:17:38] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'reported_jobs' view.
+[2025-06-01 08:17:48] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'reported_jobs'.
+[2025-06-01 08:17:48] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'reported_jobs' view.
+[2025-06-01 08:17:51] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-06-01 08:18:12] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-06-01 08:18:25] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_service_one'.
+[2025-06-01 08:18:25] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_service_one' view.
+[2025-06-01 08:18:27] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-06-01 08:18:39] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-06-01 08:19:59] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-06-01 08:20:23] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-06-01 08:20:26] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_service_one'.
+[2025-06-01 08:20:26] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_service_one' view.
+[2025-06-01 08:20:35] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_service_one'.
+[2025-06-01 08:20:35] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_service_one' view.
+[2025-06-01 08:20:39] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-06-01 08:21:35] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-06-01 08:21:58] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_service_one'.
+[2025-06-01 08:21:58] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_service_one' view.
+[2025-06-01 08:22:04] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-06-01 08:22:05] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_service_one'.
+[2025-06-01 08:22:05] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_service_one' view.
+[2025-06-01 08:23:20] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_user_info'.
+[2025-06-01 08:23:20] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_user_info' view.
+[2025-06-01 08:23:20] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_service_two' view.
+[2025-06-01 08:23:22] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-06-01 08:24:11] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'messages'.
+[2025-06-01 08:24:11] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'messages' view.
+[2025-06-01 08:27:01] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'messages'.
+[2025-06-01 08:27:01] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'messages' view.
+[2025-06-01 08:27:05] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-06-01 08:27:07] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_service_one'.
+[2025-06-01 08:27:07] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_service_one' view.
+[2025-06-01 08:27:10] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_user_info'.
+[2025-06-01 08:27:10] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_user_info' view.
+[2025-06-01 08:27:10] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_service_two' view.
+[2025-06-01 08:27:17] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_user_info'.
+[2025-06-01 08:27:17] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_user_info' view.
+[2025-06-01 08:27:17] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_service_two' view.
+[2025-06-01 08:27:18] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_job_stats'.
+[2025-06-01 08:27:18] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_job_stats' view.
+[2025-06-01 08:27:23] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_service_two'.
+[2025-06-01 08:27:23] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_service_two' view.
+[2025-06-01 08:27:26] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_visitors_info'.
+[2025-06-01 08:27:26] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_visitors_info' view.
+[2025-06-01 08:27:40] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_qoe'.
+[2025-06-01 08:27:40] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_qoe' view.
+[2025-06-01 08:27:44] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_service_one'.
+[2025-06-01 08:27:44] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_service_one' view.
+[2025-06-01 08:27:45] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_user_info'.
+[2025-06-01 08:27:45] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_user_info' view.
+[2025-06-01 08:27:45] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_service_two' view.
+[2025-06-01 08:28:45] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_user_info'.
+[2025-06-01 08:28:45] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_user_info' view.
+[2025-06-01 08:28:45] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_service_two' view.
+[2025-06-01 08:28:46] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_user_info'.
+[2025-06-01 08:28:46] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_user_info' view.
+[2025-06-01 08:28:46] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_service_two' view.
+[2025-06-01 08:29:59] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_user_info'.
+[2025-06-01 08:29:59] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_user_info' view.
+[2025-06-01 08:29:59] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_service_two' view.
+[2025-06-01 08:30:03] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_user_info'.
+[2025-06-01 08:30:03] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_user_info' view.
+[2025-06-01 08:30:03] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_service_two' view.
+[2025-06-01 08:30:04] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_user_info'.
+[2025-06-01 08:30:04] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_user_info' view.
+[2025-06-01 08:30:04] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_service_two' view.
+[2025-06-01 08:30:05] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_service_one'.
+[2025-06-01 08:30:05] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_service_one' view.
+[2025-06-01 08:30:06] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_user_info'.
+[2025-06-01 08:30:06] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_user_info' view.
+[2025-06-01 08:30:06] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_service_two' view.
+[2025-06-01 08:30:21] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_user_info'.
+[2025-06-01 08:30:21] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_user_info' view.
+[2025-06-01 08:30:21] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_service_two' view.
+[2025-06-01 08:30:29] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_service_one'.
+[2025-06-01 08:30:29] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_service_one' view.
+[2025-06-01 08:30:30] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_user_info'.
+[2025-06-01 08:30:30] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_user_info' view.
+[2025-06-01 08:30:30] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_service_two' view.
+[2025-06-01 08:30:33] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_service_one'.
+[2025-06-01 08:30:33] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_service_one' view.
+[2025-06-01 08:30:35] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-06-01 08:30:36] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_service_one'.
+[2025-06-01 08:30:36] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_service_one' view.
+[2025-06-01 08:30:38] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_user_info'.
+[2025-06-01 08:30:38] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_user_info' view.
+[2025-06-01 08:30:38] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_service_two' view.
+[2025-06-01 08:30:39] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_job_stats'.
+[2025-06-01 08:30:39] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_job_stats' view.
+[2025-06-01 08:30:41] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_user_info'.
+[2025-06-01 08:30:41] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_user_info' view.
+[2025-06-01 08:30:41] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_service_two' view.
+[2025-06-01 08:31:25] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'messages'.
+[2025-06-01 08:31:25] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'messages' view.
+[2025-06-01 08:34:19] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-06-01 08:34:21] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_user_info'.
+[2025-06-01 08:34:21] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_user_info' view.
+[2025-06-01 08:34:21] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_service_two' view.
+[2025-06-01 08:38:18] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_user_info'.
+[2025-06-01 08:38:18] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_user_info' view.
+[2025-06-01 08:38:18] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_service_two' view.
+[2025-06-01 08:39:06] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_user_info'.
+[2025-06-01 08:39:06] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_user_info' view.
+[2025-06-01 08:39:06] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_service_two' view.
+[2025-06-01 08:41:19] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_user_info'.
+[2025-06-01 08:41:19] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_user_info' view.
+[2025-06-01 08:41:19] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_service_two' view.
+[2025-06-01 08:42:19] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-06-01 08:42:39] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-06-01 08:42:40] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_job_stats'.
+[2025-06-01 08:42:40] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_job_stats' view.
+[2025-06-01 08:42:41] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_user_info'.
+[2025-06-01 08:42:41] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_user_info' view.
+[2025-06-01 08:42:41] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_service_two' view.
+[2025-06-01 08:44:35] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_user_info'.
+[2025-06-01 08:44:35] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_user_info' view.
+[2025-06-01 08:44:35] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_service_two' view.
+[2025-06-01 08:44:38] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_service_one'.
+[2025-06-01 08:44:38] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_service_one' view.
+[2025-06-01 08:44:39] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_service_two'.
+[2025-06-01 08:44:39] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_service_two' view.
+[2025-06-01 08:44:40] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_visitors_info'.
+[2025-06-01 08:44:40] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_visitors_info' view.
+[2025-06-01 08:44:42] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_qoe'.
+[2025-06-01 08:44:42] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_qoe' view.
+[2025-06-01 08:44:49] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'messages'.
+[2025-06-01 08:44:49] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'messages' view.
+[2025-06-01 08:46:38] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-06-01 08:46:39] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_job_stats'.
+[2025-06-01 08:46:39] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_job_stats' view.
+[2025-06-01 08:46:40] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_user_info'.
+[2025-06-01 08:46:41] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_user_info' view.
+[2025-06-01 08:46:41] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_service_two' view.
+[2025-06-01 08:46:49] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_user_info'.
+[2025-06-01 08:46:49] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_user_info' view.
+[2025-06-01 08:46:49] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_service_two' view.
+[2025-06-01 08:46:50] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_service_one'.
+[2025-06-01 08:46:50] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_service_one' view.
+[2025-06-01 08:46:51] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_user_info'.
+[2025-06-01 08:46:51] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_user_info' view.
+[2025-06-01 08:46:51] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_service_two' view.
+[2025-06-01 08:48:58] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_user_info'.
+[2025-06-01 08:48:58] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_user_info' view.
+[2025-06-01 08:48:58] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_service_two' view.
+[2025-06-01 08:49:00] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_user_info'.
+[2025-06-01 08:49:00] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_user_info' view.
+[2025-06-01 08:49:00] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_service_two' view.
+[2025-06-01 08:50:15] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_user_info'.
+[2025-06-01 08:50:15] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_user_info' view.
+[2025-06-01 08:50:15] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_service_two' view.
+[2025-06-01 08:50:49] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_user_info'.
+[2025-06-01 08:50:49] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_user_info' view.
+[2025-06-01 08:50:49] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_service_two' view.
+[2025-06-01 08:51:03] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_user_info'.
+[2025-06-01 08:51:03] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_user_info' view.
+[2025-06-01 08:51:03] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_service_two' view.
+[2025-06-01 08:51:05] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_job_stats'.
+[2025-06-01 08:51:05] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_job_stats' view.
+[2025-06-01 08:51:06] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_service_two'.
+[2025-06-01 08:51:06] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_service_two' view.
+[2025-06-01 08:51:07] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_job_stats'.
+[2025-06-01 08:51:07] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_job_stats' view.
+[2025-06-01 08:51:10] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_service_one'.
+[2025-06-01 08:51:10] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_service_one' view.
+[2025-06-01 08:51:11] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_user_info'.
+[2025-06-01 08:51:11] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_user_info' view.
+[2025-06-01 08:51:11] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_service_two' view.
+[2025-06-01 08:51:16] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_job_stats'.
+[2025-06-01 08:51:16] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'dashboard_job_stats' view.
+[2025-06-01 08:51:19] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'messages'.
+[2025-06-01 08:51:19] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'messages' view.
+[2025-06-01 08:51:21] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-06-01 08:53:13] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-06-01 08:53:23] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'messages'.
+[2025-06-01 08:53:23] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'messages' view.
+[2025-06-01 08:56:31] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-06-01 08:57:19] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'messages'.
+[2025-06-01 08:57:19] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'messages' view.
+[2025-06-01 08:57:33] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-06-01 08:58:43] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-06-01 08:59:09] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-06-01 08:59:10] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-06-01 08:59:43] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-06-01 08:59:48] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-06-01 08:59:52] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-06-01 08:59:54] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-06-01 09:00:05] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'messages'.
+[2025-06-01 09:00:05] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'messages' view.
+[2025-06-01 09:00:08] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-06-01 09:00:11] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'edit_job'.
+[2025-06-01 09:00:15] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-06-01 09:00:22] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'edit_job'.
+[2025-06-01 09:00:24] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-06-01 09:01:01] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'messages'.
+[2025-06-01 09:01:01] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'messages' view.
+[2025-06-01 09:01:02] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-06-01 09:01:12] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-06-01 09:01:15] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-06-01 09:01:39] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'generate_message'.
+[2025-06-01 09:01:41] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'achievements'.
+[2025-06-01 09:01:42] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_users'.
+[2025-06-01 09:01:42] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'manage_users' view.
+[2025-06-01 09:01:48] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'reported_jobs'.
+[2025-06-01 09:01:48] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'reported_jobs' view.
+[2025-06-01 09:01:49] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-06-01 09:01:51] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-06-01 09:02:46] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-06-01 09:02:49] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'edit_job'.
+[2025-06-01 09:03:03] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-06-01 09:03:19] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-06-01 09:03:23] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_users'.
+[2025-06-01 09:03:23] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'manage_users' view.
+[2025-06-01 09:03:25] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-06-01 09:03:26] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'reported_jobs'.
+[2025-06-01 09:03:26] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'reported_jobs' view.
+[2025-06-01 09:03:27] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-06-01 09:04:12] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'reported_jobs'.
+[2025-06-01 09:04:12] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'reported_jobs' view.
+[2025-06-01 09:04:27] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_users'.
+[2025-06-01 09:04:27] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'manage_users' view.
+[2025-06-01 09:05:08] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-06-01 09:05:09] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-06-01 09:07:04] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-06-01 09:07:13] [AI_SUMMARY_SKIP] AI Summary generation skipped for job '14q': API Key is placeholder or empty.
+[2025-06-01 09:07:17] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job '14q'.
+[2025-06-01 09:07:17] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: '14q') ready for review. AI Summary generated (length: 2120).
+[2025-06-01 09:07:17] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-06-01 09:07:29] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-06-01 09:08:45] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-06-01 09:08:46] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-06-01 09:08:47] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-06-01 09:08:49] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'reported_jobs'.
+[2025-06-01 09:08:49] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'reported_jobs' view.
+[2025-06-01 09:09:16] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'reported_jobs'.
+[2025-06-01 09:09:16] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'reported_jobs' view.
+[2025-06-01 09:09:28] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_users'.
+[2025-06-01 09:09:28] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'manage_users' view.
+[2025-06-01 09:09:29] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'reported_jobs'.
+[2025-06-01 09:09:29] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'reported_jobs' view.
+[2025-06-01 09:09:33] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-06-01 09:09:35] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'reported_jobs'.
+[2025-06-01 09:09:35] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'reported_jobs' view.
+[2025-06-01 09:09:36] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_users'.
+[2025-06-01 09:09:36] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'manage_users' view.
+[2025-06-01 09:09:44] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'messages'.
+[2025-06-01 09:09:44] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'messages' view.
+[2025-06-01 09:10:15] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_users'.
+[2025-06-01 09:10:15] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'manage_users' view.
+[2025-06-01 09:10:32] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'reported_jobs'.
+[2025-06-01 09:10:32] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'reported_jobs' view.
+[2025-06-01 09:10:36] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_users'.
+[2025-06-01 09:10:36] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'manage_users' view.
+[2025-06-01 09:10:38] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'achievements'.
+[2025-06-01 09:10:46] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'generate_message'.
+[2025-06-01 09:10:49] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'logs'.
+[2025-06-01 09:10:49] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'logs' view.
+[2025-06-01 09:10:51] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-06-01 09:10:51] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-06-01 09:10:54] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'whatsapp_profile'.
+[2025-06-01 09:10:54] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'whatsapp_profile' view.
+[2025-06-01 09:10:56] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_users'.
+[2025-06-01 09:10:56] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'manage_users' view.
+[2025-06-01 09:11:41] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-06-01 09:11:48] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-06-01 09:11:49] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-06-01 09:11:56] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'reported_jobs'.
+[2025-06-01 09:11:56] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'reported_jobs' view.
+[2025-06-01 09:11:57] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_users'.
+[2025-06-01 09:11:57] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'manage_users' view.
+[2025-06-01 09:14:12] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'edit_user'.
+[2025-06-01 09:14:17] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_users'.
+[2025-06-01 09:14:17] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'manage_users' view.
+[2025-06-01 09:14:21] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'edit_user'.
+[2025-06-01 09:14:28] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_users'.
+[2025-06-01 09:14:28] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'manage_users' view.
+[2025-06-01 09:14:52] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-06-01 09:14:52] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-06-01 09:16:02] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'generate_message'.
+[2025-06-01 09:16:03] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'generate_message'.
+[2025-06-01 09:16:07] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-06-01 09:16:11] [AI_SUMMARY_SKIP] AI Summary generation skipped for job '14q': API Key is placeholder or empty.
+[2025-06-01 09:16:16] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job '14q'.
+[2025-06-01 09:16:16] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: '14q') ready for review. AI Summary generated (length: 2118).
+[2025-06-01 09:16:16] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-06-01 09:16:18] [JOB_POST_SUCCESS] Job ID '1748749578_1649' (Title: '14q') posted successfully by 'suthan@jobhunt.top'.
+[2025-06-01 09:16:20] [AI_IMAGE_ERROR] AI poster image generation FAILED for job ID '1748749578_1649'. Prompt: 'Create a professional and visually appealing poster for a job opening. Job Title: '14q'. Company: 'Allitson'. Location: ''. Key elements to convey: opportunity, growth, modern workplace. Style: Clean, corporate, with a touch of innovation. Dominant colors: blues, greys, with an accent color like teal or orange. Include abstract representations of collaboration or technology if appropriate. Avoid text clutter.'
+[2025-06-01 09:16:20] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-06-01 09:16:33] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'generate_message'.
+[2025-06-01 09:16:33] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'generate_message' view. WhatsApp generated: Yes. Telegram generated: Yes.
+[2025-06-01 09:17:30] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'generate_message'.
+[2025-06-01 09:17:30] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'generate_message' view. WhatsApp generated: Yes. Telegram generated: Yes.
+[2025-06-01 09:18:29] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'logs'.
+[2025-06-01 09:18:29] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'logs' view.
+[2025-06-01 09:18:36] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_users'.
+[2025-06-01 09:18:36] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'manage_users' view.
+[2025-06-01 09:18:44] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'edit_user'.
+[2025-06-01 09:18:48] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_users'.
+[2025-06-01 09:18:48] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'manage_users' view.
+[2025-06-01 09:18:55] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-06-01 09:18:55] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-06-01 09:19:00] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'achievements'.
+[2025-06-01 09:19:02] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-06-01 09:19:07] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'achievements'.
+[2025-06-01 09:20:30] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-06-01 09:20:38] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-06-01 09:20:40] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-06-01 09:21:05] [AUTH_INFO] User 'suthan@jobhunt.top' logged out.
+[2025-06-01 09:21:09] [AUTH_SUCCESS] User 'suthan@jobhunt.top' logged in successfully. Role: 'super_admin'.
+[2025-06-01 09:21:09] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-06-01 09:21:32] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'messages'.
+[2025-06-01 09:21:32] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'messages' view.
+[2025-06-01 09:24:23] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'messages'.
+[2025-06-01 09:24:23] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'messages' view.
+[2025-06-01 09:24:25] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'profile'.
+[2025-06-01 09:24:25] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'profile' view.
+[2025-06-01 09:24:45] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-06-01 09:24:45] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-06-01 09:24:53] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'whatsapp_profile'.
+[2025-06-01 09:24:53] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'whatsapp_profile' view.
+[2025-06-01 09:24:59] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'generate_message'.
+[2025-06-01 09:24:59] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'generate_message' view. WhatsApp generated: Yes. Telegram generated: Yes.
+[2025-06-01 09:25:01] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_users'.
+[2025-06-01 09:25:01] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'manage_users' view.
+[2025-06-01 09:25:02] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'achievements'.
+[2025-06-01 09:25:05] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_users'.
+[2025-06-01 09:25:05] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'manage_users' view.

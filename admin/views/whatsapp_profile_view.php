@@ -4,10 +4,10 @@
 ?>
 
 <div class="dashboard-content whatsapp-management-content">
-    <h3>WhatsApp Automation Management</h3>
+    <h2 class="view-main-title">WhatsApp Automation Management</h2>
 
     <div class="dashboard-section whatsapp-management-section">
-        <h4>WhatsApp Automation Status</h4>
+        <h4 class="section-title">WhatsApp Automation Status</h4>
         <div id="whatsappStatusArea">
             <p>Status: <span id="whatsappSessionStatus">Checking...</span></p>
         </div>
@@ -16,12 +16,12 @@
         </div>
         <div class="actions" style="margin-top: 15px;">
             <button id="checkWhatsappStatusBtn" class="action-button">Refresh Status</button>
-            <button id="initiateWhatsappLoginBtn" class="action-button primary">Start Session / Scan QR</button>
-            <button id="logoutWhatsappBtn" class="action-button danger">Logout Session</button>
+            <button id="initiateWhatsappLoginBtn" class="action-button button-primary">Start Session / Scan QR</button>
+            <button id="logoutWhatsappBtn" class="action-button button-danger">Logout Session</button>
         </div>
         <div class="actions" style="margin-top: 10px;">
-            <button id="listWhatsappGroupsBtn" class="action-button" disabled>List Groups</button>
-            <button id="getWhatsappProfileBtn" class="action-button" disabled style="margin-left:10px;">Show Profile Info</button>
+            <button id="listWhatsappGroupsBtn" class="action-button button-secondary" disabled>List Groups</button>
+            <button id="getWhatsappProfileBtn" class="action-button button-secondary" disabled style="margin-left:10px;">Show Profile Info</button>
         </div>
         <div id="whatsappGroupsArea" style="margin-top: 15px; max-height: 300px; overflow-y: auto; border: 1px solid #eee; padding: 10px; display: none;">
             <!-- Group list will appear here -->
@@ -31,19 +31,66 @@
         </div>
     </div>
     <style>
-        /* Styles specific to this WhatsApp view */
-        .whatsapp-management-content h3 {
-            margin-bottom: 20px;
-            border-bottom: 1px solid #eee;
+        .view-main-title { /* Consistent main title for views */
+            margin-top: 0;
+            margin-bottom: 25px;
+            color: var(--primary-color);
+            font-size: 1.75em;
+            font-weight: 600;
             padding-bottom: 10px;
+            border-bottom: 2px solid var(--primary-color-lighter);
         }
-        .whatsapp-management-section { margin-top: 0; /* Reset margin if it's the main content */ }
-        .whatsapp-management-section .actions button { margin-right: 10px; margin-bottom: 5px; }
-        #whatsappQrArea img { max-width: 250px; border: 1px solid #ccc; padding: 5px; }
-        #whatsappSessionStatus { font-weight: bold; }
-        .info-list { list-style: none; padding-left: 0; }
-        .info-list li { padding: 5px 0; border-bottom: 1px dashed #eee; }
+        .section-title { /* Consistent section titles */
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: var(--text-color-light);
+            font-size: 1.2em;
+            font-weight: 500;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .dashboard-section.whatsapp-management-section { /* Ensure consistent section styling */
+            background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow-sm);
+            border: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+        .whatsapp-management-section .actions .action-button { 
+            /* Inherit global .button styles */
+            margin-right: 10px; 
+            margin-bottom: 10px; /* Increased margin for better spacing if they wrap */
+        }
+        /* Add specific button theme classes if not already applied in HTML */
+        .action-button.button-primary { background-color: var(--primary-color); border-color: var(--primary-color); color: #fff; }
+        .action-button.button-primary:hover { background-color: var(--primary-color-darker); border-color: var(--primary-color-darker); }
+        .action-button.button-danger { background-color: var(--error-color); border-color: var(--error-color); color: #fff; }
+        .action-button.button-danger:hover { background-color: #c0392b; border-color: #c0392b; } /* From header.php */
+        .action-button.button-secondary { background-color: var(--secondary-color); border-color: var(--secondary-color); color: #fff; }
+        .action-button.button-secondary:hover { background-color: var(--secondary-color-darker); border-color: var(--secondary-color-darker); }
+
+        #whatsappQrArea img { 
+            max-width: 250px; 
+            border: 1px solid var(--border-color); /* Use theme variable */
+            padding: 5px; 
+            border-radius: var(--border-radius); /* Use theme variable */
+        }
+        #whatsappSessionStatus { 
+            font-weight: bold; 
+            /* Color is set by JS */
+        }
+        #whatsappGroupsArea, #whatsappProfileArea {
+            border: 1px solid var(--border-color); /* Use theme variable */
+            padding: 15px; /* Increased padding */
+            border-radius: var(--border-radius); /* Use theme variable */
+            background-color: var(--body-bg); /* Slightly different background */
+        }
+        /* .info-list styles (used by JS for profile) should be global or defined here if specific */
+        .info-list { list-style: none; padding-left: 0; font-size: 0.95rem; }
+        .info-list li { padding: 8px 0; border-bottom: 1px dashed var(--border-color); }
         .info-list li:last-child { border-bottom: none; }
+        .info-list strong { color: var(--text-color); }
     </style>
 </div>
 

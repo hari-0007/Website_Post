@@ -7,7 +7,7 @@ $logFilePathForDisplay = defined('APP_LOG_FILE_PATH') ? APP_LOG_FILE_PATH : 'App
 
 ?>
 <div class="dashboard-content logs-view-content">
-    <h3>Application Log Viewer</h3>
+    <h2 class="view-main-title">Application Log Viewer</h2>
     <!-- <p class="log-info">
         Displaying the last <?= count($logEntries) ?> entries from <code><?= htmlspecialchars($logFilePathForDisplay) ?></code>.
         Auto-refreshes every 10 seconds.
@@ -25,13 +25,16 @@ $logFilePathForDisplay = defined('APP_LOG_FILE_PATH') ? APP_LOG_FILE_PATH : 'App
 </div>
 
 <style>
-    .logs-view-content h3 {
-        color: #005fa3;
+    .view-main-title { /* Consistent main title for views */
         margin-top: 0;
-        margin-bottom: 10px;
+        margin-bottom: 25px;
+        color: var(--primary-color);
+        font-size: 1.75em;
+        font-weight: 600;
         padding-bottom: 10px;
-        border-bottom: 1px solid #e0e0e0;
+        border-bottom: 2px solid var(--primary-color-lighter);
     }
+
     .log-info code {
         background-color: #f0f0f0;
         padding: 2px 4px;
@@ -44,29 +47,29 @@ $logFilePathForDisplay = defined('APP_LOG_FILE_PATH') ? APP_LOG_FILE_PATH : 'App
         margin-bottom: 15px;
     }
     .log-container {
-        background-color: #1e1e1e; /* Dark background for logs */
-        color: #d4d4d4; /* Light text */
+        background-color: var(--sidebar-brand-bg); /* Use a dark theme color */
+        color: var(--sidebar-link-color); /* Use a light theme color for text */
         font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
         font-size: 0.85em;
         line-height: 1.4;
         padding: 15px;
-        border-radius: 4px;
+        border-radius: var(--border-radius); /* Use theme variable */
         height: 65vh; /* Increased height */
         overflow-y: auto; /* Scroll for overflow */
-        border: 1px solid #333;
-        box-shadow: inset 0 0 5px rgba(0,0,0,0.3);
+        border: 1px solid var(--sidebar-bg); /* Use a related dark theme color for border */
+        box-shadow: inset 0 0 8px rgba(0,0,0,0.25); /* Slightly softer inset shadow */
     }
     .log-entry {
         padding: 1px 0; /* Reduced padding for more compact view */
         white-space: pre-wrap; /* Preserve whitespace and wrap lines */
         word-break: break-all; /* Break long words/strings */
-        border-bottom: 1px dotted #444; /* Subtle separator for entries */
+        border-bottom: 1px dotted var(--sidebar-link-hover-bg); /* Use a theme color for separator */
     }
     .log-entry:last-child {
         border-bottom: none;
     }
     .log-entry.no-data-message {
-        color: #888;
+        color: var(--text-muted); /* Use theme variable */
         font-style: italic;
         border-bottom: none;
     }

@@ -20,6 +20,8 @@ $userRoleChartLabels = $userRoleChartLabels ?? [];
 $userRoleChartData = $userRoleChartData ?? [];
 $userStatusChartLabels = $userStatusChartLabels ?? [];
 $userStatusChartData = $userStatusChartData ?? [];
+$topPostersChartLabels = $topPostersChartLabels ?? []; // Added initialization
+$topPostersChartData = $topPostersChartData ?? []; // Added initialization
 // $userAchievementsChartLabels and $userAchievementsChartData are no longer used for this view.
 // Variables for "Overall User Job Posting Performance Chart" are no longer used.
 
@@ -30,12 +32,12 @@ $quarterlyUserEarningsData = $quarterlyUserEarningsData ?? [];
 $shouldLoadChartJsForUserInfo = !empty($userRoleChartData) || !empty($userStatusChartData) || !empty($topPostersChartData) || !empty($quarterlyUserEarningsData);
 ?>
 <div class="dashboard-content user-info-view-content">
-    <h3>User Statistics Overview</h3>
+    <h2 class="view-main-title">User Statistics Overview</h2>
 
     <div class="dashboard-columns stats-summary-columns">
         <div class="dashboard-column">
-            <div class="dashboard-section user-role-section">
-                <h4>Users by Role</h4>
+            <div class="dashboard-section user-role-section"> 
+                <h4 class="section-title">Users by Role</h4>
                 <?php if (!empty($userCountsByRole)): ?>
                     <ul class="info-list compact-list user-stats-list">
                         <?php foreach ($userCountsByRole as $role => $count): ?>
@@ -54,8 +56,8 @@ $shouldLoadChartJsForUserInfo = !empty($userRoleChartData) || !empty($userStatus
         </div>
 
         <div class="dashboard-column">
-            <div class="dashboard-section user-status-section">
-                <h4>Users by Status</h4>
+            <div class="dashboard-section user-status-section"> 
+                <h4 class="section-title">Users by Status</h4>
                 <?php if (!empty($userCountsByStatus)): ?>
                     <ul class="info-list compact-list user-stats-list">
                         <?php foreach ($userCountsByStatus as $status => $count): ?>
@@ -79,8 +81,8 @@ $shouldLoadChartJsForUserInfo = !empty($userRoleChartData) || !empty($userStatus
     <!-- "Overall Job Posting Performance by User" chart removed -->
     <?php endif; ?>
 
-    <div class="dashboard-section leaderboard-section">
-        <h4>Top Posters (Last 30 Days)</h4>
+    <div class="dashboard-section leaderboard-section"> 
+        <h4 class="section-title">Top Posters (Last 30 Days)</h4>
         <?php if (!empty($performanceLeaderboard)): ?>
             <div class="dashboard-columns top-posters-layout">
                 <div class="dashboard-column leaderboard-list-container">
@@ -91,7 +93,7 @@ $shouldLoadChartJsForUserInfo = !empty($userRoleChartData) || !empty($userStatus
                                 <?php $hasPosters = true; ?>
                                 <li title="Username: <?= htmlspecialchars($username) ?>">
                                     <span class="leaderboard-name"><?= htmlspecialchars($data['name']) ?></span>
-                                    <span class="leaderboard-count"><?= htmlspecialchars($data['count']) ?> jobs</span>
+                                    <span class="leaderboard-count styled-count-badge"><?= htmlspecialchars($data['count']) ?> jobs</span>
                                 </li>
                             <?php endif; ?>
                         <?php endforeach; ?>
@@ -114,8 +116,8 @@ $shouldLoadChartJsForUserInfo = !empty($userRoleChartData) || !empty($userStatus
     </div>
 
     <?php if ($loggedInUserRole === 'super_admin' || in_array($loggedInUserRole, $allRegionalAdminRoles)): ?>
-    <div class="dashboard-section quarterly-user-earnings-section">
-        <h4>User Earnings (Last 3 Months)</h4>
+    <div class="dashboard-section quarterly-user-earnings-section"> 
+        <h4 class="section-title">User Earnings (Last 3 Months)</h4>
         <?php if (!empty($quarterlyUserEarningsData) && !empty($quarterlyUserEarningsLabels)): ?>
             <div class="chart-container" style="height: 400px;"> <!-- Adjust height as needed -->
                 <canvas id="quarterlyUserEarningsChart"></canvas>
@@ -129,24 +131,25 @@ $shouldLoadChartJsForUserInfo = !empty($userRoleChartData) || !empty($userStatus
 </div>
 
 <style>
-    /* Styles for User Info Tab - can be moved to a central admin_styles.css */
-    .user-info-view-content .dashboard-content h3, /* Tab Title */
-    .user-info-view-content .dashboard-section h4, /* Section Titles */
-    .user-info-view-content .performance-column h5 /* Sub-section Titles */
-    {
-        color: #005fa3; /* Consistent heading color */
+    .view-main-title { /* Consistent main title for views */
         margin-top: 0;
-    }
-    .user-info-view-content .dashboard-content h3 {
         margin-bottom: 25px;
+        color: var(--primary-color);
+        font-size: 1.75em;
+        font-weight: 600;
         padding-bottom: 10px;
-        border-bottom: 1px solid #e0e0e0;
+        border-bottom: 2px solid var(--primary-color-lighter);
     }
-    .user-info-view-content .dashboard-section h4 {
+    .section-title { /* Consistent section titles */
+        margin-top: 0;
         margin-bottom: 15px;
-        font-size: 1.1em;
+        color: var(--text-color-light);
+        font-size: 1.2em;
+        font-weight: 500;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--border-color);
     }
-     .user-info-view-content .performance-column h5 {
+     .user-info-view-content .performance-column h5 { /* Specific for this view if needed, otherwise use .section-title */
         margin-bottom: 10px;
         font-size: 1em;
         padding-bottom: 5px;
@@ -189,10 +192,10 @@ $shouldLoadChartJsForUserInfo = !empty($userRoleChartData) || !empty($userStatus
     }
 
     .user-info-view-content .dashboard-section {
-        background-color: #ffffff;
+        background-color: var(--card-bg); /* Use theme variable */
         padding: 20px;
-        border-radius: 6px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        border-radius: var(--border-radius); /* Use theme variable */
+        box-shadow: var(--box-shadow-sm); /* Use theme variable */
         height: 100%; /* Make sections in columns equal height if desired */
         display: flex;
         flex-direction: column;
@@ -207,18 +210,18 @@ $shouldLoadChartJsForUserInfo = !empty($userRoleChartData) || !empty($userStatus
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 8px 0; /* Increased padding */
-        border-bottom: 1px solid #f0f0f0;
+        padding: 8px 0; 
+        border-bottom: 1px dashed var(--border-color); /* Use theme variable */
         font-size: 0.9rem;
     }
     .user-stats-list li:last-child {
         border-bottom: none;
     }
     .user-stats-list li strong {
-        color: #333;
+        color: var(--text-color); /* Use theme variable */
     }
     .user-stats-list li span {
-        color: #005fa3;
+        color: var(--primary-color); /* Use theme variable */
         font-weight: bold;
     }
 
@@ -228,7 +231,7 @@ $shouldLoadChartJsForUserInfo = !empty($userRoleChartData) || !empty($userStatus
         padding-top: 15px;
     }
     .user-info-view-content .chart-container { /* General chart container styling */
-        padding: 0; /* Remove padding if section already has it */
+        padding: 0; 
         background-color: transparent; /* Make it transparent if section has bg */
         box-shadow: none;
         border: none;
@@ -236,37 +239,47 @@ $shouldLoadChartJsForUserInfo = !empty($userRoleChartData) || !empty($userStatus
 
 
     .user-info-view-content .performance-list {
-        list-style: none;
+        list-style: none; /* Kept for specificity if needed, but .info-list might cover it */
         padding-left: 0;
         font-size: 0.9rem;
     }
     .user-info-view-content .performance-list li {
         padding: 6px 0;
-        color: #555;
+        color: var(--text-muted); /* Use theme variable */
     }
     .user-info-view-content .performance-list li strong {
-        color: #005fa3;
+        color: var(--primary-color); /* Use theme variable */
     }
     
     .user-info-view-content .leaderboard-list {
         list-style-type: decimal;
         padding-left: 25px;
         margin-top: 0;
+        margin-bottom: 0;
     }
     .user-info-view-content .leaderboard-list li {
-        padding: 6px 0;
+        padding: 8px 0; /* Increased padding */
         font-size: 0.9rem;
         display: flex;
         justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px dashed var(--border-color); /* Use theme variable */
+    }
+    .user-info-view-content .leaderboard-list li:last-child {
+        border-bottom: none;
     }
     .user-info-view-content .leaderboard-name {
-        color: #333;
+        color: var(--text-color); /* Use theme variable */
         font-weight: 500;
     }
-    .user-info-view-content .leaderboard-count {
-        color: #005fa3;
+    .user-info-view-content .leaderboard-count.styled-count-badge { /* More specific for this list */
+        color: var(--primary-color-darker); /* Use theme variable */
         font-weight: bold;
         margin-left: 10px;
+        background-color: var(--primary-color-lighter); /* Use theme variable */
+        padding: 3px 8px;
+        border-radius: var(--border-radius); /* Use theme variable */
+        font-size: 0.85em;
     }
     .top-posters-layout .leaderboard-list-container {
         flex-basis: 45%; /* Adjust as needed */
@@ -281,7 +294,7 @@ $shouldLoadChartJsForUserInfo = !empty($userRoleChartData) || !empty($userStatus
     }
 
     .no-data-message {
-        color: #777;
+        color: var(--text-muted); /* Use theme variable */
         font-style: italic;
         padding: 10px 0;
     }
@@ -292,16 +305,24 @@ $shouldLoadChartJsForUserInfo = !empty($userRoleChartData) || !empty($userStatus
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    const pieChartColors = [
-        '#007bff', '#28a745', '#ffc107', '#dc3545', 
-        '#17a2b8', '#6f42c1', '#fd7e14', '#6c757d'
-    ].map(hex => hex + 'B3'); // Add alpha for 0.7 opacity
+    <?php
+        // Define pieChartColors in PHP to be accessible by the closure later
+        // and also to be json_encoded for JavaScript.
+        $phpPieChartColors = [
+            'rgba(59, 130, 246, 0.8)', // Theme Primary
+            'rgba(16, 185, 129, 0.8)', // Theme Success
+            'rgba(245, 158, 11, 0.8)', // Theme Warning
+            'rgba(239, 68, 68, 0.8)',  // Theme Error
+            'rgba(107, 114, 128, 0.8)',// Theme Secondary
+            'rgba(139, 92, 246, 0.8)' // Generic Purple
+        ];
+    ?>
+    // Use theme colors for charts - make this available to JS
+    const pieChartColors = <?= json_encode($phpPieChartColors) ?>;
 
-    const barChartColors = [
-        'rgba(75, 192, 192, 0.7)', 'rgba(255, 159, 64, 0.7)',
-        'rgba(255, 99, 132, 0.7)', 'rgba(54, 162, 235, 0.7)',
-        'rgba(153, 102, 255, 0.7)'
-    ];
+    function getSolidBorderColor(rgbaColor) {
+        return rgbaColor.replace(/[\d\.]+\)$/, '1)');
+    }
 
     <?php if (!empty($userRoleChartLabels) && !empty($userRoleChartData)): ?>
     if (document.getElementById('userRoleChart')) {
@@ -314,7 +335,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     label: 'Users by Role',
                     data: <?= json_encode($userRoleChartData) ?>,
                     backgroundColor: pieChartColors,
-                    borderColor: pieChartColors.map(color => color.substring(0,7)), // Solid border
+                    borderColor: pieChartColors.map(getSolidBorderColor), 
                     borderWidth: 1,
                     hoverOffset: 8
                 }]
@@ -354,8 +375,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 datasets: [{
                     label: 'Users by Status',
                     data: <?= json_encode($userStatusChartData) ?>,
-                    backgroundColor: pieChartColors.slice(3).concat(pieChartColors.slice(0,3)), // Rotate colors
-                    borderColor: pieChartColors.slice(3).concat(pieChartColors.slice(0,3)).map(color => color.substring(0,7)),
+                    backgroundColor: pieChartColors.slice(2).concat(pieChartColors.slice(0,2)), // Rotate colors
+                    borderColor: pieChartColors.slice(2).concat(pieChartColors.slice(0,2)).map(getSolidBorderColor),
                     borderWidth: 1,
                     hoverOffset: 8
                 }]
@@ -388,6 +409,10 @@ document.addEventListener('DOMContentLoaded', function () {
     <?php if (!empty($topPostersChartLabels) && !empty($topPostersChartData)): ?>
     if (document.getElementById('topPostersChart')) {
         const topPostersCtx = document.getElementById('topPostersChart').getContext('2d');
+        // Use a subset or rotated pieChartColors for bar chart for variety
+        const barChartBackgroundColors = pieChartColors.slice(0, <?= count($topPostersChartLabels) ?>).map(c => c.replace(/[\d\.]+\)$/, '0.7)'));
+        const barChartBorderColors = barChartBackgroundColors.map(getSolidBorderColor);
+
         new Chart(topPostersCtx, {
             type: 'bar',
             data: {
@@ -395,8 +420,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 datasets: [{
                     label: 'Job Posts (Last 30 Days)',
                     data: <?= json_encode($topPostersChartData) ?>,
-                    backgroundColor: barChartColors,
-                    borderColor: barChartColors.map(color => color.replace('0.7', '1')),
+                    backgroundColor: barChartBackgroundColors,
+                    borderColor: barChartBorderColors,
                     borderWidth: 1,
                     borderRadius: 4,
                     barPercentage: 0.7,
@@ -422,11 +447,30 @@ document.addEventListener('DOMContentLoaded', function () {
     <?php if (!empty($quarterlyUserEarningsLabels) && !empty($quarterlyUserEarningsData)): ?>
     if (document.getElementById('quarterlyUserEarningsChart')) {
         const quarterlyEarningsCtx = document.getElementById('quarterlyUserEarningsChart').getContext('2d');
+        <?php
+        $jsonEncodedQuarterlyDatasets = "[]"; // Default to an empty JS array
+        if (is_array($quarterlyUserEarningsData) && !empty($quarterlyUserEarningsData)) {
+            // Use the PHP defined $phpPieChartColors here
+            $processedDatasets = array_map(function($dataset, $index) use ($phpPieChartColors) {
+                $colorIndex = $index % count($phpPieChartColors); 
+                $bgColor = preg_replace('/[\d\.]+?\)$/', '0.7)', $phpPieChartColors[$colorIndex]);
+                $borderColor = preg_replace('/[\d\.]+?\)$/', '1)', $phpPieChartColors[$colorIndex]);
+                $dataset['backgroundColor'] = $bgColor;
+                $dataset['borderColor'] = $borderColor;
+                $dataset['borderWidth'] = 1;
+                $dataset['borderRadius'] = 4;
+                return $dataset;
+            }, $quarterlyUserEarningsData, array_keys($quarterlyUserEarningsData));
+            $jsonEncodedQuarterlyDatasets = json_encode($processedDatasets);
+        }
+        ?>
+        const quarterlyDatasets = <?= $jsonEncodedQuarterlyDatasets ?>;
+
         new Chart(quarterlyEarningsCtx, {
             type: 'bar',
             data: {
                 labels: <?= json_encode($quarterlyUserEarningsLabels) ?>,
-                datasets: <?= json_encode($quarterlyUserEarningsData) ?>
+                datasets: quarterlyDatasets
             },
             options: {
                 responsive: true,

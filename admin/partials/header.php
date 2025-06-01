@@ -34,7 +34,7 @@
             --body-bg: #F7FAFC; /* Very Light Grey Background */
             --card-bg: #ffffff;
             --text-color: #2D3748; /* Dark Grey for Text */
-            --text-color-light: #4A5568; /* Medium Grey */
+            --text-color-light: #4A5568; /* Medium Grey */ 
             --text-muted: #718096; /* Lighter Grey for muted text */
             --border-color: #CBD5E0; /* Standard Border Color */
 
@@ -63,7 +63,7 @@
             margin: 0;
             background-color: var(--body-bg);
             color: var(--text-color);
-            /* transition: margin-left 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); */ /* No longer needed for fixed sidebar */
+            /* transition: margin-left 0.3s ease; */ /* Will be controlled by JS */
             font-size: 0.95rem; /* Base font size */
             line-height: 1.5; /* Slightly tighter line height for a more compact feel */
             -webkit-font-smoothing: antialiased;
@@ -87,21 +87,20 @@
             z-index: 1030; /* High z-index */
         }
 
-        /* Sidebar toggle button is removed, so this style is no longer needed */
         #sidebarToggleBtn {
             background: none;
             border: none;
             color: var(--primary-color);
-            font-size: 24px; /* Adjust for better visual balance */
+            font-size: 22px; /* Adjust for better visual balance */
             line-height: 1;
             cursor: pointer;
             margin-right: 15px;
             padding: 8px; /* Make it easier to click */
             border-radius: var(--border-radius);
         }
-        /* #sidebarToggleBtn:hover { 
+        #sidebarToggleBtn:hover { 
             background-color: var(--body-bg);
-        } */
+        }
 
         .admin-topbar-title {
             font-weight: 600;
@@ -121,18 +120,55 @@
             color: var(--primary-color);
             font-size: 1.2em;
         }
+        .admin-topbar-user .user-dropdown-trigger {
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: var(--border-radius);
+            transition: background-color 0.2s ease;
+            display: flex;
+            align-items: center;
+        }
+        .admin-topbar-user .user-dropdown-trigger:hover {
+            background-color: var(--body-bg); /* Light hover */
+        }
+        .user-dropdown-menu {
+            display: none; /* Hidden by default */
+            position: absolute;
+            top: 55px; /* Below the topbar */
+            right: 10px;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            z-index: 1100; /* Above other elements */
+            min-width: 180px;
+            padding: 5px 0;
+        }
+        .user-dropdown-menu.open {
+            display: block; /* Show when open */
+        }
+        .user-dropdown-menu a {
+            display: block;
+            padding: 8px 15px;
+            color: var(--text-color);
+            text-decoration: none;
+        }
+        .user-dropdown-menu a:hover {
+            background-color: var(--body-bg);
+            color: var(--text-color-darker, var(--primary-color-darker)); /* Fallback if --text-color-darker not defined */
+        }
 
         /* --- Sidebar --- */
         .admin-sidebar {
             position: fixed;
-            top: 0;
-            left: 0; /* Always open */
+            top: 0; 
+            left: -250px; /* Initially hidden */
             width: 250px;
             height: 100%;
             background-color: var(--sidebar-bg);
             color: var(--sidebar-link-color);
             box-shadow: 2px 0 6px rgba(0,0,0,0.1); /* Refined, softer shadow */
-            /* transition: left 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); */ /* No longer needed */
+            transition: left 0.3s ease;
             z-index: 1020; /* Below topbar, above overlay if any */
             display: flex; /* For flex column layout */
             flex-direction: column;
@@ -273,28 +309,22 @@
             padding: 20px 25px; /* Adjusted padding */
             padding-top: calc(60px + 20px); /* Account for fixed top bar */
             border-radius: var(--border-radius); /* Consistent border-radius */
-            box-shadow: 0 2px 10px rgba(0,0,0,0.07); /* Softer, more modern shadow */
-            /* transition: margin-left 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); */ /* No longer needed */
+            box-shadow: 0 2px 10px rgba(0,0,0,0.07); /* Softer, more modern shadow */ 
+            transition: margin-left 0.3s ease; 
             border: 1px solid var(--border-color);
         }
 
         body.sidebar-open .container {
-            margin-left: calc(max(25px, (100% - 1200px)/2) + 250px);
+            margin-left: calc(250px + 20px); /* Sidebar width + gap */
+        }
+        body.sidebar-open .admin-sidebar {
+            left: 0; /* Show sidebar */
         }
 
-        @media (max-width: 1570px) { /* 1300px container + 250px sidebar + 20px margin */
-            body.sidebar-open .container {
-                margin-left: calc(250px + 20px);
-            }
-        }
         @media (max-width: 768px) { /* Tablet and smaller */
             .admin-sidebar {
                 width: 240px; /* Slightly narrower for small screens */
-                left: 0; /* Still fixed open, but media query could hide it if a toggle was re-introduced for mobile */
-                /* Consider adding a toggle for mobile if screen real estate is an issue */
-            }
-            body.sidebar-open .container {
-                 margin-left: 20px; /* Sidebar overlays content */
+                left: -240px; /* Ensure it's hidden by default on small screens too */
             }
             .admin-topbar-title {
                 font-size: 1em; /* Smaller title */
@@ -306,12 +336,12 @@
                 padding: 20px;
                 padding-top: calc(60px + 15px);
                 margin: 15px auto;
+                margin-left: 20px; /* Default margin when sidebar is closed */
+            }
+            body.sidebar-open .container {
+                 margin-left: calc(240px + 10px); /* Adjust for narrower sidebar and smaller gap */
             }
         }
-        /* Example: If you wanted to hide sidebar on small screens and add a toggle back for mobile */
-        /* @media (max-width: 768px) {
-            .admin-sidebar { left: -240px; } 
-            body.sidebar-open .admin-sidebar { left: 0; } ... and so on for container margin */
         @media (max-width: 480px) { /* Mobile */
             .admin-topbar-title { display: none; } /* Hide title completely */
         }
@@ -543,15 +573,22 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <?php endif; ?>
 </head>
-<body class="<?php echo (isset($loggedIn) && $loggedIn) ? 'sidebar-open' : ''; ?>"> <?php /* Always sidebar-open if logged in */ ?>
+<body> <?php /* sidebar-open class will be managed by JavaScript */ ?>
 
 <?php if (isset($loggedIn) && $loggedIn): ?>
     <header class="admin-topbar" id="adminTopbar">
-        <?php /* <button id="sidebarToggleBtn" title="Toggle Menu">☰</button> -- Toggle button removed */ ?>
+        <button id="sidebarToggleBtn" title="Toggle Menu">☰</button>
         <div class="admin-topbar-title">Admin Panel</div>
         <div class="admin-topbar-user">
-            <span class="user-icon">👤</span> <!-- Replace with a proper icon -->
-            <span><?php echo htmlspecialchars($_SESSION['admin_display_name'] ?? ($_SESSION['admin_username'] ?? 'Admin')); ?></span>
+            <div class="user-dropdown-trigger" id="userDropdownTrigger">
+                <span class="user-icon">👤</span> <!-- Replace with a proper icon -->
+                <span><?php echo htmlspecialchars($_SESSION['admin_display_name'] ?? ($_SESSION['admin_username'] ?? 'Admin')); ?></span>
+                <span style="font-size: 0.7em; margin-left: 5px;">▼</span> <!-- Dropdown arrow -->
+            </div>
+            <div class="user-dropdown-menu" id="userDropdownMenu">
+                <a href="dashboard.php?view=profile">Manage Profile</a>
+                <a href="auth.php?action=logout">Logout</a>
+            </div>
         </div>
     </header>
 
@@ -633,15 +670,17 @@
                 <a href="dashboard.php?view=whatsapp_profile" class="<?php echo ($requestedView === 'whatsapp_profile') ? 'active' : ''; ?>">
                     <span class="nav-icon">📱</span> WhatsApp Profile
                 </a>
-                 <a href="dashboard.php?view=profile" class="<?php echo ($requestedView === 'profile') ? 'active' : ''; ?>">
+                <!-- "Manage Profile" moved to user dropdown -->
+                 <!-- <a href="dashboard.php?view=profile" class="<?php // echo ($requestedView === 'profile') ? 'active' : ''; ?>">
                     <span class="nav-icon">👤</span> Manage Profile
-                </a>
+                </a> -->
                 <!-- <a href="dashboard.php?view=settings" class="<?php echo ($requestedView === 'settings') ? 'active' : ''; ?>">
                     <span class="nav-icon">🔧</span> Settings
                 </a> -->
-                <a href="auth.php?action=logout"> <!-- This link should not be handled by AJAX nav if it's a full redirect -->
+                <!-- "Logout" moved to user dropdown -->
+                <!-- <a href="auth.php?action=logout"> 
                     <span class="nav-icon">🚪</span> Logout
-                </a>
+                </a> -->
             </nav>
         </div>
     </aside>
@@ -653,3 +692,68 @@
 // and then closed in footer.php.
 // This header.php file sets up the surrounding layout (topbar, sidebar).
 ?>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // User Dropdown Logic (moved from footer.php)
+        const userDropdownTrigger = document.getElementById('userDropdownTrigger');
+        const userDropdownMenu = document.getElementById('userDropdownMenu');
+        const sidebarToggleBtn = document.getElementById('sidebarToggleBtn');
+        const bodyElement = document.body;
+
+        if (userDropdownTrigger && userDropdownMenu) {
+            // console.log('[DEBUG Header] User dropdown elements found. Attaching listeners.');
+
+            // Named function for handling clicks outside the user dropdown
+            function handleOutsideUserDropdownClick(event) {
+                if (userDropdownMenu.classList.contains('open')) { // Check if menu is open
+                    // If the click is outside the trigger AND outside the menu
+                    if (!userDropdownTrigger.contains(event.target) && !userDropdownMenu.contains(event.target)) {
+                        userDropdownMenu.classList.remove('open');
+                        // console.log('[DEBUG Header] Closing user dropdown (click outside).');
+                    }
+                }
+            }
+
+            userDropdownTrigger.addEventListener('click', function(event) {
+                event.stopPropagation(); // Prevent click from bubbling up to window, which would immediately close it
+                userDropdownMenu.classList.toggle('open');
+                // console.log('[DEBUG Header] User dropdown menu "open" class toggled. Now has class "open":', userDropdownMenu.classList.contains('open'));
+            });
+
+            // Add the global click listener for closing the user dropdown by clicking outside
+            window.addEventListener('click', handleOutsideUserDropdownClick);
+
+        } else {
+            if (!userDropdownTrigger) {
+                console.warn('[DEBUG Header] User dropdown trigger (userDropdownTrigger) NOT FOUND. Dropdown toggle will not work.');
+            }
+            if (!userDropdownMenu) {
+                console.warn('[DEBUG Header] User dropdown menu (userDropdownMenu) NOT FOUND. Dropdown toggle will not work.');
+            }
+        }
+
+        // Sidebar Toggle Logic
+        if (sidebarToggleBtn && bodyElement) {
+            // Check localStorage for saved sidebar state
+            const sidebarState = localStorage.getItem('sidebarState');
+            if (sidebarState === 'closed') {
+                bodyElement.classList.remove('sidebar-open');
+            } else if (sidebarState === 'open') { // Default to open if not set or explicitly open
+                bodyElement.classList.add('sidebar-open');
+            } else { // Default to open if no state saved
+                 bodyElement.classList.add('sidebar-open');
+            }
+
+            sidebarToggleBtn.addEventListener('click', function() {
+                bodyElement.classList.toggle('sidebar-open');
+                // Save the new state to localStorage
+                if (bodyElement.classList.contains('sidebar-open')) {
+                    localStorage.setItem('sidebarState', 'open');
+                } else {
+                    localStorage.setItem('sidebarState', 'closed');
+                }
+            });
+        }
+    });
+</script>

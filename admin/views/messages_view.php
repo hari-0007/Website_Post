@@ -187,7 +187,7 @@ function render_stars_php($rating) {
                                     <span class="status-badge <?php echo (isset($message['read']) && $message['read']) ? 'status-read' : 'status-unread'; ?>">
                                         <?php echo (isset($message['read']) && $message['read']) ? 'Read' : 'Unread'; ?>
                                     </span>
-                                   <button class="flag-button <?php echo (isset($message['flagged']) && $message['flagged']) ? 'is-flagged-btn' : ''; ?>" onclick="event.stopPropagation(); toggleFlagJs('<?php echo htmlspecialchars($message['id'] ?? ''); ?>', this, '<?php echo htmlspecialchars($email); // Pass raw email for JS logic ?>')" >
+                                   <button class="flag-button <?php echo (isset($message['flagged']) && $message['flagged']) ? 'is-flagged-btn' : ''; ?>" onclick="event.stopPropagation(); toggleFlagJs('<?php echo htmlspecialchars($message['id'] ?? ''); ?>', this, '<?php echo htmlspecialchars($message['email'] ?? $email); // Pass original message email or group email ?>')" >
                                         <?php echo (isset($message['flagged']) && $message['flagged']) ? 'Unflag' : 'Flag'; ?>
                                     </button>
                                  </div>
@@ -217,7 +217,7 @@ function render_stars_php($rating) {
         <!-- Message Detail Modal HTML -->
         <div id="messageDetailModal" class="modal" style="display: none;">
             <div class="modal-content">
-                <h3 class="modal-title">Message Details</h3>
+                <h3 class="modal-view-title">Message Details</h3> <!-- Changed class for clarity -->
                 <div id="modalStatusArea"></div>
                 <div class="message-details-content">
                     <p><strong>From:</strong> <span id="detailName"></span> &lt;<span id="detailEmail"></span>&gt;</p>
@@ -268,10 +268,10 @@ function render_stars_php($rating) {
 
     .search-container input[type="text"] {
         width: 100%;
-        padding: .5rem .75rem; /* Match global form input style */
-        border: 1px solid var(--border-color); /* Use theme variable */
-        border-radius: var(--border-radius); /* Use theme variable */
-        box-sizing: border-box; /* Ensures padding doesn't affect width */
+        padding: .6rem .85rem; /* Slightly more padding for search */
+        border: 1px solid var(--border-color); 
+        border-radius: var(--border-radius); 
+        box-sizing: border-box; 
         font-size: 0.95rem;
     }
 
@@ -282,23 +282,24 @@ function render_stars_php($rating) {
     }
 
     .email-group.card {
-        border: 1px solid var(--border-color); /* Use theme variable */
-        border-radius: var(--border-radius); /* Use theme variable */
-        box-shadow: var(--box-shadow-sm); /* Use theme variable */
-        transition: box-shadow 0.3s ease;
+        border: 1px solid var(--border-color); 
+        border-radius: var(--border-radius); 
+        box-shadow: var(--box-shadow-sm); 
+        transition: box-shadow 0.2s ease-in-out, border-color 0.2s ease-in-out;
     }
     .email-group.card.conversation-is-flagged .card-header {
         background-color: #fff3cd; /* Light yellow for flagged conversation header */
     }
 
     .email-group.card:hover {
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        box-shadow: var(--box-shadow); /* Use theme's larger shadow on hover */
+        border-color: var(--primary-color-lighter); /* Highlight border on hover */
     }
 
     .card-header {
-        background-color: var(--body-bg); /* Use theme variable */
+        background-color: var(--body-bg); 
         padding: 15px;
-        border-bottom: 1px solid var(--border-color); /* Use theme variable */
+        border-bottom: 1px solid var(--border-color); 
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -313,22 +314,22 @@ function render_stars_php($rating) {
     }
     .header-content .text-muted {
         font-size: 0.85em;
-        color: var(--text-muted); /* Use theme variable */
+        color: var(--text-muted); 
     }
 
     .email-title {
         font-size: 1.1rem;
         font-weight: bold;
         margin: 0;
-        color: var(--text-color); /* Use theme variable */
+        color: var(--text-color); 
     }
     .email-group.card.read .email-title { /* If all messages in group are read */
         font-weight: normal;
-        color: var(--text-muted); /* Use theme variable */
+        color: var(--text-muted); 
     }
     .email-group.card.unread .email-title { /* If at least one message is unread */
         font-weight: bold;
-        color: var(--primary-color); /* Use theme variable */
+        color: var(--primary-color); 
     }
     .conversation-emoji {
         font-size: 1em; /* Adjust size as needed */
@@ -337,15 +338,15 @@ function render_stars_php($rating) {
     .star-rating {
         font-size: 1em; /* Adjust size as needed */
         margin-left: 8px;
-        color: var(--warning-color); /* Use theme variable */
+        color: var(--warning-color); 
     }
 
 
     .header-actions {
         display: flex;
         gap: 15px;
-        font-size: 0.85rem; /* Slightly smaller */
-        color: var(--text-muted); /* Use theme variable */
+        font-size: 0.8rem; /* Even smaller for less emphasis */
+        color: var(--text-muted); 
     }
 
     .card-body {
@@ -359,36 +360,40 @@ function render_stars_php($rating) {
     }
 
     .feedback-message-item {
-        border: 1px solid var(--border-color); /* Use theme variable */
-        background-color: var(--card-bg); /* Use theme variable */
+        border: 1px solid var(--border-color);
+        background-color: var(--card-bg);
         padding: 15px;
         margin-bottom: 10px;
-        border-radius: var(--border-radius); /* Use theme variable */
-        transition: background-color 0.2s ease, border-left-color 0.3s ease;
+        border-radius: var(--border-radius);
+        transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+        box-shadow: var(--box-shadow-sm); /* Add a subtle shadow */
     }
 
     .feedback-message-item.message-is-flagged {
-        border-left-color: red !important; /* Make flagged messages have a red left border */
-        background-color: #ffebee; /* Light red background for flagged message */
+        border-left: 4px solid var(--warning-color); /* Use theme warning color for left border */
+        background-color: var(--warning-bg); /* Use theme warning background */
     }
 
     .feedback-message-item:hover {
-        background-color: var(--body-bg); /* Use theme variable */
+        background-color: var(--body-bg); 
     }
 
     .feedback-message-item.message-unread {
-        border-left: 4px solid var(--primary-color); /* Use theme variable */
+        border-left: 4px solid var(--primary-color);
+        background-color: #f8fbff; /* Slightly different background for unread */
     }
     .feedback-message-item.message-unread .message-from strong {
         font-weight: bold; /* Ensure unread message sender is bold */
+        color: var(--primary-color-darker);
     }
 
     .feedback-message-item.message-read {
-        border-left: 4px solid var(--secondary-color); /* Use theme variable */
+        border-left: 4px solid var(--secondary-color);
+        /* background-color: #fdfdfd; */ /* Optional: slightly different bg for read */
     }
     .feedback-message-item.message-read .message-from strong {
         font-weight: normal; /* Normal weight for read messages */
-        color: var(--text-muted); /* Use theme variable */
+        color: var(--text-muted);
     }
     .feedback-message-item.message-read .message-date {
         color: #888;
@@ -399,7 +404,7 @@ function render_stars_php($rating) {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 10px;
+        margin-bottom: 12px; /* Increased space */
     }
 
     .message-info {
@@ -409,12 +414,12 @@ function render_stars_php($rating) {
 
     .message-from {
         /* font-weight: bold; */ /* Handled by .message-read/.message-unread */
-        color: var(--text-color); /* Use theme variable */
+        color: var(--text-color);
     }
 
     .message-date {
         font-size: 0.85rem;
-        color: var(--text-muted); /* Use theme variable */
+        color: var(--text-muted);
     }
     .message-emotion-emoji {
         font-size: 0.9em; /* Slightly smaller than text */
@@ -444,16 +449,17 @@ function render_stars_php($rating) {
     }
 
     .message-content {
-        background-color: var(--body-bg); /* Use theme variable */
-        padding: 10px;
-        border-radius: 5px;
+        background-color: transparent; /* Make it blend with item background */
+        padding: 0; /* Remove padding if it's just text */
+        /* border-radius: 5px; */ /* Not needed if no background */
         white-space: pre-wrap;
         word-wrap: break-word;
         font-size: 0.95em;
-        margin-top: 10px;
+        margin-top: 0; /* Adjusted as header has more margin-bottom */
         max-height: 120px;
         overflow: hidden;
         text-overflow: ellipsis;
+        color: var(--text-color-light); /* Slightly lighter for message body */
     }
 
     .status-badge {
@@ -469,12 +475,12 @@ function render_stars_php($rating) {
 
     .status-unread {
         color: #fff;
-        background-color: var(--primary-color); /* Use theme variable */
+        background-color: var(--primary-color);
     }
 
     .status-read {
         color: #fff;
-        background-color: var(--secondary-color); /* Use theme variable */
+        background-color: var(--secondary-color);
     }
 
     .action-link {
@@ -485,14 +491,15 @@ function render_stars_php($rating) {
     .flag-button {
         padding: 3px 8px;
         font-size: 0.8em;
-        border: 1px solid var(--border-color); /* Use theme variable */
-        background-color: var(--body-bg); /* Use theme variable */
+        border: 1px solid var(--border-color);
+        background-color: var(--body-bg);
         cursor: pointer;
         border-radius: 3px;
+        color: #333;
     }
     .flag-button.is-flagged-btn {
-        background-color: var(--warning-color); /* Use theme variable */
-        border-color: var(--warning-color); /* Use theme variable */
+        background-color: var(--warning-color);
+        border-color: var(--warning-color);
         color: #333;
     }
 
@@ -512,10 +519,10 @@ function render_stars_php($rating) {
     }
 
     .modal-content {
-        background-color: var(--card-bg); /* Use theme variable */
+        background-color: var(--card-bg);
         padding: 20px;
-        border-radius: var(--border-radius); /* Use theme variable */
-        box-shadow: var(--box-shadow); /* Use theme variable */
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
         width: 90%;
         max-width: 700px;
         max-height: 90vh;
@@ -524,31 +531,32 @@ function render_stars_php($rating) {
         flex-direction: column; /* Stack content vertically */
     }
 
-    .modal-title { /* For h3 inside modal */
+    .modal-view-title { /* For h3 inside modal */
         margin-top: 0;
-        color: var(--primary-color-darker); /* Use theme variable */
-        border-bottom: 1px solid var(--border-color); /* Use theme variable */
+        color: var(--primary-color-darker);
+        border-bottom: 1px solid var(--border-color);
         padding-bottom: 10px;
-        margin-bottom: 15px; /* Space after title */
+        margin-bottom: 20px; /* More space after title */
+        font-size: 1.4em; /* Slightly larger modal title */
     }
     .message-details-content {
         padding: 15px 0; /* Add some padding */
         font-size: 0.95rem;
         line-height: 1.6;
-        color: var(--text-color); /* Use theme variable */
+        color: var(--text-color);
         flex-grow: 1; /* Allow this section to take available space */
     }
     .message-details-content p {
         margin-bottom: 12px; /* Consistent spacing for paragraphs */
     }
     .message-details-content strong {
-        color: var(--primary-color-darker); /* Use theme variable */
+        color: var(--primary-color-darker);
     }
     .message-body-container {
         margin-top: 15px;
         padding: 15px;
-        background-color: var(--body-bg); /* Use theme variable */
-        border-radius: var(--border-radius); /* Use theme variable */
+        background-color: var(--body-bg);
+        border-radius: var(--border-radius);
     }
 
     .modal-actions {
@@ -606,27 +614,27 @@ function render_stars_php($rating) {
     .message-item-commands-display {
         margin-top: 8px;
         padding-top: 8px;
-        border-top: 1px dashed var(--border-color); /* Use theme variable */
+        border-top: 1px dashed var(--border-color);
         font-size: 0.85em;
-        color: var(--text-muted); /* Use theme variable */
+        color: var(--text-muted);
     }
     .message-item-commands-display strong {
-        color: var(--text-color); /* Use theme variable */
+        color: var(--text-color);
     }
     .message-item-commands-display ul {
         list-style: disc; margin-left: 20px; padding-left: 0; margin-top: 3px; margin-bottom: 0;
     }
 
     .message-commands-container {
-        margin-top: 20px; /* More space */
+        margin-top: 20px;
         padding-top: 10px;
-        border-top: 1px solid var(--border-color); /* Use theme variable */
+        border-top: 1px solid var(--border-color);
     }
 
     .message-commands-container h4 {
         margin-bottom: 5px;
         font-size: 0.95em;
-        color: var(--text-color); /* Use theme variable */
+        color: var(--text-color);
         margin-top: 0; /* Reset top margin for h4 inside this container */
     }
 
@@ -637,22 +645,22 @@ function render_stars_php($rating) {
     }
 
     #detailCommandsList li {
-        background-color: var(--body-bg); /* Use theme variable */
+        background-color: var(--body-bg);
         padding: 6px 10px;
         margin-bottom: 5px; /* Space between command items */
-        border-radius: var(--border-radius); /* Use theme variable */
-        color: var(--text-color-light); /* Use theme variable */
+        border-radius: var(--border-radius);
+        color: var(--text-color-light);
     }
 
     .add-command-form { margin-top: 10px; display: flex; gap: 10px; }
     .add-command-form input[type="text"] { flex-grow: 1; padding: 8px; border: 1px solid var(--border-color); border-radius: var(--border-radius); }
     .add-command-form button {
         padding: 8px 12px;
-        background-color: var(--success-color); /* Use theme variable */
+        background-color: var(--success-color);
         color: white;
     }
     .add-command-form button:hover {
-        background-color: var(--success-color-darker); /* Assuming you'd add this variable */
+        background-color: #27ae60; /* Darker Emerald from header.php button styles */
     }
 </style>
  
@@ -703,6 +711,17 @@ function render_stars_php($rating) {
                 const newAddCommandButton = addCommandButton.cloneNode(true);
                 addCommandButton.parentNode.replaceChild(newAddCommandButton, addCommandButton);
                 
+                // Add event listener for Enter key on the input field
+                const newCommandInput = document.getElementById('newCommandInput');
+                if (newCommandInput) {
+                    newCommandInput.onkeyup = function(event) { // Use onkeyup to capture Enter
+                        if (event.key === 'Enter') { // Check if Enter key was pressed
+                            event.preventDefault(); // Prevent default form submission if it were a form
+                            handleAddCommand(message.id);
+                        }
+                    };
+                }
+
                 newAddCommandButton.onclick = function() { 
                     handleAddCommand(message.id); // Pass the current message's ID
                 };
@@ -1136,7 +1155,7 @@ function renderNewMessageItemHTML(message) {
 
     return `
         <li class="feedback-message-item ${readStatusClass} ${flaggedClass}" data-message-id="${escapeHTML(message.id || '')}" onclick="openMessageModal('${escapeHTML(message.id || '')}', this)" style="cursor:pointer;">
-            <div class="message-header">
+            <div class="message-header"> 
                 <div class="message-info">
                     <span class="message-from"><strong>From:</strong> ${escapeHTML(message.name || 'N/A')}
                         <span class="message-emotion-emoji" title="${escapeHTML(ucfirst(emotionLabel))}">${escapeHTML(emotionEmoji)}</span>
@@ -1147,7 +1166,7 @@ function renderNewMessageItemHTML(message) {
                     <span class="status-badge ${message.read ? 'status-read' : 'status-unread'}">
                         ${message.read ? 'Read' : 'Unread'}
                     </span>
-                    <button class="flag-button ${message.flagged ? 'is-flagged-btn' : ''}" onclick="event.stopPropagation(); toggleFlagJs('${escapeHTML(message.id || '')}', this, '${escapeHTML(message.email || '')}')">
+                    <button class="flag-button ${message.flagged ? 'is-flagged-btn' : ''}" onclick="event.stopPropagation(); toggleFlagJs('${escapeHTML(message.id || '')}', this, '${escapeHTML(message.email || '')}')"> 
                         ${message.flagged ? 'Unflag' : 'Flag'}
                     </button>
                 </div>
@@ -1312,7 +1331,7 @@ function updateOverallUnreadCount() {
             unreadCount++;
         }
     });
-    const unreadBadgeElement = document.querySelector('.admin-nav a[href="?view=messages"] .unread-badge');
+    const unreadBadgeElement = document.querySelector('.admin-sidebar nav a[href="dashboard.php?view=messages"] .unread-badge'); // Corrected selector
     if (unreadBadgeElement) {
         unreadBadgeElement.textContent = unreadCount > 0 ? unreadCount : '';
         unreadBadgeElement.style.display = unreadCount > 0 ? 'inline-block' : 'none';

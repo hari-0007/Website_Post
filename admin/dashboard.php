@@ -1,7 +1,9 @@
 <?php
 
 // admin/dashboard.php - Main Admin Panel Entry Point and Router
-
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 // Ensure no whitespace or output before this tag
 session_start(); // Make sure session is started
 
@@ -166,89 +168,9 @@ $userRole = $loggedInUserRole; // Make it available with a simpler name if heade
 // The $unreadMessagesCount is already calculated above and will be in scope for header.php
 error_log("[DEBUG] dashboard.php: Final Unread messages before including header: " . $unreadMessagesCount . " | LoggedIn: " . ($loggedIn ? 'Yes' : 'No')); // DETAILED DEBUG
 require_once __DIR__ . '/partials/header.php';
+echo "<!-- DEBUG: dashboard.php - header.php included -->\n";
 
 ?>
-
-<style>
-    .stats-grid {
-        display: grid; /* Changed to grid for better control */
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Responsive columns */
-        gap: 20px;
-        margin-bottom: 20px;
-    }
-
-    .stat-card {
-        padding: 15px;
-        background-color: #ffffff; /* Cleaner background */
-        border: 1px solid #e0e0e0; /* Softer border */
-        border-radius: 6px; /* Slightly more rounded */
-        text-align: center;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05); /* Subtle shadow */
-    }
-
-    .stat-card h4 {
-        margin-bottom: 10px;
-        font-size: 1rem; /* Adjusted size */
-        color: #555; /* Softer color */
-    }
-
-    .stat-card p {
-        font-size: 1.8rem; /* Larger number */
-        font-weight: bold;
-        color: #007bff;
-    }
-
-    .chart-container {
-        margin-top: 20px;
-        padding: 15px;
-        background-color: #ffffff;
-        border: 1px solid #e0e0e0;
-        border-radius: 6px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    }
-
-    .chart-container h3 {
-        margin-bottom: 10px;
-        font-size: 1.5rem;
-        color: #333;
-    }
-
-    canvas {
-        max-width: 100%;
-        height: auto;
-    }
-    /* In your admin_styles.css or embedded style tag */
-.sub-nav {
-    background-color: #f8f9fa; /* Lighter background */
-    padding: 10px 0;
-    margin-bottom: 20px;
-    text-align: center;
-    border-radius: 6px;
-    border: 1px solid #dee2e6;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-}
-
-.sub-nav a {
-    color: #005fa3;
-    padding: 10px 15px;
-    text-decoration: none;
-    font-weight: 500; /* Medium weight */
-    transition: background-color 0.3s ease, color 0.3s ease;
-    border-radius: 4px; /* Add radius to individual links for hover effect */
-    margin: 0 3px; /* Spacing between links */
-}
-
-.sub-nav a:hover {
-    background-color: #e2e6ea;
-    color: #004a80;
-}
-
-.sub-nav a.active {
-    background-color: #005fa3; /* Primary color */
-    color: white;
-}
-
-</style>
 
     <div class="container">
         <?php
@@ -272,13 +194,16 @@ require_once __DIR__ . '/partials/header.php';
             // This area will be populated by AJAX or on initial load by fetch_content.php
             // On initial load, fetch_content.php is included directly here.
             // Check if it's an AJAX request by looking for the X-Requested-With header
+            echo "<!-- DEBUG: dashboard.php - Before fetch_content.php check -->\n";
             if (!isset($_SERVER['HTTP_X_REQUESTED_WITH']) || strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) !== 'xmlhttprequest') {
                  // Not an AJAX request, load content directly
                  // fetch_content.php will output the HTML for the requested view
                  // Pass necessary variables to fetch_content.php via include scope
                  // Note: Variables like $allJobs, $feedbackMessages, $users, $jobToEdit, $whatsappMessage, $telegramMessage
                  // loaded above (or rather, made available by fetch_content.php) are available in the scope of fetch_content.php when included here.
+                 echo "<!-- DEBUG: dashboard.php - Including fetch_content.php directly -->\n";
                  require_once __DIR__ . '/fetch_content.php';
+                 echo "<!-- DEBUG: dashboard.php - fetch_content.php included directly -->\n";
                  // The output from fetch_content.php (which includes the view file)
                  // will go directly into this div on the initial page load.
             } else {
@@ -288,12 +213,15 @@ require_once __DIR__ . '/partials/header.php';
                  // So, nothing to do here for AJAX requests on the initial page load within this block.
                  // The AJAX request is a separate HTTP request handled by fetch_content.php itself.
             }
+            echo "<!-- DEBUG: dashboard.php - After fetch_content.php check -->\n";
 
             // If the user is NOT logged in, display the login/registration/forgot password view directly
             // This happens on initial page load before AJAX takes over, OR if fetch_content redirects here.
             if (!$loggedIn) {
+                 echo "<!-- DEBUG: dashboard.php - User not logged in, including login.php -->\n";
                  // The login view uses $loginError, $registerMessage, $forgotPasswordMessage
                  require_once __DIR__ . '/views/login.php';
+                 echo "<!-- DEBUG: dashboard.php - login.php included -->\n";
             }
 
             ?>

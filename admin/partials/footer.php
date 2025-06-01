@@ -21,17 +21,23 @@ $userRoleForJS = $_SESSION['admin_role'] ?? 'user';
           // So, the unconditional <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> is removed from here.
     ?>
     <script>
+        console.log("--- FOOTER SCRIPT BLOCK STARTED ---"); 
         // Get the current view, logged-in status, and user role from PHP
-        const currentView = <?= json_encode($currentViewForJS) ?>;
-        const isLoggedIn = <?= $isLoggedInForJS ? 'true' : 'false' ?>;
-        const userRole = <?= json_encode($userRoleForJS) ?>; // Pass user role to JS
+        const currentView = <?= json_encode($currentViewForJS ?? 'error_view_not_set') ?>; // Add fallback for safety
+        const isLoggedIn = <?= isset($isLoggedInForJS) && $isLoggedInForJS ? 'true' : 'false' ?>; // Ensure boolean
+        const userRole = <?= json_encode($userRoleForJS ?? 'error_role_not_set') ?>; // Add fallback
         const mainContentDiv = document.getElementById('main-content');
+        console.log("[DEBUG] currentView:", currentView);
+        console.log("[DEBUG] isLoggedIn:", isLoggedIn);
+        console.log("[DEBUG] userRole:", userRole);
+        console.log("[DEBUG] mainContentDiv:", mainContentDiv);
 
         // --- GLOBAL MODAL CONTROL FUNCTIONS ---
         let currentModal = null; // Keep track of the currently open modal element
 
         // Function to open a modal element
         function openModal(modalElement) {
+            // console.log('[DEBUG] openModal called for:', modalElement); // Can be noisy
             if (modalElement) {
                 closeCurrentModal(); // Close any currently open modal first
                 currentModal = modalElement;
@@ -46,6 +52,7 @@ $userRoleForJS = $_SESSION['admin_role'] ?? 'user';
 
         // Function to close the currently open modal
         function closeCurrentModal() {
+            // console.log('[DEBUG] closeCurrentModal called. Current modal:', currentModal); // Can be noisy
             if (currentModal) {
                 currentModal.style.display = 'none';
                  // Optional: Clear the form or reset its state when closing
@@ -394,19 +401,20 @@ $userRoleForJS = $_SESSION['admin_role'] ?? 'user';
 
 
         document.addEventListener('DOMContentLoaded', () => {
-            console.log("DOMContentLoaded event fired."); // DEBUG: Check if DOMContentLoaded fires
+            console.log("--- DOMContentLoaded event fired ---"); 
 
              if (isLoggedIn && mainContentDiv) {
                  const initialViewFromPHP = currentView; // Use the JS const currentView
                  const urlParams = new URLSearchParams(window.location.search);
                  const initialJobIdFromUrl = urlParams.get('id');
                  const initialUsernameFromUrl = urlParams.get('username');
+                 console.log('[DEBUG] DOMContentLoaded: initialViewFromPHP =', initialViewFromPHP, ', initialJobIdFromUrl =', initialJobIdFromUrl, ', initialUsernameFromUrl =', initialUsernameFromUrl);
 
                  let initialFetchUrl = `fetch_content.php?view=${encodeURIComponent(initialViewFromPHP)}`;
                  if (initialViewFromPHP === 'edit_job' && initialJobIdFromUrl) {
                       initialFetchUrl += `&id=${encodeURIComponent(initialJobIdFromUrl)}`;
                  } else if ((initialViewFromPHP === 'manage_users' || initialViewFromPHP === 'edit_user') && initialUsernameFromUrl) {
-                      initialFetchUrl += `&username=${encodeURIComponent(initialUsernameFromUrl)}`;
+                     initialFetchUrl += `&username=${encodeURIComponent(initialUsernameFromUrl)}`;
                  }
 
                  mainContentDiv.innerHTML = '<p>Loading...</p>';
@@ -462,10 +470,22 @@ $userRoleForJS = $_SESSION['admin_role'] ?? 'user';
             // Sidebar Toggle Logic has been removed as the sidebar is now fixed.
             // No JavaScript is needed for toggling or cookie management for the sidebar.
 
-        }); // Close DOMContentLoaded listener
-
+            // User Dropdown Logic (AJAX links part - toggle logic moved to header.php)
+            const userDropdownMenuForAjax = document.getElementById('userDropdownMenu'); 
+            if (userDropdownMenuForAjax) {
+                // Ensure AJAX navigation works for links inside the dropdown if they are intended for AJAX
+                userDropdownMenuForAjax.querySelectorAll('a[href^="dashboard.php?view="]').forEach(link => {
+                    link.removeEventListener('click', handleNavLinkClick); // Remove if already attached by global selector
+                    link.addEventListener('click', handleNavLinkClick);
+                    // console.log('[DEBUG Footer] Attached AJAX nav to dropdown link:', link.href);
+                });
+            } else {
+                // This warning is now more relevant if the menu isn't found for AJAX link attachment.
+                // The header script will warn if elements are not found for the toggle itself.
+                console.warn('[DEBUG Footer] User dropdown menu (userDropdownMenu) NOT FOUND for attaching AJAX link handlers.');
+            }
+        }); // End DOMContentLoaded
     </script>
-
 
 </body>
 </html>

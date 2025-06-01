@@ -26,5 +26,12 @@
         "display_name": "Shaji",
         "role": "user",
         "status": "active"
+    },
+    {
+        "username": "sa@jobhunt.top",
+        "password_hash": "$2y$12$N7\/sgZg7tIuKOsyqtG.ZSe8rVP2b3.cUn6cMvowVym285RObcUeGm",
+        "display_name": "Hari",
+        "role": "user",
+        "status": "active"
     }
 ]

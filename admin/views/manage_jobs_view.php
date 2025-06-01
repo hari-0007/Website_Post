@@ -61,39 +61,41 @@ $pagedJobs = array_slice($filteredJobs, $startIndex, $jobsPerPage);
     </div>
 </header>
 
-<table>
-    <thead>
-        <tr>
-            <th>Title</th>
-            <th class="optional-column">Company</th>
-            <th>Location</th>
-            <th class="optional-column">Posted On</th>
-            <th class="actions-column">Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        <?php if (!empty($pagedJobs)): ?>
-            <?php foreach ($pagedJobs as $job): ?>
-                <tr>
-                    <td><?= htmlspecialchars($job['title'] ?? 'N/A') ?></td>
-                    <td class="optional-column"><?= htmlspecialchars($job['company'] ?? 'N/A') ?></td>
-                    <td><?= htmlspecialchars($job['location'] ?? 'N/A') ?></td>
-                    <td class="optional-column">
-                        <?= htmlspecialchars(date('M d, Y', strtotime($job['posted_at'] ?? $job['posted_on'] ?? 'now'))) ?>
-                    </td>
-                    <td class="actions-column">
-                        <a href="dashboard.php?view=edit_job&id=<?= urlencode($job['id']) ?>" class="button button-small button-edit">Edit</a>
-                        <a href="job_actions.php?action=delete_job&id=<?= urlencode($job['id']) ?>" class="button button-small button-danger" onclick="return confirm('Are you sure you want to delete this job? This action cannot be undone.')">Delete</a>
-                    </td>
-                </tr>
-            <?php endforeach; ?>
-        <?php else: ?>
+<div class="table-responsive-wrapper">
+    <table>
+        <thead>
             <tr>
-                <td colspan="4" style="text-align: center;">No jobs found.</td>
+                <th>Title</th>
+                <th class="optional-column">Company</th>
+                <th>Location</th>
+                <th class="optional-column">Posted On</th>
+                <th class="actions-column">Actions</th>
             </tr>
-        <?php endif; ?>
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            <?php if (!empty($pagedJobs)): ?>
+                <?php foreach ($pagedJobs as $job): ?>
+                    <tr>
+                        <td><?= htmlspecialchars($job['title'] ?? 'N/A') ?></td>
+                        <td class="optional-column"><?= htmlspecialchars($job['company'] ?? 'N/A') ?></td>
+                        <td><?= htmlspecialchars($job['location'] ?? 'N/A') ?></td>
+                        <td class="optional-column">
+                            <?= htmlspecialchars(date('M d, Y', strtotime($job['posted_at'] ?? $job['posted_on'] ?? 'now'))) ?>
+                        </td>
+                        <td class="actions-column">
+                            <a href="dashboard.php?view=edit_job&id=<?= urlencode($job['id']) ?>" class="button button-small button-edit">Edit</a>
+                            <a href="job_actions.php?action=delete_job&id=<?= urlencode($job['id']) ?>" class="button button-small button-danger" onclick="return confirm('Are you sure you want to delete this job? This action cannot be undone.')">Delete</a>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <tr>
+                    <td colspan="5" style="text-align: center;">No jobs found.</td> <!-- Adjusted colspan -->
+                </tr>
+            <?php endif; ?>
+        </tbody>
+    </table>
+</div>
 
 <!-- Pagination Controls -->
 <div class="pagination">

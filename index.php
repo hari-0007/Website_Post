@@ -974,6 +974,7 @@ if ($isAjaxRequest) {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <script src="https://www.google.com/recaptcha/api.js?onload=onloadRecaptchaCallback&render=explicit" async defer></script>
     <link rel="icon" type="image/png" href="/data/images/logo.png">
     <link rel="canonical" href="<?= htmlspecialchars($canonicalUrl) ?>" />
     <?php if ($shouldNoIndexThisPage): ?>
@@ -1988,6 +1989,7 @@ if ($isAjaxRequest) {
                     <input type="text" name="name" placeholder="Your Name" required>
                     <input type="email" name="email" placeholder="Your Email" required>
                     <textarea name="message" placeholder="Your Message" rows="3" required></textarea>
+                    <div id="feedbackRecaptchaContainer" style="margin-bottom: 10px; transform:scale(0.9); transform-origin:0 0; display:none;"></div>
                     <div id="responseMsg" class="feedback-message" style="display: none;"></div>
                     <button type="submit" class="button">Send</button>
                 </form>
@@ -2013,6 +2015,7 @@ if ($isAjaxRequest) {
             <input type="email" id="reportEmail" name="reportEmail">
             <label for="reportReason">Reason for Report:</label>
             <textarea id="reportReason" name="reportReason" rows="3" required placeholder="Please provide details..."></textarea>
+            <div id="reportRecaptchaContainer" style="margin-top:10px; margin-bottom: 10px; transform:scale(0.9); transform-origin:0 0;"></div>
             <div id="reportStatusMessage" style="display:none; margin-top:10px;"></div>
         </div>
 
@@ -2084,7 +2087,25 @@ if ($isAjaxRequest) {
     <script>
         // Embed all job data with PHP-generated Unix timestamps for JavaScript
         const allJobDataFromPHP = <?php echo json_encode($jobsForJS); ?>;
+        var feedbackRecaptchaWidgetId;
+        var reportRecaptchaWidgetId;
 
+        // Callback function for Google reCAPTCHA explicit rendering
+        function onloadRecaptchaCallback() {
+            // console.log("reCAPTCHA API loaded."); // For debugging
+            const feedbackContainer = document.getElementById('feedbackRecaptchaContainer');
+            if (feedbackContainer) {
+                feedbackRecaptchaWidgetId = grecaptcha.render('feedbackRecaptchaContainer', {
+                    'sitekey' : '6LcF92ErAAAAAB3je0xS2cQqHZ_EBwsC940zZTkS' // Replace with your Site Key
+                });
+            }
+            const reportContainer = document.getElementById('reportRecaptchaContainer');
+            if (reportContainer) {
+                reportRecaptchaWidgetId = grecaptcha.render('reportRecaptchaContainer', {
+                    'sitekey' : '6LcF92ErAAAAAB3je0xS2cQqHZ_EBwsC940zZTkS' // Replace with your Site Key
+                });
+            }
+        }
         let allJobPostsForCounts = []; // Renamed to avoid confusion, used specifically for counts
 
         // Cookie helper functions
@@ -2170,6 +2191,7 @@ if ($isAjaxRequest) {
             const name = reportNameField.value.trim();
             const email = reportEmailField.value.trim();
             const reason = reportReasonField.value.trim();
+            const recaptchaResponse = grecaptcha.getResponse(reportRecaptchaWidgetId);
 
             if (!reason) {
                 reportStatusMessage.textContent = 'Please provide a reason for the report.';
@@ -2208,6 +2230,7 @@ if ($isAjaxRequest) {
                 } else {
                     reportStatusMessage.textContent = data.message || 'Failed to submit report. Please try again.';
                     reportStatusMessage.style.color = 'red';
+                    if (typeof reportRecaptchaWidgetId !== 'undefined') grecaptcha.reset(reportRecaptchaWidgetId); // Corrected the typo in grecaptcha.reset
                 }
             })
             .catch(error => {
@@ -2435,6 +2458,9 @@ if ($isAjaxRequest) {
                 return res.json();
             })
             .then(data => {
+                if (data.captcha_error) { // Check for captcha error specifically
+                    if (typeof feedbackRecaptchaWidgetId !== 'undefined') grecaptcha.reset(feedbackRecaptchaWidgetId);
+                }
                 console.log("Feedback response data:", data); // Log parsed JSON data
                 responseBox.innerText = data.message;
                 responseBox.className = 'feedback-message ' + (data.success ? 'success' : 'error');
@@ -2707,6 +2733,22 @@ if ($isAjaxRequest) {
                     // Optional: Reload to apply PHP logic immediately if needed,
                     // or to ensure visitor counter updates if it's the first consent.
                     // window.location.reload(); 
+      });
+        }
+
+        // Logic to show feedback reCAPTCHA only after typing in message
+        const feedbackTextarea = document.querySelector('#feedbackForm textarea[name="message"]');
+        const feedbackRecaptchaDiv = document.getElementById('feedbackRecaptchaContainer');
+        let feedbackRecaptchaShown = false;
+
+        if (feedbackTextarea && feedbackRecaptchaDiv) {
+            feedbackTextarea.addEventListener('input', function() {
+                if (!feedbackRecaptchaShown && feedbackTextarea.value.trim() !== '') {
+                    feedbackRecaptchaDiv.style.display = 'block'; // Or 'flex' if reCAPTCHA widget needs it
+                    // You might want to adjust the transform origin or scale here if needed when it becomes visible
+                    feedbackRecaptchaShown = true;
+                    // The reCAPTCHA should render automatically if the API is loaded and the container is visible.
+                }
                 });
             }
 

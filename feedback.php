@@ -1,13 +1,58 @@
 <?php
-// feedback.php
+session_start(); // Keep if other parts of your script might use sessions
 
 header('Content-Type: application/json');
 
-// Include configuration for file path
-require_once __DIR__ . '/admin/includes/config.php';
+// Include configuration for file path (if needed for other constants, though not directly for feedback.json path here)
+// require_once __DIR__ . '/admin/includes/config.php'; // Assuming USER_UNIQUE_ID_COOKIE_NAME is defined here or globally
+
+// Define USER_UNIQUE_ID_COOKIE_NAME if not already defined via config.php
+if (!defined('USER_UNIQUE_ID_COOKIE_NAME')) {
+    define('USER_UNIQUE_ID_COOKIE_NAME', 'user_unique_site_id');
+}
+
 
 // Path to the feedback data file
 $feedbackFilename = __DIR__ . '/data/feedback.json';
+
+// --- Google reCAPTCHA Verification ---
+function verifyRecaptcha($recaptchaResponse, $secretKey) {
+    $url = 'https://www.google.com/recaptcha/api/siteverify';
+    $data = [
+        'secret'   => $secretKey,
+        'response' => $recaptchaResponse,
+        'remoteip' => $_SERVER['REMOTE_ADDR'] ?? null // Optional: IP of the user
+    ];
+    $options = [
+        'http' => [
+            'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+            'method'  => 'POST',
+            'content' => http_build_query($data),
+            'timeout' => 5 // 5 second timeout for the request
+        ],
+    ];
+    $context  = stream_context_create($options);
+    $result = @file_get_contents($url, false, $context); // Use @ to suppress errors if request fails, check $result
+
+    if ($result === FALSE) {
+        // Log error or handle failure to connect to Google's API
+        error_log("reCAPTCHA verification request failed for feedback form.");
+        return false;
+    }
+    $responseKeys = json_decode($result, true);
+    // error_log("reCAPTCHA verification response for feedback: " . print_r($responseKeys, true)); // For debugging
+    return ($responseKeys && isset($responseKeys["success"]) && $responseKeys["success"]);
+}
+
+$recaptchaSecretKey = '6LcF92ErAAAAAHO38liOFIgrapN-KriFuVxK3zwq'; // <-- REPLACE WITH YOUR ACTUAL SECRET KEY
+$userRecaptchaResponse = $_POST['g-recaptcha-response'] ?? '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !verifyRecaptcha($userRecaptchaResponse, $recaptchaSecretKey)) {
+    echo json_encode(['success' => false, 'message' => 'reCAPTCHA verification failed. Please try again.', 'captcha_error' => true]);
+    exit;
+}
+// --- End Google reCAPTCHA Verification ---
+
 
 // Get and sanitize input
 $name = trim($_POST['name'] ?? '');
@@ -120,10 +165,6 @@ if (!function_exists('get_ai_message_analysis')) {
             $analysis = ['emotion_label' => 'disagreement', 'emoji' => '👎', 'sticker_id' => 'sticker_disagreement.png'];
         }
 
-        // For backward compatibility, also add the emoji directly to the analysis result
-        // if other parts of the system might still expect `detected_emotion_emoji` directly.
-        // $analysis['detected_emotion_emoji'] = $analysis['emoji'];
-
         return $analysis;
     }
 }
@@ -132,8 +173,6 @@ if (!function_exists('get_ai_message_analysis')) {
 // --- Wrapper for backward compatibility or accidental old calls ---
 if (!function_exists('get_emotion_emoji_from_text')) {
     function get_emotion_emoji_from_text($text) {
-        // Ensure get_ai_message_analysis is available.
-        // It's defined above this point in the current file structure.
         $analysis = get_ai_message_analysis($text);
         return $analysis['emoji'] ?? '😐'; // Return emoji, with a fallback
     }
@@ -150,7 +189,7 @@ $newFeedback = [
     'id' => time() . '_' . mt_rand(1000, 9999), // Simple unique ID
     'name' => htmlspecialchars($name, ENT_QUOTES, 'UTF-8'), // Sanitize output
     'email' => htmlspecialchars($email, ENT_QUOTES, 'UTF-8'), // Sanitize output
-    'message' => $message, // Allow special characters without sanitizing here
+    'message' => $message, // Allow special characters without sanitizing here for storage
     'timestamp' => time(), // Unix timestamp
     'read' => false, // New messages are unread
     'flagged' => false, // New messages are not flagged
@@ -165,7 +204,7 @@ $newFeedback = [
 array_unshift($feedback, $newFeedback);
 
 // Save the updated feedback array
-$jsonData = json_encode($feedback, JSON_PRETTY_PRINT);
+$jsonData = json_encode($feedback, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES); // Added JSON_UNESCAPED_SLASHES
 if ($jsonData === false) {
     error_log("Feedback Error: Could not encode feedback data to JSON: " . json_last_error_msg());
     echo json_encode([

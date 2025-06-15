@@ -1,5 +1,10 @@
 <?php
 // Ensure no whitespace or output before this tag
+
+// Send X-Robots-Tag to prevent indexing of admin pages
+if (isset($loggedIn) && $loggedIn) { // Apply only when in a logged-in admin context
+    header('X-Robots-Tag: noindex, nofollow', true);
+}
 // error_log("[DEBUG] header.php: LoggedIn: " . (isset($loggedIn) ? ($loggedIn ? 'Yes' : 'No') : 'NOT SET') . " | RequestedView: " . ($requestedView ?? 'NOT SET'));
 ?>
 <!DOCTYPE html>
@@ -7,6 +12,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="../data/images/logo.png"> <!-- Path relative to admin/partials/ -->
     <title>Admin Panel<?= isset($loggedIn) && $loggedIn && isset($requestedView) ? ' - ' . ucwords(str_replace('_', ' ', $requestedView)) : '' ?></title>
     <style>
         /* SolarWinds-Inspired Professional Admin Panel Styles */
@@ -194,6 +200,11 @@
         .admin-sidebar-brand .logo-icon { /* For a potential logo icon */
             margin-right: 10px;
             font-size: 1.5em;
+        }
+        .admin-sidebar-brand .logo-image { /* For the actual logo image */
+            height: 35px; /* Adjust size as needed */
+            width: auto;
+            margin-right: 10px;
         }
 
         .admin-sidebar-nav-wrapper {
@@ -594,8 +605,8 @@
 
     <aside class="admin-sidebar" id="adminSidebar">
         <a href="dashboard.php?view=dashboard_overview" class="admin-sidebar-brand">
-            <!-- <span class="logo-icon">🚀</span> Replace with your logo/icon -->
-            YourPanel
+            <img src="../data/images/logo.png" alt="Site Logo" class="logo-image"> <!-- Added logo.png -->
+            <span>Admin Panel</span> <!-- Changed from YourPanel -->
         </a>
         <div class="admin-sidebar-nav-wrapper">
             <nav>

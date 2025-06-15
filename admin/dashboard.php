@@ -6,6 +6,7 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 // Ensure no whitespace or output before this tag
 session_start(); // Make sure session is started
+header('X-Robots-Tag: noindex, nofollow', true);
 
 // Include configuration and helper functions
 require_once __DIR__ . '/includes/config.php';

@@ -1,10 +1,13 @@
 <?php
+ob_start(); // Start output buffering at the very beginning for header manipulation
 session_start();
+
 
 define('COOKIE_CONSENT_STATUS_NAME', 'cookie_consent_status');
 define('USER_INTERESTS_COOKIE_NAME', 'user_job_interests');
 define('USER_VIEWED_JOB_IDS_COOKIE_NAME', 'user_viewed_job_ids'); // New cookie for viewed job IDs
 define('USER_UNIQUE_ID_COOKIE_NAME', 'user_unique_site_id'); // New cookie for unique user ID
+define('JOIN_CHANNELS_POPUP_SHOWN_COOKIE_NAME', 'join_channels_popup_shown'); // Cookie for the new popup
 define('MAX_USER_INTERESTS', 5); // Store up to 5 recent interests
 
 // At the top of index.php
@@ -275,17 +278,46 @@ $isRecommendationsView = isset($_GET['recommendations']) && $_GET['recommendatio
 // Check if a specific job ID is requested to be expanded
 $jobIdToExpandFromUrl = isset($_GET['job_id']) ? trim($_GET['job_id']) : null;
 $singleJobView = false;
+$jobWasFoundForSingleView = false; // Flag to indicate if the job_id in URL was valid
 
 if ($jobIdToExpandFromUrl) {
-    $foundJob = null;
-    foreach ($phpJobsArray as $job) { // $phpJobsArray is currently the full list from $decodedJobs
-        if (isset($job['id']) && $job['id'] === $jobIdToExpandFromUrl) {
-            $foundJob = $job;
-            break;
+    $tempFoundJob = null;
+    // IMPORTANT: Check against $decodedJobs (the full, unfiltered list from JSON)
+    if (!empty($decodedJobs)) { // Ensure $decodedJobs is populated
+        foreach ($decodedJobs as $job_item) {
+            if (isset($job_item['id']) && $job_item['id'] === $jobIdToExpandFromUrl) {
+                $tempFoundJob = $job_item;
+                break;
+            }
         }
     }
-    $phpJobsArray = $foundJob ? [$foundJob] : []; // If found, phpJobsArray now contains only this job
-    $singleJobView = (bool)$foundJob;
+
+    if ($tempFoundJob) {
+        $phpJobsArray = [$tempFoundJob]; // Now $phpJobsArray contains only this job
+        $singleJobView = true;
+        $jobWasFoundForSingleView = true; // Mark that the job was found
+
+        // If a single job is viewed, reset filter parameters for display and canonical URL generation.
+        // This ensures the canonical URL is clean for the single job page.
+        $search_param_raw = ''; $search_param = '';
+        $type_param_raw = ''; $type_param = '';
+        $filter_param_raw = 'all'; $filter_param = 'all';
+        $isRecommendationsView = false; // Single job view overrides recommendations view state
+    } else {
+        // Job ID was specified in URL, but not found in the master list. Issue a 404.
+        ob_clean(); // Clear any output that might have occurred (like session cookie headers)
+        header("HTTP/1.1 404 Not Found");
+        // Output a custom 404 page
+        echo "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"UTF-8\"><title>404 Job Not Found</title>";
+        echo "<style>body { font-family: Arial, sans-serif; text-align: center; padding-top: 50px; } h1 { color: #333; } p { color: #666; } a { color: #007bff; text-decoration: none; }</style>";
+        echo "</head><body>";
+        echo "<h1>404 - Job Not Found</h1>";
+        echo "<p>The job you are looking for (ID: " . htmlspecialchars($jobIdToExpandFromUrl) . ") does not exist or is no longer available.</p>";
+        echo "<p><a href=\"" . strtok($_SERVER["REQUEST_URI"], '?') . "\">Return to Job Listings</a></p>";
+        echo "</body></html>";
+        ob_end_flush(); // Send the output
+            exit; // Stop script execution after sending 404 page
+    }
 }
 
 // Interest-based filtering logic
@@ -633,16 +665,87 @@ $offset = ($page - 1) * $limit;
 $pagedJobs = array_slice($filteredJobs, $offset, $limit);
 
 function formatAiSummary($summary) {
+    if ($summary === null) return ''; // Handle null summaries
     $formatted = preg_replace('/\*\*(.*?)\*\*/', '<strong>$1</strong>', $summary);
     $formatted = nl2br($formatted);
     return $formatted;
 }
+
+// --- Canonical URL and Prev/Next Links Logic ---
+$protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
+$host = $_SERVER['HTTP_HOST'];
+$currentUrlPath = strtok($_SERVER["REQUEST_URI"], '?'); // Path without query string, e.g., /index.php
+
+$canonicalUrlParams = [];
+
+// 1. Single Job View (if $jobWasFoundForSingleView is true)
+if ($singleJobView && $jobWasFoundForSingleView && isset($jobIdToExpandFromUrl)) {
+    $canonicalUrl = $protocol . $host . $currentUrlPath . '?job_id=' . urlencode($jobIdToExpandFromUrl);
+} else {
+    // 2. Recommendations View
+    if ($isRecommendationsView) {
+        $canonicalUrlParams['recommendations'] = '1';
+    }
+
+    // 3. Filters and Search (using processed parameters for consistency)
+    if (!empty($search_param)) { // $search_param is from trim(strtolower($_GET['search']))
+        $canonicalUrlParams['search'] = $search_param;
+    }
+    if (!empty($type_param)) { // $type_param is strtolower, 'all' becomes ''
+        $canonicalUrlParams['type'] = $type_param;
+    }
+    if ($filter_param !== 'all') { // $filter_param is validated
+        $canonicalUrlParams['filter'] = $filter_param;
+    }
+
+    // 4. Pagination
+    $currentPageForCanonical = isset($_GET['page']) ? intval($_GET['page']) : 1;
+    if ($currentPageForCanonical > 1) { // Only add 'page' param if it's not the first page
+        $canonicalUrlParams['page'] = $currentPageForCanonical;
+    }
+
+    // Sort parameters by key to ensure consistent URL regardless of $_GET order
+    ksort($canonicalUrlParams);
+
+    $canonicalQueryString = http_build_query($canonicalUrlParams);
+    $canonicalUrl = $protocol . $host . $currentUrlPath . ($canonicalQueryString ? '?' . $canonicalQueryString : '');
+}
+
+$prevLink = null;
+$nextLink = null;
+if (!$singleJobView && $totalPages > 1) {
+    $paginationBaseParamsForPrevNext = $canonicalUrlParams; // Start with params used for canonical
+    unset($paginationBaseParamsForPrevNext['page']); // Remove page from base for constructing prev/next
+
+    if ($page > 1) { // $page is the current page number from $_GET['page'] ?? 1
+        $prevPageParams = $paginationBaseParamsForPrevNext;
+        if ($page > 2) { $prevPageParams['page'] = $page - 1; } // Link to page 1 has no 'page' param
+        $prevQueryString = http_build_query($prevPageParams);
+        $prevLink = $protocol . $host . $currentUrlPath . ($prevQueryString ? '?' . $prevQueryString : '');
+    }
+    if ($page < $totalPages) {
+        $nextPageParams = $paginationBaseParamsForPrevNext;
+        $nextPageParams['page'] = $page + 1;
+        $nextLink = $protocol . $host . $currentUrlPath . '?' . http_build_query($nextPageParams);
+    }
+}
+// --- End Canonical URL and Prev/Next Links Logic ---
+
+// --- Logic for Conditional Noindex ---
+$shouldNoIndexThisPage = false;
+if (!$singleJobView && empty($pagedJobs) && ($search_param !== '' || $type_param !== '' || $filter_param !== 'all' || $isRecommendationsView)) {
+    // Condition: Not a single job view, no paged jobs found (meaning filteredJobs was empty or pagination resulted in no jobs for this page),
+    // AND at least one filter/search/recommendation is active.
+    // This avoids noindexing the main "all jobs" page if it's temporarily empty or a high page number of an empty filter.
+    $shouldNoIndexThisPage = true;
+}
+// --- End Logic for Conditional Noindex ---
 ?>
 
 <?php
 // Start of the function to render job listings and pagination
 function render_job_listings_and_pagination($pagedJobs, $singleJobView, $totalPages, $search, $filter, $jobType, $page, $isRecommendationsView = false) {
-    ob_start(); 
+    ob_start();
 ?>
     <?php if(empty($pagedJobs)): ?>
         <p class="no-jobs-message">No matching jobs found for the current criteria.</p>
@@ -665,11 +768,9 @@ function render_job_listings_and_pagination($pagedJobs, $singleJobView, $totalPa
                 <span class="animated-icon icon-briefcase" style="top: <?= rand(5, 95) ?>%; left: <?= rand(5, 95) ?>%; animation-delay: -<?= rand(0, 10) ?>s;">💼</span>
                 <span class="animated-icon icon-document" style="top: <?= rand(5, 95) ?>%; left: <?= rand(5, 95) ?>%; animation-delay: -<?= rand(0, 10) ?>s;">📄</span>
                 <span class="animated-icon icon-profile" style="top: <?= rand(5, 95) ?>%; left: <?= rand(5, 95) ?>%; animation-delay: -<?= rand(0, 10) ?>s;">👤</span>
+                <span class="animated-icon icon-graph" style="top: <?= rand(5, 95) ?>%; left: <?= rand(5, 95) ?>%; animation-delay: -<?= rand(0, 10) ?>s;">📈</span>
             </div>
-            <!-- Job Card Title with Shadow -->
-            <style>
-                .job-card h3 { text-shadow: 1px 1px 3px rgba(0,0,0,0.15); }
-            </style>
+
             <h3>
                 <?= htmlspecialchars($job['title'] ?? 'N/A') ?>
                 <?php if (!empty($job['vacant_positions']) && $job['vacant_positions'] > 1): ?>
@@ -683,7 +784,7 @@ function render_job_listings_and_pagination($pagedJobs, $singleJobView, $totalPa
                     </span>
                 <?php endif; ?>
             </h3>
-            <p class="job-card-company-location" style="position: relative; z-index: 2;"> <!-- Ensure text is above icons -->
+            <p class="job-card-company-location"> <!-- position: relative; z-index: 2; handled by general CSS rule now -->
             <strong><?= htmlspecialchars($job['company'] ?? 'N/A') ?></strong> – <?= htmlspecialchars($job['location'] ?? 'N/A') ?><br>
             
             <p class="job-summary" style="margin-top: 5px; margin-bottom: 10px;"><?= formatAiSummary(substr($job['ai_summary'] ?? '', 0, 300)) ?><?php if(strlen($job['ai_summary'] ?? '') > 300) echo "..."; ?></p>
@@ -873,11 +974,21 @@ if ($isAjaxRequest) {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>UAE Job Portal</title>
+    <link rel="icon" type="image/png" href="/data/images/logo.png">
+    <link rel="canonical" href="<?= htmlspecialchars($canonicalUrl) ?>" />
+    <?php if ($shouldNoIndexThisPage): ?>
+    <meta name="robots" content="noindex, follow" />
+    <?php endif; ?>
+    <?php if ($prevLink): ?>
+    <link rel="prev" href="<?= htmlspecialchars($prevLink) ?>" />
+    <?php endif; ?>
+    <?php if ($nextLink): ?>
+    <link rel="next" href="<?= htmlspecialchars($nextLink) ?>" />
+    <?php endif; ?>
+    <title>Top Job Hunt</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         * { box-sizing: border-box; }
-        body { font-family: Arial, sans-serif; margin:0; padding:0; background:var(--body-bg); color:#333; }
         .container { width:100%; }
         .job-card.job-card-active {
     box-shadow: 0 0 25px rgba(0, 0, 0, 0.15);  /* Secondary shadow for depth */
@@ -885,6 +996,77 @@ if ($isAjaxRequest) {
     background: linear-gradient(to bottom, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 30%), #fff; /* Brighter gloss when active */
     border-left-color: #005fa3; /* Highlight color */
 }
+        body { 
+            font-family: Arial, sans-serif; margin:0; padding:0; background:var(--body-bg); color:#333; 
+            padding-top: 20px; /* Add some padding to the top since the header is removed */
+        }
+        /* New Site Header Styles */
+        .site-header-main {
+            display: flex;
+            align-items: center;
+            justify-content: center; /* Center items in the header */
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            /* background-color: #f8f9fa; */ /* Optional: light background for the header */
+            /* border-bottom: 1px solid #e0e0e0; */ /* Optional: subtle border */
+        }
+        .site-logo img { /* Changed from svg to img */
+            width: 50px; /* Adjust size as needed */
+            height: 50px;
+            margin-right: 10px; /* Adjusted margin */
+        }
+        .site-title-main {
+            font-size: 2em; /* Adjust size as needed */
+            color: #005fa3; /* Theme color */
+            font-weight: bold;
+            margin: 0;
+            text-decoration: none;
+        }
+
+        /* 2D Animation Styles for Job Cards */
+        .job-card .animated-icons-container { /* Specific to job cards */
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1; /* Behind text content within the job card */
+            pointer-events: none; /* So icons don't interfere with clicks */
+            border-radius: inherit; /* Inherit border-radius from job-card */
+        }
+        .job-card .animated-icon { /* Specific to job cards */
+            position: absolute;
+            font-size: 18px; /* Slightly smaller for job cards */
+            color: #005fa3; /* Primary blue for icons */
+            opacity: 0.08; /* More subtle for job cards */
+            animation: float 15s infinite ease-in-out alternate;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0px) translateX(0px) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-10px) translateX(8px) rotate(3deg); /* Less movement */
+            }
+            100% {
+                transform: translateY(3px) translateX(-8px) rotate(-3deg); /* Less movement */
+            }
+        }
+
+        /* Ensure job card content is above animated icons */
+        .job-card > h3,
+        .job-card > p, /* This will target all direct p children */
+        .job-card > small,
+        .job-card > .job-details, /* The container for expanded details */
+        .job-card > .share-button { /* The share button itself */
+            position: relative;
+            z-index: 2;
+        }
+        .job-card h3 { /* Moved from inline style in PHP */
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.15); 
+        }
 
         /* Styles for different bold job titles */
         .job-title-bold-style-1 {
@@ -895,70 +1077,6 @@ if ($isAjaxRequest) {
             /* Or, for more distinctness if font weights are limited: */
             /* font-family: 'Impact', Haettenschweiler, 'Arial Narrow Bold', sans-serif; */
         }
-
-        .title-card {
-            background: #ffffff; /* White background */
-            background-color: var(--body-bg); /* New: Very light cool blue/off-white */
-            color: #2c3e50;
-            padding: 60px 20px; /* Increased padding */
-            margin-bottom: 20px; /* Increased margin */
-            text-align:center;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.07); /* Slightly softer, more diffused shadow */
-            width: 100%;
-            position: relative; /* For potential pseudo-elements or overlays */
-            overflow: hidden;
-            z-index: 1; /* Lower z-index than main content */
-            transition: opacity 0.3s ease-out, transform 0.3s ease-out; /* Add transform to transition */
-            transform-origin: center bottom; /* Set transform origin for potential rotation */
-            border-radius: 12px; /* Add some rounded corners for a softer look */
-        }
-        .title-card h1 {
-            margin:0 0 20px; /* Increased bottom margin */
-            font-size: 40px; /* Slightly larger */
-            color: #005fa3; /* Ensure heading is white */
-            font-weight: 700; /* Maintain existing weight or adjust if needed for clarity */
-            letter-spacing: -0.5px;
-            position: relative; /* To ensure it's above animated icons if they overlap */
-            z-index: 2;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.1); /* Subtle text shadow */
-        }
-        .title-card p {
-            font-size: 19px; /* Slightly larger */
-            color: #4a5568; /* Slightly softer dark grey */
-            margin-bottom: 35px; /* More space */
-            opacity: 0.95;
-            max-width: 700px; /* Constrain width of paragraph for better line length */
-            margin-left: auto;
-            margin-right: auto;
-            line-height: 1.6;
-            position: relative; /* To ensure it's above animated icons */
-            z-index: 2;
-            line-height: 1.7; /* Increased line height */
-        }
-        .title-card .join-buttons {
-            display:inline-flex;
-            gap:12px; /* Slightly more gap */
-            flex-wrap:wrap;
-            justify-content:center;
-            position: relative; /* To ensure it's above animated icons */
-            z-index: 2;
-        }
-
-        .title-card .join-buttons a {
-            color:#fff; text-decoration:none; padding:12px 22px; /* More padding for buttons */
-            border-radius:6px; /* Slightly more rounded */
-            transition: background-color 0.3s, border-color 0.3s;
-            font-weight: 500; /* Clearer button text */
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .title-card .join-buttons a.whatsapp { background:#25D366; }
-        .title-card .join-buttons a.telegram { background:#0088cc; } /* Corrected class name */
-        .title-card .join-buttons a:hover {
-            opacity:.85; /* Slightly more noticeable opacity change */
-            transform: translateY(-2px); /* Slightly more lift */
-            box-shadow: 0 4px 10px rgba(0,0,0,0.12); /* Enhanced shadow on hover */
-        }
-
         /* 2D Animation Styles */
         .animated-icons-container {
             position: absolute;
@@ -995,7 +1113,6 @@ if ($isAjaxRequest) {
                 transform: translateY(5px) translateX(-10px) rotate(-5deg);
             }
         }
-
         .content-wrapper { display:flex; gap:20px; padding:0 20px; }
 
         .sidebar { width:220px; background:var(--body-bg); padding:20px; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,0.05); flex-shrink:0; }
@@ -1160,7 +1277,6 @@ if ($isAjaxRequest) {
             .mobile-filters {
                 display: flex; /* Show and use flex for layout */
             }
-             .title-card { padding: 20px 10px; /* Adjust title card padding */ }
              .job-card .share-button-container {
                 margin-top: 15px;    /* Adjusted top margin for mobile */
                 margin-bottom: 15px; /* Adjusted bottom margin for mobile */
@@ -1182,9 +1298,6 @@ if ($isAjaxRequest) {
         @media(max-width:600px){
              .button, .search-bar button {width:100%; text-align:center;}
              .search-bar form { flex-direction: column; } /* Stack search inputs vertically */
-             .search-bar input[type="text"], .search-bar button { width: 100%; } /* Full width for stacked elements */
-             .title-card h1 { font-size: 24px; }
-             .title-card p { font-size: 14px; }
              .modal-content { width: 95%; /* Make modal slightly wider on very small screens */ }
         }
         /* --- End Responsive Styles --- */
@@ -1535,6 +1648,22 @@ if ($isAjaxRequest) {
         }
         .caution-message-modal p { margin-bottom: 10px; line-height: 1.5; color: #555; }
 
+        /* Styles for the new Join Channels Popup */
+        #joinChannelsPopup {
+            /* Uses .modal styles for base, can add specifics */
+            text-align: center;
+        }
+        #joinChannelsPopup .modal-content {
+            max-width: 450px; /* Slightly wider for two buttons */
+        }
+        #joinChannelsPopup h4 {
+            margin-bottom: 15px;
+            font-size: 1.5em; /* Larger title */
+        }
+        #joinChannelsPopup p {
+            margin-bottom: 20px;
+        }
+
         .caution-message-modal .close-caution-modal {
             float: right;
             font-size: 1.5rem;
@@ -1719,6 +1848,10 @@ if ($isAjaxRequest) {
         .share-option-button.email { background-color: #7f8c8d; } /* A neutral email color */
 
         /* AJAX Loading and Transition Styles */
+        #job-listings-container {
+            perspective: 1000px; /* Enables 3D space for children transforms like translateZ */
+            position: relative; /* Establishes a stacking context and reference for absolute children if any */
+        }
         #job-listings-container.loading-content {
             opacity: 0.5; /* Dim the content while loading new data */
             transition: opacity 0.2s ease-in-out;
@@ -1745,50 +1878,18 @@ if ($isAjaxRequest) {
             #cookieConsentBanner .button { width: auto; padding: 8px 15px; font-size: 13px; }
         }
     </style>
-    <!-- Ensure the 3D background div doesn't interfere if not used, or styles it minimally -->
-    <style>
-        #title-card-3d-background {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0; /* Behind animated icons and text */
-            pointer-events: none; /* If it's purely decorative and shouldn't capture mouse events */
-        }
-        /* Ensure the canvas created by Three.js fills the container */
-        #title-card-3d-background canvas {
-            display: block; /* Removes extra space below canvas */
-            width: 100% !important; /* Override Three.js inline styles if necessary */
-            height: 100% !important; /* Override Three.js inline styles if necessary */
-        }
-    </style>
 </head>
 <body>
 
     <div class="container">
-        <div class="title-card">
-            <!-- Layer 0: Potential 3D Background -->
-            <div id="title-card-3d-background" class="title-card-animation-bg">
-                <!-- The 3D scene will be rendered here by Three.js -->
-            </div>
-            <!-- Layer 1: 2D Animated Icons -->
-            <div class="animated-icons-container">
-                <!-- Replace emojis with actual font icons (e.g., Font Awesome) or SVGs -->
-                <span class="animated-icon icon-magnify">🔍</span>
-                <span class="animated-icon icon-briefcase">💼</span>
-                <span class="animated-icon icon-document">📄</span>
-                <span class="animated-icon icon-profile">👤</span>
-                <span class="animated-icon icon-graph">📈</span>
-            </div>
-            <!-- Layer 2: Content -->
-            <h1>🎯 Discover the Latest Jobs in UAE</h1>
-            <p>Find fresh opportunities daily from top companies across UAE. Remote, onsite, and hybrid roles available.</p>
-            <div class="join-buttons">
-            <a href="https://whatsapp.com/channel/0029VbBMdgCI7BeBLRm1Au1I" target="_blank" class="whatsapp">Join WhatsApp</a>
-                <a href="https://t.me/uaejobprofessionals" target="_blank" class="telegram">Join Telegram</a>
-            </div>
-        </div>
+        <header class="site-header-main">
+            <a href="<?= strtok($_SERVER["REQUEST_URI"], '?') ?>" class="site-logo-link" aria-label="Homepage">
+                <div class="site-logo">
+                    <img src="/data/images/logo.png" alt="Job Portal Logo">
+                </div>
+            </a>
+            <a href="<?= strtok($_SERVER["REQUEST_URI"], '?') ?>" class="site-title-main">Job Hunt</a>
+        </header>
 
         <div class="content-wrapper">
             <aside class="sidebar">
@@ -1921,6 +2022,16 @@ if ($isAjaxRequest) {
                 </div>
     </div>
 
+        <!-- New Join Channels Popup Modal -->
+    <div id="joinChannelsPopup" class="modal" style="display:none;">
+        <div class="modal-content">
+            <span class="close" onclick="closeJoinChannelsPopup()">&times;</span>
+            <h4>🚀 Stay Ahead!</h4>
+            <p>Don't miss out on the latest job opportunities. Join our channels for daily updates:</p>
+            <a href="https://whatsapp.com/channel/0029VbBMdgCI7BeBLRm1Au1I" target="_blank" class="join-now button" onclick="handleJoinChannelsClick()">Join WhatsApp</a>
+            <a href="https://t.me/uaejobprofessionals" target="_blank" class="join-telegram button" onclick="handleJoinChannelsClick()" style="margin-left: 10px;">Join Telegram</a>
+        </div>
+    </div>
     <div id="telegramModal" class="modal" style="display:none;">
         <div class="modal-content">
             <span class="close" onclick="closeTelegramModal()">&times;</span>
@@ -2574,6 +2685,7 @@ if ($isAjaxRequest) {
         }
 
         const CONSENT_COOKIE_NAME_JS = '<?php echo COOKIE_CONSENT_STATUS_NAME; ?>'; // Use PHP constant
+        const JOIN_CHANNELS_POPUP_COOKIE_NAME_JS = '<?php echo JOIN_CHANNELS_POPUP_SHOWN_COOKIE_NAME; ?>';
 
         window.onload = function() {
             processJobDataForCounts(); // Process the PHP-provided data
@@ -2606,7 +2718,31 @@ if ($isAjaxRequest) {
                 });
             }
             */
+            // --- New Join Channels Popup Logic ---
+            const joinChannelsPopup = document.getElementById('joinChannelsPopup');
+            if (joinChannelsPopup && !getCookie(JOIN_CHANNELS_POPUP_COOKIE_NAME_JS)) {
+                // Show the popup after a short delay to make it less abrupt
+                setTimeout(() => {
+                    joinChannelsPopup.style.display = 'flex';
+                }, 1500); // 1.5 second delay
+            }
         };
+        function closeJoinChannelsPopup() {
+            const joinChannelsPopup = document.getElementById('joinChannelsPopup');
+            if (joinChannelsPopup) {
+                joinChannelsPopup.style.display = 'none';
+            }
+            // Set cookie to prevent showing again for 1 day
+            setCookie(JOIN_CHANNELS_POPUP_COOKIE_NAME_JS, 'true', 1);
+        }
+
+        function handleJoinChannelsClick() {
+            // This function is called when a user clicks a join button.
+            // We want to close the popup and set the cookie.
+            // The actual navigation will be handled by the link's href.
+            closeJoinChannelsPopup();
+            // No need to preventDefault, as we want the link to work.
+        }
         // Sticky mobile filters interaction with footer
         const mobileFilters = document.querySelector('.mobile-filters');
         const siteFooter = document.querySelector('.site-footer');
@@ -2860,7 +2996,7 @@ if ($isAjaxRequest) {
         });
 
     </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script>
         // --- Three.js Background Animation for Title Card: Rotating Icosahedron ---
         let scene, camera, renderer, icosahedronMesh;
@@ -2942,43 +3078,9 @@ if ($isAjaxRequest) {
             // We can add to it or have a separate one. For clarity, a separate call here is fine.
             initThreeJS();
         });
-
-        // --- Title Card Fade Out on Scroll ---
-        const titleCard = document.querySelector('.title-card');
-        const mainContentStart = document.querySelector('main'); // Or a more specific element marking start of main content
-
-        if (titleCard && mainContentStart) {
-            window.addEventListener('scroll', function() {
-                const titleCardHeight = titleCard.offsetHeight;
-                // Get the top position of the main content area relative to the viewport
-                const mainContentTop = mainContentStart.getBoundingClientRect().top;
-                
-                // Start fading when the top of main content is about to overlap the title card
-                // Let's say we start fading when main content is 100px above the bottom of the title card
-                // and fully faded when main content top is at the title card's top.
-                // This means the fade happens over the height of the title card.
-
-                // Calculate how much of the title card is "covered" by the scroll
-                // A simpler approach: start fading when main content is near the top of the viewport
-                // and fully fade out as it scrolls further up.
-                
-                let opacity = 1;
-                // Start fading when the top of the title card is about to go off-screen
-                // and be fully faded when, say, half of it is off-screen.
-                const titleCardTop = titleCard.getBoundingClientRect().top;
-                const fadeStartOffset = 0; // Start fading immediately as it scrolls up
-                const fadeDistance = titleCardHeight * 0.7; // Fade out over 70% of its height (adjust as needed)
-                const maxTranslateY = 50; // Max vertical movement in pixels (adjust as needed)
-                // const maxRotateX = 5; // Max tilt in degrees (adjust as needed, requires perspective on parent)
-
-                if (titleCardTop < fadeStartOffset) {
-                    opacity = Math.max(0, 1 - (Math.abs(titleCardTop - fadeStartOffset) / fadeDistance));
-                    const translateY = Math.min(maxTranslateY, (Math.abs(titleCardTop - fadeStartOffset) / fadeDistance) * maxTranslateY);
-                    titleCard.style.transform = `translateY(${translateY}px)`;
-                }
-                titleCard.style.opacity = opacity;
-            });
-        }
     </script>
+    <?php
+    ob_end_flush(); // Send all buffered output to the browser
+    ?>
 </body>
 </html>

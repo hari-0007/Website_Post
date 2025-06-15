@@ -1,0 +1,8 @@
+User-agent: *
+Disallow: /admin/
+# Add other paths you want to block, e.g.:
+# Disallow: /members-only/
+# Disallow: /some-other-restricted-path/
+
+# Allow your sitemap if you have one for your public site
+# Sitemap: https://www.yourwebsite.com/sitemap.xml

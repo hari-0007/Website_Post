@@ -1,7 +1,14 @@
 <?php
-
+ob_start(); 
 header('Content-Type: application/json');
-
+// Custom error handler to catch PHP errors and output JSON
+set_error_handler(function ($severity, $message, $file, $line) {
+    ob_clean(); // Clean any previous output
+    header('Content-Type: application/json', true, 500); // Ensure 500 status for server errors
+    error_log("PHP Error in feedback.php: [{$severity}] {$message} in {$file} on line {$line}");
+    echo json_encode(['success' => false, 'message' => 'An internal server error occurred. Please try again later.', 'php_error' => true]);
+    exit;
+});
 // Include configuration for file path (if needed for other constants, though not directly for feedback.json path here)
 // require_once __DIR__ . '/admin/includes/config.php'; // Assuming USER_UNIQUE_ID_COOKIE_NAME is defined here or globally
 
@@ -50,13 +57,19 @@ error_log("[FEEDBACK_DEBUG] User reCAPTCHA response token: " . $userRecaptchaRes
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !verifyRecaptcha($userRecaptchaResponse, $recaptchaSecretKey)) {
     error_log("[FEEDBACK_DEBUG] reCAPTCHA verification FAILED by verifyRecaptcha function.");
+    ob_clean(); // Clean buffer before specific JSON error
     echo json_encode(['success' => false, 'message' => 'reCAPTCHA verification failed. Please try again.', 'captcha_error' => true]);
     exit;
 }
 error_log("[FEEDBACK_DEBUG] reCAPTCHA verification PASSED.");
 // --- End Google reCAPTCHA Verification ---
 
-
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    error_log("[FEEDBACK_ERROR] Invalid request method: " . $_SERVER['REQUEST_METHOD']);
+    ob_clean();
+    echo json_encode(['success' => false, 'message' => 'Invalid request method.']);
+    exit;
+}
 // Get and sanitize input
 $name = trim($_POST['name'] ?? '');
 $email = trim($_POST['email'] ?? '');
@@ -68,6 +81,8 @@ error_log("[FEEDBACK_DEBUG] Received POST data - Name: {$name}, Email: {$email},
 
 // Basic validation
 if (empty($name) || empty($email) || empty($message)) {
+    error_log("[FEEDBACK_ERROR] Validation failed: Empty fields. Name: {$name}, Email: {$email}, Message: " . (empty($message) ? 'empty' : 'filled'));
+    ob_clean();
     echo json_encode([
         'success' => false,
         'message' => 'Please fill in all fields.'
@@ -77,6 +92,7 @@ if (empty($name) || empty($email) || empty($message)) {
 
 // Validate rating (optional, but good practice)
 if ($rating < 0 || $rating > 5) { // Assuming 0 means no rating, 1-5 are valid
+    ob_clean();
     echo json_encode([
         'success' => false,
         'message' => 'Invalid rating value.'
@@ -85,6 +101,7 @@ if ($rating < 0 || $rating > 5) { // Assuming 0 means no rating, 1-5 are valid
 }
 // Validate email format (basic check)
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    ob_clean();
     echo json_encode([
         'success' => false,
         'message' => 'Please enter a valid email address.'
@@ -107,6 +124,7 @@ if (file_exists($feedbackFilename)) {
     if (!is_dir($dir)) {
         if (!@mkdir($dir, 0755, true)) { // Suppress error if dir already exists due to race condition
             error_log("[FEEDBACK_DEBUG] Feedback Error: Could not create data directory: " . $dir);
+            ob_clean();
             echo json_encode([
                 'success' => false,
                 'message' => 'Error saving feedback. Please try again later.'
@@ -223,6 +241,7 @@ array_unshift($feedback, $newFeedback);
 $jsonData = json_encode($feedback, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES); // Added JSON_UNESCAPED_SLASHES
 if ($jsonData === false) {
     error_log("[FEEDBACK_DEBUG] Feedback Error: Could not encode feedback data to JSON: " . json_last_error_msg());
+    ob_clean();
     echo json_encode([
         'success' => false,
         'message' => 'Error saving feedback. Please try again later.'
@@ -233,6 +252,7 @@ if ($jsonData === false) {
 // Use LOCK_EX to prevent concurrent writes from corrupting the file
 if (file_put_contents($feedbackFilename, $jsonData, LOCK_EX) === false) {
     error_log("[FEEDBACK_DEBUG] Feedback Error: Could not write feedback data to file: " . $feedbackFilename . " - Check permissions and path.");
+    ob_clean();
     echo json_encode([
         'success' => false,
         'message' => 'Error saving feedback. Please try again later.'
@@ -242,9 +262,11 @@ if (file_put_contents($feedbackFilename, $jsonData, LOCK_EX) === false) {
 
 error_log("[FEEDBACK_DEBUG] Feedback successfully saved to " . $feedbackFilename);
 // Success response
+ob_clean(); // Clean buffer before final JSON output
 echo json_encode([
     'success' => true,
     'message' => 'Thank you! Your message has been sent.'
 ]);
+ob_end_flush(); // Send the output
 
 ?>

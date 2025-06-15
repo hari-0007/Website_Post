@@ -2476,16 +2476,33 @@ if ($isAjaxRequest) {
             e.preventDefault();
             const form = e.target;
             const formData = new FormData(form);
+            const recaptchaResponse = grecaptcha.getResponse(feedbackRecaptchaWidgetId);
+
+            if (!recaptchaResponse) {
+                alert('Please complete the reCAPTCHA verification.'); // Simple alert for feedback form
+                console.error("Feedback Submit Error: reCAPTCHA response is empty.");
+                return;
+            }
+            formData.append('g-recaptcha-response', recaptchaResponse);
+
             const responseBox = document.getElementById('responseMsg');
-            console.log("Feedback form submitted. FormData:", formData); // Log form data
+            console.log("Feedback form submitted. FormData entries:");
+            for (let pair of formData.entries()) { console.log(pair[0]+ ': '+ pair[1]); }
 
             fetch('feedback.php', {
                 method: 'POST',
                 body: formData
              })
              .then(res => {
-                console.log("Feedback response status:", res.status); // Log response status
-                return res.json();
+                console.log("Feedback fetch response status:", res.status, "Status Text:", res.statusText);
+                if (!res.ok) {
+                    // If response is not OK, try to get text for more error details
+                    return res.text().then(text => {
+                        throw new Error(`HTTP error! status: ${res.status}, body: ${text}`);
+                    });
+                }
+                return res.json(); // If OK, proceed to parse as JSON
+
             })
             .then(res => {
                 console.log("Feedback response status:", res.status); // Log response status
@@ -2501,6 +2518,7 @@ if ($isAjaxRequest) {
                 responseBox.className = 'feedback-message ' + (data.success ? 'success' : 'error');
                 responseBox.style.display = 'block';
                 if (data.success) {
+                    if (typeof feedbackRecaptchaWidgetId !== 'undefined') grecaptcha.reset(feedbackRecaptchaWidgetId);
                     form.reset();
                 }
                 setTimeout(() => { responseBox.style.display = 'none'; }, 5000);
@@ -2510,6 +2528,7 @@ if ($isAjaxRequest) {
                 responseBox.innerText = 'An error occurred. Please try again.';
                 responseBox.className = 'feedback-message error';
                 responseBox.style.display = 'block';
+                if (typeof feedbackRecaptchaWidgetId !== 'undefined') grecaptcha.reset(feedbackRecaptchaWidgetId);
                 setTimeout(() => { responseBox.style.display = 'none'; }, 5000);
             });
         });

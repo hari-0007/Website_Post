@@ -1,5 +1,4 @@
 <?php
-session_start(); // Keep if other parts of your script might use sessions
 
 header('Content-Type: application/json');
 
@@ -14,6 +13,7 @@ if (!defined('USER_UNIQUE_ID_COOKIE_NAME')) {
 
 // Path to the feedback data file
 $feedbackFilename = __DIR__ . '/data/feedback.json';
+error_log("[FEEDBACK_DEBUG] Script started. Feedback file: " . $feedbackFilename);
 
 // --- Google reCAPTCHA Verification ---
 function verifyRecaptcha($recaptchaResponse, $secretKey) {
@@ -36,21 +36,24 @@ function verifyRecaptcha($recaptchaResponse, $secretKey) {
 
     if ($result === FALSE) {
         // Log error or handle failure to connect to Google's API
-        error_log("reCAPTCHA verification request failed for feedback form.");
+        error_log("[FEEDBACK_DEBUG] reCAPTCHA verification request failed to connect to Google.");
         return false;
     }
     $responseKeys = json_decode($result, true);
-    // error_log("reCAPTCHA verification response for feedback: " . print_r($responseKeys, true)); // For debugging
+    error_log("[FEEDBACK_DEBUG] reCAPTCHA verification response from Google: " . print_r($responseKeys, true));
     return ($responseKeys && isset($responseKeys["success"]) && $responseKeys["success"]);
 }
 
 $recaptchaSecretKey = '6LcF92ErAAAAAHO38liOFIgrapN-KriFuVxK3zwq'; // <-- REPLACE WITH YOUR ACTUAL SECRET KEY
 $userRecaptchaResponse = $_POST['g-recaptcha-response'] ?? '';
+error_log("[FEEDBACK_DEBUG] User reCAPTCHA response token: " . $userRecaptchaResponse);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !verifyRecaptcha($userRecaptchaResponse, $recaptchaSecretKey)) {
+    error_log("[FEEDBACK_DEBUG] reCAPTCHA verification FAILED by verifyRecaptcha function.");
     echo json_encode(['success' => false, 'message' => 'reCAPTCHA verification failed. Please try again.', 'captcha_error' => true]);
     exit;
 }
+error_log("[FEEDBACK_DEBUG] reCAPTCHA verification PASSED.");
 // --- End Google reCAPTCHA Verification ---
 
 
@@ -58,6 +61,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !verifyRecaptcha($userRecaptchaResp
 $name = trim($_POST['name'] ?? '');
 $email = trim($_POST['email'] ?? '');
 $message = trim($_POST['message'] ?? '');
+$rating = isset($_POST['rating']) ? intval($_POST['rating']) : 0; // Get and sanitize rating
+
+error_log("[FEEDBACK_DEBUG] Received POST data - Name: {$name}, Email: {$email}, Rating: {$rating}, Message (first 50 chars): " . substr($message, 0, 50));
+
 
 // Basic validation
 if (empty($name) || empty($email) || empty($message)) {
@@ -68,6 +75,14 @@ if (empty($name) || empty($email) || empty($message)) {
     exit;
 }
 
+// Validate rating (optional, but good practice)
+if ($rating < 0 || $rating > 5) { // Assuming 0 means no rating, 1-5 are valid
+    echo json_encode([
+        'success' => false,
+        'message' => 'Invalid rating value.'
+    ]);
+    exit;
+}
 // Validate email format (basic check)
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
     echo json_encode([
@@ -83,15 +98,15 @@ if (file_exists($feedbackFilename)) {
     $jsonData = file_get_contents($feedbackFilename);
     $feedback = json_decode($jsonData, true);
     if ($feedback === null || !is_array($feedback)) {
-        $feedback = []; // Initialize as empty array if file is empty or invalid JSON
-        error_log("Feedback Error: Could not decode feedback.json or file is empty/invalid.");
+        $feedback = []; 
+        error_log("[FEEDBACK_DEBUG] Feedback Error: Could not decode feedback.json or file is empty/invalid. Initializing as empty array.");
     }
 } else {
-    // Ensure the data directory exists if feedback.json didn't exist
+    error_log("[FEEDBACK_DEBUG] feedback.json does not exist. Will attempt to create it.");
     $dir = dirname($feedbackFilename);
     if (!is_dir($dir)) {
-        if (!mkdir($dir, 0755, true)) {
-            error_log("Feedback Error: Could not create data directory: " . $dir);
+        if (!@mkdir($dir, 0755, true)) { // Suppress error if dir already exists due to race condition
+            error_log("[FEEDBACK_DEBUG] Feedback Error: Could not create data directory: " . $dir);
             echo json_encode([
                 'success' => false,
                 'message' => 'Error saving feedback. Please try again later.'
@@ -190,6 +205,7 @@ $newFeedback = [
     'name' => htmlspecialchars($name, ENT_QUOTES, 'UTF-8'), // Sanitize output
     'email' => htmlspecialchars($email, ENT_QUOTES, 'UTF-8'), // Sanitize output
     'message' => $message, // Allow special characters without sanitizing here for storage
+    'rating' => $rating, // Add the rating
     'timestamp' => time(), // Unix timestamp
     'read' => false, // New messages are unread
     'flagged' => false, // New messages are not flagged
@@ -206,7 +222,7 @@ array_unshift($feedback, $newFeedback);
 // Save the updated feedback array
 $jsonData = json_encode($feedback, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES); // Added JSON_UNESCAPED_SLASHES
 if ($jsonData === false) {
-    error_log("Feedback Error: Could not encode feedback data to JSON: " . json_last_error_msg());
+    error_log("[FEEDBACK_DEBUG] Feedback Error: Could not encode feedback data to JSON: " . json_last_error_msg());
     echo json_encode([
         'success' => false,
         'message' => 'Error saving feedback. Please try again later.'
@@ -216,7 +232,7 @@ if ($jsonData === false) {
 
 // Use LOCK_EX to prevent concurrent writes from corrupting the file
 if (file_put_contents($feedbackFilename, $jsonData, LOCK_EX) === false) {
-    error_log("Feedback Error: Could not write feedback data to file: " . $feedbackFilename);
+    error_log("[FEEDBACK_DEBUG] Feedback Error: Could not write feedback data to file: " . $feedbackFilename . " - Check permissions and path.");
     echo json_encode([
         'success' => false,
         'message' => 'Error saving feedback. Please try again later.'
@@ -224,6 +240,7 @@ if (file_put_contents($feedbackFilename, $jsonData, LOCK_EX) === false) {
     exit;
 }
 
+error_log("[FEEDBACK_DEBUG] Feedback successfully saved to " . $feedbackFilename);
 // Success response
 echo json_encode([
     'success' => true,

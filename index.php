@@ -2482,6 +2482,10 @@ if ($isAjaxRequest) {
             fetch('feedback.php', {
                 method: 'POST',
                 body: formData
+             })
+             .then(res => {
+                console.log("Feedback response status:", res.status); // Log response status
+                return res.json();
             })
             .then(res => {
                 console.log("Feedback response status:", res.status); // Log response status

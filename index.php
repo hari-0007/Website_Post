@@ -1002,6 +1002,30 @@ if ($isAjaxRequest) {
             padding-top: 20px; /* Add some padding to the top since the header is removed */
         }
         /* New Site Header Styles */
+        /* Star Rating Styles */
+        .star-rating-container {
+            margin-bottom: 10px;
+            text-align: left; /* Or center if you prefer */
+        }
+        .star-rating {
+            font-size: 2em; /* Adjust size of stars */
+            color: #ddd; /* Default star color (empty) */
+            cursor: pointer;
+            display: inline-block; /* Allow stars to sit on one line */
+        }
+        .star-rating span:hover,
+        .star-rating span.hover { /* For hover effect */
+            color: #ffc107; /* Gold color for hover */
+        }
+        .star-rating span.selected { /* For selected stars */
+            color: #ffc107; /* Gold color for selected */
+        }
+        .star-rating-label {
+            display: block;
+            font-size: 0.9em;
+            color: #555;
+            margin-bottom: 5px;
+        }
         .site-header-main {
             display: flex;
             align-items: center;
@@ -1988,6 +2012,13 @@ if ($isAjaxRequest) {
                 <form id="feedbackForm">
                     <input type="text" name="name" placeholder="Your Name" required>
                     <input type="email" name="email" placeholder="Your Email" required>
+                    <div class="star-rating-container" id="feedbackStarsContainer" style="display:none;">
+                        <label class="star-rating-label">Rate your experience:</label>
+                        <div class="star-rating" id="feedbackStarRating">
+                            <span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span>
+                        </div>
+                    </div>
+                    <input type="hidden" name="rating" id="feedbackRatingInput" value="0">
                     <textarea name="message" placeholder="Your Message" rows="3" required></textarea>
                     <div id="feedbackRecaptchaContainer" style="margin-bottom: 10px; transform:scale(0.9); transform-origin:0 0; display:none;"></div>
                     <div id="responseMsg" class="feedback-message" style="display: none;"></div>
@@ -2739,18 +2770,55 @@ if ($isAjaxRequest) {
         // Logic to show feedback reCAPTCHA only after typing in message
         const feedbackTextarea = document.querySelector('#feedbackForm textarea[name="message"]');
         const feedbackRecaptchaDiv = document.getElementById('feedbackRecaptchaContainer');
+        const feedbackStarsDiv = document.getElementById('feedbackStarsContainer');
         let feedbackRecaptchaShown = false;
+        let feedbackStarsShown = false;
 
         if (feedbackTextarea && feedbackRecaptchaDiv) {
-            feedbackTextarea.addEventListener('input', function() {
-                if (!feedbackRecaptchaShown && feedbackTextarea.value.trim() !== '') {
-                    feedbackRecaptchaDiv.style.display = 'block'; // Or 'flex' if reCAPTCHA widget needs it
-                    // You might want to adjust the transform origin or scale here if needed when it becomes visible
-                    feedbackRecaptchaShown = true;
-                    // The reCAPTCHA should render automatically if the API is loaded and the container is visible.
+            feedbackTextarea.addEventListener('focus', function() { // Changed from 'input' to 'focus' for stars
+                if (!feedbackStarsShown) {
+                    if(feedbackStarsDiv) feedbackStarsDiv.style.display = 'block';
+                    feedbackStarsShown = true;
                 }
-                });
-            }
+                // Keep reCAPTCHA logic tied to actual input if preferred, or also show on focus
+                if (!feedbackRecaptchaShown && feedbackTextarea.value.trim() !== '') { // Or just !feedbackRecaptchaShown to show on focus
+                    if(feedbackRecaptchaDiv) feedbackRecaptchaDiv.style.display = 'block';
+                    feedbackRecaptchaShown = true;
+                }
+            });
+            // If you want reCAPTCHA to also show on focus, not just input:
+            // feedbackTextarea.addEventListener('focus', function() {
+            //     if (!feedbackRecaptchaShown) {
+            //         if(feedbackRecaptchaDiv) feedbackRecaptchaDiv.style.display = 'block';
+            //         feedbackRecaptchaShown = true;
+            //     }
+            // });
+        }
+
+        // Star Rating Logic for Feedback Form
+        const stars = document.querySelectorAll('#feedbackStarRating span');
+        const ratingInput = document.getElementById('feedbackRatingInput');
+        let currentRating = 0;
+
+        stars.forEach((star, index) => {
+            star.addEventListener('mouseover', () => {
+                stars.forEach((s, i) => s.classList.toggle('hover', i <= index));
+            });
+            star.addEventListener('mouseout', () => {
+                stars.forEach(s => s.classList.remove('hover'));
+                // Re-apply selected class based on currentRating
+                stars.forEach((s, i) => s.classList.toggle('selected', i < currentRating));
+            });
+            star.addEventListener('click', () => {
+                currentRating = index + 1;
+                ratingInput.value = currentRating;
+                stars.forEach((s, i) => s.classList.toggle('selected', i < currentRating));
+            });
+        });
+        // Ensure mouseout from the container also resets hover state
+        document.getElementById('feedbackStarRating').addEventListener('mouseleave', () => {
+            stars.forEach(s => s.classList.remove('hover'));
+        });
 
             /* // Optional: Decline button logic
             if (declineBtn) {

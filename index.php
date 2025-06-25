@@ -2518,11 +2518,7 @@ if ($isAjaxRequest) {
                 return res.json(); // If OK, proceed to parse as JSON
 
             })
-            .then(data => { // Renamed 'res' to 'data' as it's the parsed JSON object
-                // 'data' now contains the JSON object returned by feedback.php (e.g., {success: true, message: "..."})
-                // No need to check data.ok or call data.json() again
-            })
-            .then(data => {
+            .then(data => { // This 'data' is the parsed JSON object from the previous .then(res => res.json())
                 if (data.captcha_error) { // Check for captcha error specifically
                     if (typeof feedbackRecaptchaWidgetId !== 'undefined') grecaptcha.reset(feedbackRecaptchaWidgetId);
                 }

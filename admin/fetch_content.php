@@ -19,11 +19,12 @@ require_once __DIR__ . '/includes/user_manager_helpers.php'; // For createUser, 
 
 
 // admin/fetch_content.php (around hypothetical line 884)
-$page_number = isset($_GET['page']) ? intval($_GET['page']) : 1; // Ensure it's an integer, default to 1
+//$page_number = isset($_GET['page']) ? intval($_GET['page']) : 1; // Ensure it's an integer, default to 1
+$page = max(1, intval($_GET['page'] ?? 1)); 
 // Or if it's from another source:
 // $page_number = intval($page_number_from_json_or_db);
 $limit = 10;
-$offset = ($page_number - 1) * $limit; // Now $page_number is guaranteed to be an integer
+$offset = ($page - 1) * $limit; // Now $page_number is guaranteed to be an integer
 
 // Check if the user is logged in
 if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {

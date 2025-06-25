@@ -269,7 +269,7 @@ switch ($requestedView) {
         // This should iterate over $allJobs, not $jobsToProcess, to get a global view for admins
         if (!empty($allJobs)) { 
             foreach ($allJobs as $job) {
-                $postedTimestamp = $job['posted_on_unix_ts'] ?? (isset($job['posted_on']) ? strtotime($job['posted_on']) : 0);
+                $postedTimestamp = $job['posted_on_unix_ts'] ?? intval(strtotime($job['posted_on'] ?? ''));
                 if ($postedTimestamp >= $startOfMonth) {
                     $totalLifetimeViewsOfJobsPostedThisMonth += (int)($job['total_views_count'] ?? 0);
                     $totalLifetimeSharesOfJobsPostedThisMonth += (int)($job['total_shares_count'] ?? 0);
@@ -279,7 +279,7 @@ switch ($requestedView) {
 
         if (!empty($jobsToProcess)) {
             foreach ($jobsToProcess as $job) {
-                 $postedTimestamp = $job['posted_on_unix_ts'] ?? (isset($job['posted_on']) ? strtotime($job['posted_on']) : 0);
+                 $postedTimestamp = $job['posted_on_unix_ts'] ?? intval(strtotime($job['posted_on'] ?? ''));
                  if ($postedTimestamp >= $startOfToday) $jobsTodayCount++;
                  if ($postedTimestamp >= $startOfMonth) $jobsMonthlyCount++;
             }
@@ -627,7 +627,7 @@ switch ($requestedView) {
          }
          if (!empty($allJobs)) {
              foreach ($allJobs as $job) {
-                  $postedTimestamp = $job['posted_on_unix_ts'] ?? (isset($job['posted_on']) ? strtotime($job['posted_on']) : 0);
+                  $postedTimestamp = $job['posted_on_unix_ts'] ?? intval(strtotime($job['posted_on'] ?? ''));
                   if ($postedTimestamp > 0) {
                       $now = time(); 
                       $daysAgo = floor(($now - $postedTimestamp) / (24 * 60 * 60));

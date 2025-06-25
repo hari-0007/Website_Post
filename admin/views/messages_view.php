@@ -181,7 +181,7 @@ function render_stars_php($rating) {
                                     <span class="message-from"><strong>From:</strong> <?php echo htmlspecialchars($message['name'] ?? 'N/A'); ?>
                                         <span class="message-emotion-emoji" title="<?php echo htmlspecialchars(ucfirst(str_replace('_', ' ', $currentMessageEmotionLabel))); ?>"><?php echo htmlspecialchars($currentMessageEmoji); ?></span>
                                     </span>
-                                    <span class="message-date"><strong>Date:</strong> <?php echo isset($message['timestamp']) ? date('Y-m-d H:i:s', $message['timestamp']) : 'N/A'; ?></span>
+                                    <span class="message-date"><strong>Date:</strong> <?php echo isset($message['timestamp']) ? date('Y-m-d H:i:s', intval(strtotime($message['timestamp'] ?? ''))) : 'N/A'; ?></span>
                                 </div>
                                 <div class="message-actions">
                                     <span class="status-badge <?php echo (isset($message['read']) && $message['read']) ? 'status-read' : 'status-unread'; ?>">
@@ -995,8 +995,10 @@ let lastKnownMessageTimestamp = <?php
     $initialLatestTimestamp = 0;
     if (!empty($allMessagesFlat)) { // $allMessagesFlat should be available from your PHP
         foreach($allMessagesFlat as $msg) {
-            if (isset($msg['timestamp']) && $msg['timestamp'] > $initialLatestTimestamp) {
-                $initialLatestTimestamp = $msg['timestamp'];
+            // Ensure timestamp is numeric before comparison
+            $msgTimestamp = intval(strtotime($msg['timestamp'] ?? '')); 
+            if ($msgTimestamp > $initialLatestTimestamp) {
+                $initialLatestTimestamp = $msgTimestamp;
             }
         }
     }

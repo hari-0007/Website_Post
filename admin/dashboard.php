@@ -38,6 +38,7 @@ $loggedInUserRole = $_SESSION['admin_role'] ?? 'user'; // Default role if not se
 $loggedInUsername = $_SESSION['admin_username'] ?? '';
 $allRegionalAdminRoles = ['India_Admin', 'Middle_East_Admin', 'USA_Admin', 'Europe_Admin']; // Define regional admin roles
 $allRegionalManagerRoles = ['India_Manager', 'Middle_East_Manager', 'USA_Manager', 'Europe_Manager']; // Define regional manager roles
+$allFrontendUserRoles = ['jobseeker', 'recruiter']; // Define frontend user roles for management
 
 
 error_log("--- [CRITICAL_DEBUG] dashboard.php: Top of script. Raw GET: " . print_r($_GET, true)); // Log raw GET

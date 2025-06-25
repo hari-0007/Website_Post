@@ -1,0 +1,58 @@
+[
+    {
+        "application_id": "app_1750869626_6149",
+        "job_id": "job_685c26209e555_1750869536",
+        "user_id": "user_1750864619_1426",
+        "timestamp": 1750869626,
+        "status": "applied"
+    },
+    {
+        "application_id": "app_1750868258_2040",
+        "job_id": "1748149852_9946",
+        "user_id": "user_1750864619_1426",
+        "timestamp": 1750868258,
+        "status": "applied"
+    },
+    {
+        "application_id": "app_1750865333_1776",
+        "job_id": "job_685c15a036fc6_1750865312",
+        "user_id": "user_1750859462_1837",
+        "timestamp": 1750865333,
+        "status": "applied"
+    },
+    {
+        "application_id": "app_1750864015_3390",
+        "job_id": "job_685c1071d10b9_1750863985",
+        "user_id": "user_1750859462_1837",
+        "timestamp": 1750864015,
+        "status": "applied"
+    },
+    {
+        "application_id": "app_1750863721_5791",
+        "job_id": "job_685c0f4d6d6d5_1750863693",
+        "user_id": "user_1750859462_1837",
+        "timestamp": 1750863721,
+        "status": "applied"
+    },
+    {
+        "application_id": "app_1750862667_5888",
+        "job_id": "job_685c0b1406c39_1750862612",
+        "user_id": "user_1750859462_1837",
+        "timestamp": 1750862667,
+        "status": "applied"
+    },
+    {
+        "application_id": "app_1750859520_3163",
+        "job_id": "1748749578_1649",
+        "user_id": "user_1750859462_1837",
+        "timestamp": 1750859520,
+        "status": "applied"
+    },
+    {
+        "application_id": "app_169...",
+        "job_id": "job123",
+        "user_id": "user_167...",
+        "timestamp": 1698397200,
+        "status": "applied"
+    }
+]

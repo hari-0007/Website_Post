@@ -1,8 +1,13 @@
 <?php
 ob_start(); // Start output buffering at the very beginning for header manipulation
 session_start();
-
-
+ 
+// --- User Session Management ---
+$isUserLoggedIn = isset($_SESSION['user_id']) && !empty($_SESSION['user_id']);
+$userRole = $_SESSION['user_role'] ?? 'guest';
+$userId = $_SESSION['user_id'] ?? null;
+// --- End User Session Management ---
+ 
 define('COOKIE_CONSENT_STATUS_NAME', 'cookie_consent_status');
 define('USER_INTERESTS_COOKIE_NAME', 'user_job_interests');
 define('USER_VIEWED_JOB_IDS_COOKIE_NAME', 'user_viewed_job_ids'); // New cookie for viewed job IDs
@@ -744,7 +749,7 @@ if (!$singleJobView && empty($pagedJobs) && ($search_param !== '' || $type_param
 
 <?php
 // Start of the function to render job listings and pagination
-function render_job_listings_and_pagination($pagedJobs, $singleJobView, $totalPages, $search, $filter, $jobType, $page, $isRecommendationsView = false) {
+function render_job_listings_and_pagination($pagedJobs, $singleJobView, $totalPages, $search, $filter, $jobType, $page, $isRecommendationsView = false, $isUserLoggedIn = false, $userRole = 'guest') {
     ob_start();
 ?>
     <?php if(empty($pagedJobs)): ?>
@@ -771,27 +776,17 @@ function render_job_listings_and_pagination($pagedJobs, $singleJobView, $totalPa
                 <span class="animated-icon icon-graph" style="top: <?= rand(5, 95) ?>%; left: <?= rand(5, 95) ?>%; animation-delay: -<?= rand(0, 10) ?>s;">📈</span>
             </div>
 
-            <h3>
-                <?= htmlspecialchars($job['title'] ?? 'N/A') ?>
-                <?php if (!empty($job['vacant_positions']) && $job['vacant_positions'] > 1): ?>
-                    <span style="font-size: 0.8rem; color: #777; font-weight: normal; margin-left: 10px; white-space: nowrap;">
-                        (<?= htmlspecialchars($job['vacant_positions']) ?> vacancies)
-                        </span>
-                <?php endif; ?>
-                <?php if ($isExpired): ?>
-                    <span style="font-size: 0.8rem; color: #dc3545; font-weight: bold; margin-left: 10px; background-color: #f8d7da; padding: 2px 6px; border-radius: 4px;">
-                        Expired
-                    </span>
-                <?php endif; ?>
+            <h3><?= htmlspecialchars($job['title'] ?? 'N/A') ?>
+                <?php if (!empty($job['vacant_positions']) && $job['vacant_positions'] > 1): ?><span style="font-size: 0.8rem; color: #777; font-weight: normal; margin-left: 10px; white-space: nowrap;">(<?= htmlspecialchars($job['vacant_positions']) ?> vacancies)</span><?php endif; ?>
+                <?php if ($isExpired): ?><span style="font-size: 0.8rem; color: #dc3545; font-weight: bold; margin-left: 10px; background-color: #f8d7da; padding: 2px 6px; border-radius: 4px;">Expired</span><?php endif; ?>
             </h3>
-            <p class="job-card-company-location"> <!-- position: relative; z-index: 2; handled by general CSS rule now -->
-            <strong><?= htmlspecialchars($job['company'] ?? 'N/A') ?></strong> – <?= htmlspecialchars($job['location'] ?? 'N/A') ?><br>
+            <p class="job-card-company-location"><strong><?= htmlspecialchars($job['company'] ?? 'N/A') ?></strong> – <?= htmlspecialchars($job['location'] ?? 'N/A') ?><br></p>
             
-            <p class="job-summary" style="margin-top: 5px; margin-bottom: 10px;"><?= formatAiSummary(substr($job['ai_summary'] ?? '', 0, 300)) ?><?php if(strlen($job['ai_summary'] ?? '') > 300) echo "..."; ?></p>
+            <p class="job-summary" style="margin-top: 5px; margin-bottom: 10px;"><?= formatAiSummary($job['ai_summary'] ?? '') ?><?php if(strlen($job['description'] ?? '') > strlen($job['ai_summary'] ?? '')) echo "..."; ?></p>
 
             <div class="job-details" style="display: none;">
-                <div class="formatted-summary">
-                    <?= formatAiSummary($job['ai_summary']?? 'N/A') ?>
+                <div class="formatted-description">
+                    <?= formatAiSummary($job['description'] ?? 'N/A') ?>
                 </div>
 <div style="text-align: right; margin-top: 8px;"> <!-- Wrapper for right alignment -->
                     <span class="job-caution-alert" title="Important Security Advice" onclick="showJobCautionAlert(event)">⚠️</span>
@@ -813,31 +808,33 @@ function render_job_listings_and_pagination($pagedJobs, $singleJobView, $totalPa
                 <p style="margin: 10px 0;"><strong>💰 Salary:</strong> <?= htmlspecialchars($job['salary']) ?></p>
             <?php endif; ?>
 
-            <?php if (!empty($job['phones'])): ?>
-                <p style="margin: 10px 0;"><strong>📞 Phone:</strong>
-                <?php if ($isExpired): ?>
-                    <span class="blurred-text">05X-XXX-XXXX</span>
+            <?php // Only show contact details (phone and email) if the job was NOT posted by a recruiter (i.e., no posted_by_id) ?>
+            <?php if (!isset($job['posted_by_id'])): ?>
+                <?php if (!empty($job['phones'])): ?>
+                    <p style="margin: 10px 0;"><strong>📞 Phone:</strong>
+                    <?php if ($isExpired): ?>
+                        <span class="blurred-text">05X-XXX-XXXX</span>
+                        <?php else: ?>
+                            <?php foreach (explode(',', $job['phones']) as $phone): ?>
+                                <a href="tel:<?= htmlspecialchars(trim($phone)) ?>"><?= htmlspecialchars(trim($phone)) ?></a>&nbsp;
+                            <?php endforeach; ?>
+                    <?php endif; ?>
+                    </p>
+                <?php endif; ?>
+                <?php if (!empty($job['emails'])): ?>
+                    <p style="margin-bottom: 15px;"><strong>📧 Email:</strong>
+                    <?php if ($isExpired): ?>
+                        <span class="blurred-text">support@jobhunt.top</span>
                     <?php else: ?>
-                        <?php foreach (explode(',', $job['phones']) as $phone): ?>
-                            <a href="tel:<?= htmlspecialchars(trim($phone)) ?>"><?= htmlspecialchars(trim($phone)) ?></a>&nbsp;
+                        <?php foreach (explode(',', $job['emails']) as $email): ?>
+                            <a href="mailto:<?= htmlspecialchars(trim($email)) ?>"><?= htmlspecialchars(trim($email)) ?></a>&nbsp;
                         <?php endforeach; ?>
+                    <?php endif; ?>
+                    </p>
                 <?php endif; ?>
-                </p>
-
-                <?php endif; ?>
-
-            <?php if (!empty($job['emails'])): // Always show Email label if emails existed ?>
-                <p style="margin-bottom: 15px;"><strong>📧 Email:</strong>
-                <?php if ($isExpired): ?>
-                    <span class="blurred-text">support@jobhunt.top</span>
-                <?php else: ?>
-                    <?php foreach (explode(',', $job['emails']) as $email): ?>
-                        <a href="mailto:<?= htmlspecialchars(trim($email)) ?>"><?= htmlspecialchars(trim($email)) ?></a>&nbsp;
-                    <?php endforeach; ?>
-                <?php endif; ?>
-                </p>
-            <?php endif; ?>
+            <?php endif; // End check for posted_by_id ?>
             
+
             <small>Posted on <?= htmlspecialchars($job['posted_on'] ?? 'N/A') ?></small><br>
             <?php // Share button and Caution Alert can be on the same line or separate
             // We'll place the caution alert after the share button or directly after "Posted on" if no share button
@@ -845,7 +842,12 @@ function render_job_listings_and_pagination($pagedJobs, $singleJobView, $totalPa
             
 
             <?php if (!$isExpired): ?>
-                <button style="margin-top: 10px; margin-right: 10px;" class="share-button" onclick="shareJob('<?= htmlspecialchars($job['id'] ?? '') ?>', '<?= htmlspecialchars($job['title'] ?? '') ?>', '<?= htmlspecialchars($job['company'] ?? '') ?>'); event.stopPropagation();">Share</button>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; flex-wrap: wrap; gap: 10px;">
+                    <button class="share-button" onclick="shareJob('<?= htmlspecialchars($job['id'] ?? '') ?>', '<?= htmlspecialchars($job['title'] ?? '') ?>', '<?= htmlspecialchars($job['company'] ?? '') ?>'); event.stopPropagation();">Share</button>
+                    <?php if ($isUserLoggedIn && $userRole === 'jobseeker' && isset($job['posted_by_id'])): ?>
+                        <button class="apply-button" onclick="applyForJob(this, '<?= htmlspecialchars($job['id'] ?? '') ?>')" style="background-color: #28a745; color: white; border: none; padding: 10px 16px; border-radius: 5px; cursor: pointer; font-weight: bold;">Apply Now</button>
+                    <?php endif; ?>
+                </div>
             <?php endif; ?>
         </div>
         <?php endforeach; ?>
@@ -965,8 +967,8 @@ error_log("[REQUEST_INFO] Total filtered jobs (before pagination): " . count($fi
 error_log("[REQUEST_INFO] Jobs for paged view (before AJAX check): " . count($pagedJobs) . " jobs. SingleView: " . ($singleJobView ? 'Yes':'No'));
 
 if ($isAjaxRequest) {
-    error_log("[AJAX_RESPONSE] Preparing AJAX response. Paged jobs: " . count($pagedJobs) . ". TotalPages: " . $totalPages . ". Current Page: " . $page . ". First job (if any): " . ($pagedJobs[0]['title'] ?? 'N/A'));
-    echo render_job_listings_and_pagination($pagedJobs, $singleJobView, $totalPages, $search, $filter, $jobType, $page, $isRecommendationsView);
+    error_log("[AJAX_RESPONSE] Preparing AJAX response. Paged jobs: " . count($pagedJobs) . ". TotalPages: " . $totalPages . ". Current Page: " . $page . ". First job (if any): " . ($pagedJobs[0]['title'] ?? 'N/A'));    
+    echo render_job_listings_and_pagination($pagedJobs, $singleJobView, $totalPages, $search, $filter, $jobType, $page, $isRecommendationsView, $isUserLoggedIn, $userRole);
     exit; 
 }
 ?>
@@ -1907,13 +1909,25 @@ if ($isAjaxRequest) {
 <body>
 
     <div class="container">
-        <header class="site-header-main">
+        <header class="site-header-main" style="position: relative;">
             <a href="<?= strtok($_SERVER["REQUEST_URI"], '?') ?>" class="site-logo-link" aria-label="Homepage">
                 <div class="site-logo">
                     <img src="/data/images/logo.png" alt="Job Portal Logo">
                 </div>
             </a>
             <a href="<?= strtok($_SERVER["REQUEST_URI"], '?') ?>" class="site-title-main">Job Hunt</a>
+            <div class="user-auth-links" style="margin-left: auto; display: flex; align-items: center; gap: 15px;">
+                <?php if ($isUserLoggedIn): ?>
+                    <?php if ($userRole === 'recruiter'): ?>
+                        <a href="profile.php?action=post_job_form" class="button" style="padding: 8px 12px; font-size: 0.9em; background-color: #e67e22; text-transform: uppercase;">Post Job</a>
+                    <?php endif; ?>
+                    <a href="profile.php" style="text-decoration: none; color: #005fa3; font-weight: bold;">My Profile</a>
+                    <a href="auth.php?action=logout" style="text-decoration: none; color: #333;">Logout</a>
+                <?php else: ?>
+                    <a href="auth.php?action=login" style="text-decoration: none; color: #005fa3; font-weight: bold;">Login</a>
+                    <a href="auth.php?action=register" class="button" style="padding: 8px 12px; font-size: 0.9em;">Register</a>
+                <?php endif; ?>
+            </div>
         </header>
 
         <div class="content-wrapper">
@@ -1976,7 +1990,7 @@ if ($isAjaxRequest) {
                 <div id="job-listings-container">
                     <?php 
                         // For non-AJAX requests, render the initial content
-                        echo render_job_listings_and_pagination($pagedJobs, $singleJobView, $totalPages, $search, $filter, $jobType, $page, $isRecommendationsView);
+                        echo render_job_listings_and_pagination($pagedJobs, $singleJobView, $totalPages, $search, $filter, $jobType, $page, $isRecommendationsView, $isUserLoggedIn, $userRole);
                     ?>
                 </div>
             </main>
@@ -2789,33 +2803,25 @@ if ($isAjaxRequest) {
                     // window.location.reload(); 
       });
         }
-
-        // Logic to show feedback reCAPTCHA only after typing in message
+        // Logic to show feedback elements on first input
         const feedbackTextarea = document.querySelector('#feedbackForm textarea[name="message"]');
         const feedbackRecaptchaDiv = document.getElementById('feedbackRecaptchaContainer');
         const feedbackStarsDiv = document.getElementById('feedbackStarsContainer');
         let feedbackRecaptchaShown = false;
         let feedbackStarsShown = false;
-
         if (feedbackTextarea && feedbackRecaptchaDiv) {
-            feedbackTextarea.addEventListener('focus', function() { // Changed from 'input' to 'focus' for stars
+            feedbackTextarea.addEventListener('input', function() {
+                // Show stars on first input if not already shown
                 if (!feedbackStarsShown) {
                     if(feedbackStarsDiv) feedbackStarsDiv.style.display = 'block';
                     feedbackStarsShown = true;
                 }
-                // Keep reCAPTCHA logic tied to actual input if preferred, or also show on focus
-                if (!feedbackRecaptchaShown && feedbackTextarea.value.trim() !== '') { // Or just !feedbackRecaptchaShown to show on focus
+                // Show reCAPTCHA on first input if not already shown
+                if (!feedbackRecaptchaShown) {
                     if(feedbackRecaptchaDiv) feedbackRecaptchaDiv.style.display = 'block';
                     feedbackRecaptchaShown = true;
                 }
             });
-            // If you want reCAPTCHA to also show on focus, not just input:
-            // feedbackTextarea.addEventListener('focus', function() {
-            //     if (!feedbackRecaptchaShown) {
-            //         if(feedbackRecaptchaDiv) feedbackRecaptchaDiv.style.display = 'block';
-            //         feedbackRecaptchaShown = true;
-            //     }
-            // });
         }
 
         // Star Rating Logic for Feedback Form
@@ -2913,7 +2919,7 @@ if ($isAjaxRequest) {
         function handleAjaxNavigation(event, url) {
             event.preventDefault(); // Stop default link behavior or form submission
 
-            const ajaxUrl = new URL(url, window.location.origin);
+            const ajaxUrl = new URL(url, window.location.href);
             ajaxUrl.searchParams.set('ajax', '1'); // Add our AJAX flag
 
             // Optional: Show a loading indicator
@@ -3128,6 +3134,38 @@ if ($isAjaxRequest) {
             updateActiveFilterLinks(window.location.href); // Set active filters on initial page load
         });
 
+        function applyForJob(button, jobId) {
+            event.stopPropagation(); // Prevent card from expanding
+
+            button.disabled = true;
+            button.textContent = 'Applying...';
+
+            fetch('apply_job.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ job_id: jobId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message); // Give feedback to the user
+                if (data.success) {
+                    button.textContent = 'Applied';
+                    // The button remains disabled
+                } else {
+                    button.textContent = 'Apply Now'; // Reset button text on failure
+                    button.disabled = false;
+                }
+            })
+            .catch(error => {
+                console.error('Error applying for job:', error);
+                alert('An error occurred while applying. Please try again.');
+                button.textContent = 'Apply Now';
+                button.disabled = false;
+            });
+        }
     </script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script>

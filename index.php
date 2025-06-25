@@ -2141,13 +2141,13 @@ if ($isAjaxRequest) {
             const feedbackContainer = document.getElementById('feedbackRecaptchaContainer');
             if (feedbackContainer) {
                 feedbackRecaptchaWidgetId = grecaptcha.render('feedbackRecaptchaContainer', {
-                    'sitekey' : '6LcF92ErAAAAAB3je0xS2cQqHZ_EBwsC940zZTkS' // Replace with your Site Key
+                    'sitekey' : '6LdejG0rAAAAADz6_mIuRwBirtmdojNX8ax6WBws' // Replace with your Site Key
                 });
             }
             const reportContainer = document.getElementById('reportRecaptchaContainer');
             if (reportContainer) {
                 reportRecaptchaWidgetId = grecaptcha.render('reportRecaptchaContainer', {
-                    'sitekey' : '6LcF92ErAAAAAB3je0xS2cQqHZ_EBwsC940zZTkS' // Replace with your Site Key
+                    'sitekey' : '6LdejG0rAAAAADz6_mIuRwBirtmdojNX8ax6WBws' // Replace with your Site Key
                 });
             }
         }

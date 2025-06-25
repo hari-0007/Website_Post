@@ -8,7 +8,7 @@ date_default_timezone_set('Asia/Kolkata');
 // --- Configuration ---
 // Replace with your actual reCAPTCHA Secret Key
 // You can find this in your Google reCAPTCHA admin console for your site.
-const RECAPTCHA_SECRET_KEY = 'YOUR_RECAPTCHA_SECRET_KEY'; 
+const RECAPTCHA_SECRET_KEY = '6LdejG0rAAAAAMh22pP5fDpL47ym5YCwst3Qf9H8'; 
 
 // Path to store feedback messages
 const FEEDBACK_FILE_PATH = __DIR__ . '/data/feedback.json';

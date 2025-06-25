@@ -2518,10 +2518,9 @@ if ($isAjaxRequest) {
                 return res.json(); // If OK, proceed to parse as JSON
 
             })
-            .then(res => {
-                console.log("Feedback response status:", res.status); // Log response status
-                if (!res.ok) { throw new Error(`HTTP error! status: ${res.status}`); }
-                return res.json();
+            .then(data => { // Renamed 'res' to 'data' as it's the parsed JSON object
+                // 'data' now contains the JSON object returned by feedback.php (e.g., {success: true, message: "..."})
+                // No need to check data.ok or call data.json() again
             })
             .then(data => {
                 if (data.captcha_error) { // Check for captcha error specifically

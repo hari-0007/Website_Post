@@ -19,31 +19,55 @@ function readJsonFile($filePath) {
         return [];
     }
     $data = json_decode(file_get_contents($filePath), true);
+    if (json_last_error() !== JSON_ERROR_NONE) {
+        error_log("readJsonFile Error: JSON decode error for {$filePath}: " . json_last_error_msg());
+        return [];
+    }
     return is_array($data) ? $data : [];
 }
 
 function writeJsonFile($filePath, $data) {
-    return file_put_contents($filePath, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES), LOCK_EX);
+    $jsonData = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+    if ($jsonData === false) {
+        error_log("writeJsonFile Error: JSON encode error for {$filePath}: " . json_last_error_msg());
+        return false;
+    }
+    // Use LOCK_EX to prevent race conditions during file write
+    if (file_put_contents($filePath, $jsonData, LOCK_EX) === false) {
+        error_log("writeJsonFile Error: Failed to write to file {$filePath}. Check permissions.");
+        return false;
+    }
+    return true;
 }
 
 // --- Main Logic ---
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $response = ['success' => false, 'message' => 'An unknown error occurred.'];
+$response = ['success' => false, 'message' => 'An unknown error occurred.'];
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = trim($_POST['name'] ?? '');
     $email = trim($_POST['email'] ?? '');
     $rating = intval($_POST['rating'] ?? 0);
     $message = trim($_POST['message'] ?? '');
     $recaptchaResponse = $_POST['g-recaptcha-response'] ?? '';
 
-    // 1. Validate reCAPTCHA
-    if (empty($recaptchaResponse)) {
-        $response['message'] = 'reCAPTCHA verification failed. Please try again.';
-        $response['captcha_error'] = true; // Custom flag for JS to reset captcha
+    // 0. Check if reCAPTCHA secret key is set
+    if (RECAPTCHA_SECRET_KEY === 'YOUR_RECAPTCHA_SECRET_KEY' || empty(RECAPTCHA_SECRET_KEY)) {
+        $response['message'] = 'Server-side reCAPTCHA secret key is not configured. Please contact the administrator.';
+        error_log("FEEDBACK ERROR: RECAPTCHA_SECRET_KEY is not set or is default placeholder.");
         echo json_encode($response);
         exit;
     }
 
+    // 1. Validate reCAPTCHA response from client
+    if (empty($recaptchaResponse)) {
+        $response['message'] = 'reCAPTCHA verification failed. Please ensure you are not a robot.';
+        $response['captcha_error'] = true; // Custom flag for JS to reset captcha
+        error_log("FEEDBACK ERROR: Empty reCAPTCHA response from client.");
+        echo json_encode($response);
+        exit;
+    }
+
+    // 2. Verify reCAPTCHA with Google
     $recaptchaUrl = 'https://www.google.com/recaptcha/api/siteverify';
     $recaptchaData = [
         'secret' => RECAPTCHA_SECRET_KEY,
@@ -55,24 +79,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'http' => [
             'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
             'method'  => 'POST',
-            'content' => http_build_query($recaptchaData)
+            'content' => http_build_query($recaptchaData),
+            'timeout' => 10 // Set a timeout for the API call
         ]
     ];
     $context  = stream_context_create($options);
-    $verifyResponse = file_get_contents($recaptchaUrl, false, $context);
-    $captchaSuccess = json_decode($verifyResponse, true);
-
-    if (!$captchaSuccess['success']) {
-        $response['message'] = 'reCAPTCHA verification failed. Are you a robot?';
+    
+    $verifyResponse = @file_get_contents($recaptchaUrl, false, $context); // Use @ to suppress warnings, handle errors manually
+    
+    if ($verifyResponse === false) {
+        $response['message'] = 'reCAPTCHA verification failed due to a server communication error. Please try again.';
         $response['captcha_error'] = true;
-        error_log("reCAPTCHA verification failed: " . json_encode($captchaSuccess['error-codes'] ?? 'No error codes'));
+        error_log("FEEDBACK ERROR: Failed to communicate with Google reCAPTCHA API. Check network/firewall. Last error: " . error_get_last()['message'] ?? 'No specific error.');
         echo json_encode($response);
         exit;
     }
 
-    // 2. Validate other form fields
+    $captchaSuccess = json_decode($verifyResponse, true);
+
+    if (!$captchaSuccess || !isset($captchaSuccess['success']) || !$captchaSuccess['success']) {
+        $response['message'] = 'reCAPTCHA verification failed. Please try again. (Code: ' . ($captchaSuccess['error-codes'][0] ?? 'unknown') . ')';
+        $response['captcha_error'] = true;
+        error_log("FEEDBACK ERROR: Google reCAPTCHA verification failed. Response: " . print_r($captchaSuccess, true));
+        echo json_encode($response);
+        exit;
+    }
+
+    // 3. Validate other form fields
     if (empty($name) || empty($email) || empty($message)) {
         $response['message'] = 'All fields (Name, Email, Message) are required.';
+        error_log("FEEDBACK ERROR: Required fields are empty. Name: '{$name}', Email: '{$email}', Message: '{$message}'.");
         echo json_encode($response);
         exit;
     }
@@ -85,8 +121,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $rating = 0; // Default to 0 if invalid
     }
 
-    // 3. Save feedback
+    // 4. Save feedback
     $feedbacks = readJsonFile(FEEDBACK_FILE_PATH);
+    if (!is_array($feedbacks)) { // Ensure $feedbacks is an array even if readJsonFile returned empty
+        $feedbacks = [];
+    }
     $newFeedback = [
         'id' => uniqid('feedback_'),
         'name' => htmlspecialchars($name),
@@ -101,12 +140,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (writeJsonFile(FEEDBACK_FILE_PATH, $feedbacks)) {
         $response = ['success' => true, 'message' => 'Thank you for your feedback!'];
     } else {
-        $response['message'] = 'Failed to save feedback. Please try again later.';
+        $response['message'] = 'Failed to save feedback. Please try again later. (File write error)';
+        error_log("FEEDBACK ERROR: Failed to write feedback to file. Check permissions for " . FEEDBACK_FILE_PATH);
     }
 
     echo json_encode($response);
 } else {
     $response = ['success' => false, 'message' => 'Invalid request method.'];
+    error_log("FEEDBACK ERROR: Invalid request method: " . $_SERVER['REQUEST_METHOD']);
     echo json_encode($response);
 }
 ?>

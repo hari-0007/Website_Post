@@ -2689,3 +2689,7 @@
 [2025-06-25 19:20:19] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'whatsapp_profile'.
 [2025-06-25 19:20:19] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'whatsapp_profile' view.
 [2025-06-25 19:20:22] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-06-25 23:51:14] [AUTH_FAILURE] Failed login attempt for username/email: 'aaa@jobhunt.top'
+[2025-06-25 23:51:16] [AUTH_FAILURE] Failed login attempt for username/email: 'aaa@jobhunt.top'
+[2025-06-25 23:51:21] [AUTH_SUCCESS] User 'suthan@jobhunt.top' logged in successfully. Role: 'super_admin'.
+[2025-06-25 23:51:21] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.

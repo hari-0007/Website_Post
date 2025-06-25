@@ -140,7 +140,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (writeJsonFile(FEEDBACK_FILE_PATH, $feedbacks)) {
         $response = ['success' => true, 'message' => 'Thank you for your feedback!'];
     } else {
-        $response['message'] = 'Failed to save feedback. Please try again later. (File write error)';
+        $response['message'] = 'Failed to save feedback. Please try again later.';
         error_log("FEEDBACK ERROR: Failed to write feedback to file. Check permissions for " . FEEDBACK_FILE_PATH);
     }
 

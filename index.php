@@ -2132,7 +2132,7 @@ if ($isAjaxRequest) {
     <script>
         // Embed all job data with PHP-generated Unix timestamps for JavaScript
         const allJobDataFromPHP = <?php echo json_encode($jobsForJS); ?>;
-        var feedbackRecaptchaWidgetId;
+        var feedbackRecaptchaWidgetId; // Declare the variable
         var reportRecaptchaWidgetId;
 
         // Callback function for Google reCAPTCHA explicit rendering
@@ -2140,12 +2140,12 @@ if ($isAjaxRequest) {
             // console.log("reCAPTCHA API loaded."); // For debugging
             const feedbackContainer = document.getElementById('feedbackRecaptchaContainer');
             if (feedbackContainer) {
-                feedbackRecaptchaWidgetId = grecaptcha.render('feedbackRecaptchaContainer', {
+                 feedbackRecaptchaWidgetId = grecaptcha.render('feedbackRecaptchaContainer', {
                     'sitekey' : '6LdejG0rAAAAADz6_mIuRwBirtmdojNX8ax6WBws' // Replace with your Site Key
                 });
             }
             const reportContainer = document.getElementById('reportRecaptchaContainer');
-            if (reportContainer) {
+             if (reportContainer) {
                 reportRecaptchaWidgetId = grecaptcha.render('reportRecaptchaContainer', {
                     'sitekey' : '6LdejG0rAAAAADz6_mIuRwBirtmdojNX8ax6WBws' // Replace with your Site Key
                 });

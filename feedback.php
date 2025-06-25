@@ -51,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $recaptchaResponse = $_POST['g-recaptcha-response'] ?? '';
 
     // 0. Check if reCAPTCHA secret key is set
-    if (RECAPTCHA_SECRET_KEY === '6LdejG0rAAAAAMh22pP5fDpL47ym5YCwst3Qf9H8' || empty(RECAPTCHA_SECRET_KEY)) {
+    if (RECAPTCHA_SECRET_KEY === 'YOUR_RECAPTCHA_SECRET_KEY' || empty(RECAPTCHA_SECRET_KEY)) {
         $response['message'] = 'Server-side reCAPTCHA secret key is not configured. Please contact the administrator.';
         error_log("FEEDBACK ERROR: RECAPTCHA_SECRET_KEY is not set or is default placeholder.");
         echo json_encode($response);

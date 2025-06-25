@@ -243,7 +243,9 @@ switch ($requestedView) {
                 return !($msg['read'] ?? true);
             });
             usort($unreadMessages, function ($a, $b) {
-                return ($b['timestamp'] ?? 0) - ($a['timestamp'] ?? 0);
+                $tsA = intval(strtotime($a['timestamp'] ?? ''));
+                $tsB = intval(strtotime($b['timestamp'] ?? ''));
+                return $tsB - $tsA; // Sort descending (newest first)
             });
             $recentMessages = array_slice($unreadMessages, 0, 5);
         }
@@ -890,7 +892,9 @@ switch ($requestedView) {
         $feedbackMessages = loadFeedbackMessages($feedbackFilename);
         if (!empty($feedbackMessages)) {
             usort($feedbackMessages, function($a, $b) {
-                return ($b['timestamp'] ?? 0) - ($a['timestamp'] ?? 0);
+                $tsA = intval(strtotime($a['timestamp'] ?? ''));
+                $tsB = intval(strtotime($b['timestamp'] ?? ''));
+                return $tsB - $tsA; // Sort descending (newest first)
             });
         }
         log_app_activity("User '$loggedInUserId' accessed 'messages' view.", "ACCESS_GRANTED");

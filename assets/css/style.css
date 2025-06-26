@@ -394,7 +394,6 @@ main {
     background-color: #f8f9fa;
     padding: 12px;
     border-radius: 5px;
-    border-left: 3px solid var(--secondary-color);
     margin-bottom: 15px;
 }
 
@@ -1124,9 +1123,6 @@ body.mobile-nav-open .mobile-nav-overlay { display: block; }
     .menu-toggle {
         display: flex;
     }
-    .mobile-only-ad {
-        display: block; /* Show on mobile screens */
-    }
     .mobile-ad-grid-fixed {
         display: block;
         }
@@ -1184,18 +1180,6 @@ body.mobile-nav-open .mobile-nav-overlay { display: block; }
 /* ==========================================================================
    15. Advertisements
    ========================================================================== */
-
-/* Styles for Mobile-Only Ad Container */
-.mobile-only-ad {
-    display: none; /* Hidden by default on desktop */
-    margin: 20px 0; /* Add some vertical spacing */
-    text-align: center; /* Center the ad content */
-}
-@media (max-width: 768px) {
-    .mobile-only-ad {
-        display: block; /* Show on mobile screens */
-    }
-}
 
 /* Styles for Desktop-Only Ad Container */
 .desktop-only-ad {

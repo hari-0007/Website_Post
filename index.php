@@ -965,32 +965,19 @@ if ($isAjaxRequest) {
                 <div class="desktop-only-ad">
                     <div class="desktop-ad-slot">
                         <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5503439974043365" crossorigin="anonymous"></script>
-                        <!-- Horizontal ad 1 -->
-                        <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-5503439974043365" data-ad-slot="2557517552" data-ad-format="auto" data-full-width-responsive="true"></ins>
+                        <!-- Horizontal ad 1 - REPLACE data-ad-slot with your unique ID -->
+                        <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-5503439974043365" data-ad-slot="2557517552_1" data-ad-format="auto" data-full-width-responsive="true"></ins>
                         <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
                     </div>
                     <div class="desktop-ad-slot">
                         <!-- The adsbygoogle.js script is already loaded, but including the full snippet is safe -->
                         <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5503439974043365" crossorigin="anonymous"></script>
-                        <!-- Horizontal ad 2 -->
-                        <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-5503439974043365" data-ad-slot="2557517552" data-ad-format="auto" data-full-width-responsive="true"></ins>
+                        <!-- Horizontal ad 2 - REPLACE data-ad-slot with your unique ID -->
+                        <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-5503439974043365" data-ad-slot="2557517552_2" data-ad-format="auto" data-full-width-responsive="true"></ins>
                         <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
                     </div>
                 </div>
             </main>
-        </div>
-        <!-- Mobile-only Ad Container -->
-        <div class="mobile-only-ad">
-            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5503439974043365"
-                 crossorigin="anonymous"></script>
-            <!-- Square ads -->
-            <ins class="adsbygoogle"
-                 style="display:block"
-                 data-ad-client="ca-pub-5503439974043365"
-                 data-ad-slot="8372116863"
-                 data-ad-format="auto"
-                 data-full-width-responsive="true"></ins>
-            <script> (adsbygoogle = window.adsbygoogle || []).push({}); </script>
         </div>
     </div>
 
@@ -1173,25 +1160,25 @@ if ($isAjaxRequest) {
             <!-- Ad Slot 1: You may need a unique data-ad-slot for each unit -->
             <div class="mobile-ad-slot">
                 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5503439974043365" crossorigin="anonymous"></script>
-                <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-5503439974043365" data-ad-slot="8372116863" data-ad-format="auto" data-full-width-responsive="true"></ins>
+                <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-5503439974043365" data-ad-slot="8372116863_1" data-ad-format="auto" data-full-width-responsive="true"></ins>
                 <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
             </div>
             <!-- Ad Slot 2 -->
             <div class="mobile-ad-slot">
                 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5503439974043365" crossorigin="anonymous"></script>
-                <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-5503439974043365" data-ad-slot="8372116863" data-ad-format="auto" data-full-width-responsive="true"></ins>
+                <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-5503439974043365" data-ad-slot="8372116863_2" data-ad-format="auto" data-full-width-responsive="true"></ins>
                 <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
             </div>
             <!-- Ad Slot 3 -->
             <div class="mobile-ad-slot">
                 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5503439974043365" crossorigin="anonymous"></script>
-                <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-5503439974043365" data-ad-slot="8372116863" data-ad-format="auto" data-full-width-responsive="true"></ins>
+                <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-5503439974043365" data-ad-slot="8372116863_3" data-ad-format="auto" data-full-width-responsive="true"></ins>
                 <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
             </div>
             <!-- Ad Slot 4 -->
             <div class="mobile-ad-slot">
                 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5503439974043365" crossorigin="anonymous"></script>
-                <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-5503439974043365" data-ad-slot="8372116863" data-ad-format="auto" data-full-width-responsive="true"></ins>
+                <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-5503439974043365" data-ad-slot="8372116863_4" data-ad-format="auto" data-full-width-responsive="true"></ins>
                 <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
             </div>
         </div>

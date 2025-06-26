@@ -1,5 +1,12 @@
 [
     {
+        "application_id": "app_1750953320_8941",
+        "job_id": "job_685c26209e555_1750869536",
+        "user_id": "user_1750859462_1837",
+        "timestamp": 1750953320,
+        "status": "applied"
+    },
+    {
         "application_id": "app_1750869626_6149",
         "job_id": "job_685c26209e555_1750869536",
         "user_id": "user_1750864619_1426",

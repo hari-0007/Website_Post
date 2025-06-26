@@ -4,7 +4,7 @@ session_start();
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 $usersFilePath = __DIR__ . '/data/users.json';
-$action = $_GET['action'] ?? 'login';
+$action = $_POST['action'] ?? $_GET['action'] ?? 'login';
 $error = '';
 $message = '';
 function readUsers($filePath) {
@@ -31,6 +31,11 @@ if (isset($_SESSION['user_id'])) {
 }
 // --- LOGIN & REGISTRATION LOGIC ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $isAjax = isset($_POST['ajax']);
+    if ($isAjax) {
+        header('Content-Type: application/json');
+    }
+
     $users = readUsers($usersFilePath);
     $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
@@ -40,10 +45,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $role = $_POST['role'] ?? '';
         if (empty($username) || empty($email) || empty($password) || empty($role)) {
             $error = 'All fields are required.';
+            if ($isAjax) { echo json_encode(['success' => false, 'message' => $error]); exit; }
         } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $error = 'Invalid email format.';
+            if ($isAjax) { echo json_encode(['success' => false, 'message' => $error]); exit; }
         } elseif (!in_array($role, ['jobseeker', 'recruiter'])) {
             $error = 'Invalid role selected.';
+            if ($isAjax) { echo json_encode(['success' => false, 'message' => $error]); exit; }
         } else {
             // Check if email already exists
             $emailExists = false;
@@ -55,6 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             if ($emailExists) {
                 $error = 'An account with this email already exists.';
+                if ($isAjax) { echo json_encode(['success' => false, 'message' => $error]); exit; }
             } else {
                 $newUser = [
                     'id' => 'user_' . time() . '_' . rand(1000, 9999),
@@ -66,8 +75,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ];
                 $users[] = $newUser;
                 writeUsers($usersFilePath, $users);
-                $message = 'Registration successful! You can now log in.';
-                $action = 'login'; // Switch to login view
+
+                // Automatically log in the new user
+                $_SESSION['user_id'] = $newUser['id'];
+                $_SESSION['user_name'] = $newUser['username'];
+                $_SESSION['user_role'] = $newUser['role'];
+
+                if ($isAjax) {
+                    echo json_encode(['success' => true]);
+                    exit;
+                } else {
+                    header('Location: profile.php');
+                    exit;
+                }
             }
         }
     }
@@ -75,6 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     elseif ($action === 'login') {
         if (empty($email) || empty($password)) {
             $error = 'Email and password are required.';
+            if ($isAjax) { echo json_encode(['success' => false, 'message' => $error]); exit; }
         } else {
             $foundUser = null;
             foreach ($users as $user) {
@@ -87,10 +108,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['user_id'] = $foundUser['id'];
                 $_SESSION['user_name'] = $foundUser['username'];
                 $_SESSION['user_role'] = $foundUser['role'];
-                header('Location: profile.php');
-                exit;
+                if ($isAjax) {
+                    echo json_encode(['success' => true]);
+                    exit;
+                } else {
+                    header('Location: profile.php');
+                    exit;
+                }
             } else {
                 $error = 'Invalid email or password.';
+                if ($isAjax) { echo json_encode(['success' => false, 'message' => $error]); exit; }
             }
         }
     }

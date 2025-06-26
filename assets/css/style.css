@@ -1084,7 +1084,6 @@ main {
     color: var(--text-color-light);
     font-size: 1em;
 }
-
 .mobile-nav-social .social-link { display: flex; align-items: center; gap: 10px; }
 
 .mobile-nav-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1099; }
@@ -1167,5 +1166,34 @@ body.mobile-nav-open .mobile-nav-overlay { display: block; }
     #cookieConsentBanner {
         padding: 15px;
         font-size: 13px;
+    }
+}
+
+/* ==========================================================================
+   15. Advertisements
+   ========================================================================== */
+
+/* Styles for Mobile-Only Ad Container */
+.mobile-only-ad {
+    display: none; /* Hidden by default on desktop */
+    margin: 20px 0; /* Add some vertical spacing */
+    text-align: center; /* Center the ad content */
+}
+@media (max-width: 768px) {
+    .mobile-only-ad {
+        display: block; /* Show on mobile screens */
+    }
+}
+
+/* Styles for Desktop-Only Ad Container */
+.desktop-only-ad {
+    display: none; /* Hidden by default */
+    margin-bottom: 20px; /* Space below the ad */
+    text-align: center;
+}
+
+@media (min-width: 769px) {
+    .desktop-only-ad {
+        display: block; /* Show on desktop screens */
     }
 }

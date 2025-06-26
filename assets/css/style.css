@@ -402,12 +402,14 @@ main {
     margin-top: 0;
 }
 
-.job-card-ad-container {
-    margin-top: 15px;
-    padding-top: 15px;
-    border-top: 1px solid var(--border-color);
-    min-height: 100px; /* Give the fluid ad some space to render */
-    display: block;
+.ad-card {
+    cursor: default; /* Override pointer cursor from .job-card */
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 150px; /* Give ad space to render */
+    background-color: #fdfdfd; /* Slightly different background */
 }
 
 .job-card-meta {

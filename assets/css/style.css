@@ -1188,8 +1188,10 @@ body.mobile-nav-open .mobile-nav-overlay { display: block; }
 /* Styles for Desktop-Only Ad Container */
 .desktop-only-ad {
     display: none; /* Hidden by default */
-    margin-bottom: 20px; /* Space below the ad */
+    margin: 40px auto 20px auto; /* Top, horizontal, bottom spacing */
     text-align: center;
+    max-height: 120px; /* Set a max-height for the ad unit */
+    overflow: hidden; /* Hide any content that might overflow the max-height */
 }
 
 @media (min-width: 769px) {

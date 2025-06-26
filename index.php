@@ -961,10 +961,7 @@ if ($isAjaxRequest) {
                         echo render_job_listings_and_pagination($pagedJobs, $singleJobView, $totalPages, $search, $filter, $jobType, $page, $isRecommendationsView, $isUserLoggedIn, $userRole);
                     ?>
                 </div>
-            </main>
-        </div>
-    </div>
-                <!-- Desktop-only Ad Container -->
+                                <!-- Desktop-only Ad Container -->
                 <div class="desktop-only-ad">
                     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5503439974043365"
                          crossorigin="anonymous"></script>
@@ -979,18 +976,21 @@ if ($isAjaxRequest) {
                          (adsbygoogle = window.adsbygoogle || []).push({});
                     </script>
                 </div>
-    <!-- Mobile-only Ad Container -->
-    <div class="mobile-only-ad">
-        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5503439974043365"
-             crossorigin="anonymous"></script>
-        <!-- Square ads -->
-        <ins class="adsbygoogle"
-             style="display:block"
-             data-ad-client="ca-pub-5503439974043365"
-             data-ad-slot="8372116863"
-             data-ad-format="auto"
-             data-full-width-responsive="true"></ins>
-        <script> (adsbygoogle = window.adsbygoogle || []).push({}); </script>
+            </main>
+        </div>
+        <!-- Mobile-only Ad Container -->
+        <div class="mobile-only-ad">
+            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5503439974043365"
+                 crossorigin="anonymous"></script>
+            <!-- Square ads -->
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-5503439974043365"
+                 data-ad-slot="8372116863"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script> (adsbygoogle = window.adsbygoogle || []).push({}); </script>
+        </div>
     </div>
 
     <footer class="site-footer">

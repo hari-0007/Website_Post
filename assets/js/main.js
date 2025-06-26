@@ -454,7 +454,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // can violate Google AdSense policies and is strongly discouraged.
         // The 5-second interval used here is for demonstration based on the request
         // and should be increased to a safe value (e.g., 30000 ms) for production.
-        const refreshInterval = 5000; // 5 seconds. CHANGE TO 30000+ FOR PRODUCTION.
+        const refreshInterval = 30000; // 5 seconds. CHANGE TO 30000+ FOR PRODUCTION.
 
         setInterval(() => {
             const adContainer = document.getElementById('in-feed-ad-container');

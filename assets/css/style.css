@@ -1093,6 +1093,12 @@ body.mobile-nav-open .mobile-nav { right: 0; }
 body.mobile-nav-open .mobile-nav-overlay { display: block; }
 
 @media (max-width: 768px) {
+    /* Add padding to the bottom of the body to prevent content from being hidden by the fixed ad bar */
+    body {
+        /* The ad grid is roughly 115px high (2 * 50px + 5px gap + 2 * 5px padding) */
+        padding-bottom: 120px;
+    }
+
     .container {
         padding: 0 10px;
     }
@@ -1117,6 +1123,12 @@ body.mobile-nav-open .mobile-nav-overlay { display: block; }
     }
     .menu-toggle {
         display: flex;
+    }
+    .mobile-only-ad {
+        display: block; /* Show on mobile screens */
+    }
+    .mobile-ad-grid-fixed {
+        display: block;
         }
     .pagination-container {
         justify-content: flex-start;
@@ -1188,14 +1200,26 @@ body.mobile-nav-open .mobile-nav-overlay { display: block; }
 /* Styles for Desktop-Only Ad Container */
 .desktop-only-ad {
     display: none; /* Hidden by default */
-    margin: 40px auto 20px auto; /* Top, horizontal, bottom spacing */
+    margin: 30px 0; /* Vertical spacing */
     text-align: center;
-    max-height: 120px; /* Set a max-height for the ad unit */
+    max-height: 100px; /* Approx 1/3 of a job card height */
     overflow: hidden; /* Hide any content that might overflow the max-height */
+    gap: 20px; /* Space between the two ad slots */
+}
+
+.desktop-ad-slot {
+    flex: 1; /* Each slot takes up equal space */
+    min-width: 0; /* Allow flex items to shrink */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100px; /* Match the container's max-height */
+    background-color: #f8f9fa; /* Light background for the ad area */
+    border: 1px dashed #e0e0e0; /* Visualize the slot during development */
 }
 
 @media (min-width: 769px) {
     .desktop-only-ad {
-        display: block; /* Show on desktop screens */
+        display: flex; /* Show on desktop screens as a flex container */
     }
 }

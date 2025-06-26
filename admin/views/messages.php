@@ -44,10 +44,13 @@ foreach ($grouped_feedback as $email => $groupData) {
 }
 
 // Sort the flattened list by timestamp (newest first)
+// This handles both Unix timestamps (new) and date strings (old) for robust sorting.
 usort($allMessagesFlat, function ($a, $b) {
-    $timestampA = (isset($a['timestamp']) && is_numeric($a['timestamp'])) ? (int)$a['timestamp'] : 0;
-    $timestampB = (isset($b['timestamp']) && is_numeric($b['timestamp'])) ? (int)$b['timestamp'] : 0;
-    return $timestampB <=> $timestampA; // Newest first
+    $tsA = $a['timestamp'] ?? 0;
+    $tsB = $b['timestamp'] ?? 0;
+    $unixA = is_numeric($tsA) ? (int)$tsA : strtotime($tsA);
+    $unixB = is_numeric($tsB) ? (int)$tsB : strtotime($tsB);
+    return $unixB <=> $unixA; // Newest first
 });
 
 // The $allMessagesFlat variable is kept as it's used by the JavaScript modal
@@ -70,15 +73,25 @@ usort($allMessagesFlat, function ($a, $b) {
                 </div>
                 <div class="card-body">
                     <p class="card-subtitle mb-2 text-muted">
-                        Total Messages: <?php echo count($groupData['messages']); ?> | 
-                        Last Message: <?php echo date('Y-m-d H:i:s', $groupData['latest_timestamp']); ?>
+                        Total Messages: <?php echo count($groupData['messages']); ?> |
+                        Last Message: <?php
+                            $ts = $groupData['latest_timestamp'];
+                            // Handle both Unix timestamps and date strings
+                            echo date('Y-m-d H:i:s', is_numeric($ts) ? (int)$ts : strtotime($ts));
+                        ?>
                     </p>
                     
                     <?php foreach ($groupData['messages'] as $message): ?>
                         <div class="feedback-message-item <?php echo (isset($message['read']) && $message['read']) ? 'message-read' : 'message-unread'; ?>" onclick="openMessageModal('<?php echo htmlspecialchars($message['id'] ?? ''); ?>')" style="cursor:pointer;">
                             <p>
                                 <strong>From:</strong> <?php echo htmlspecialchars($message['name'] ?? 'N/A'); ?><br>
-                                <strong>Date:</strong> <?php echo isset($message['timestamp']) ? date('Y-m-d H:i:s', $message['timestamp']) : 'N/A'; ?><br>
+                                <strong>Date:</strong> <?php
+                                    if (isset($message['timestamp'])) {
+                                        $ts = $message['timestamp'];
+                                        // Handle both Unix timestamps and date strings
+                                        echo date('Y-m-d H:i:s', is_numeric($ts) ? (int)$ts : strtotime($ts));
+                                    } else { echo 'N/A'; }
+                                ?><br>
                                 <strong>Status:</strong> 
                                 <span class="status-badge <?php echo (isset($message['read']) && $message['read']) ? 'status-read' : 'status-unread'; ?>">
                                     <?php echo (isset($message['read']) && $message['read']) ? 'Read' : 'Unread'; ?>
@@ -398,9 +411,21 @@ usort($allMessagesFlat, function ($a, $b) {
             // Populate modal with message details
             if (detailName) detailName.innerText = message.name || 'N/A';
             if (detailEmail) detailEmail.innerText = message.email || 'N/A';
-            if (detailTimestamp) detailTimestamp.innerText = message.timestamp
-                ? new Date(message.timestamp * 1000).toLocaleString()
-                : 'N/A';
+            if (detailTimestamp) {
+                let timestamp = message.timestamp;
+                let dateObj;
+                if (timestamp) {
+                    // Handle both Unix timestamps (number) and date strings (string)
+                    // JS `new Date()` can parse 'YYYY-MM-DD HH:MM:SS' strings and also accepts milliseconds
+                    dateObj = new Date(typeof timestamp === 'number' ? timestamp * 1000 : timestamp);
+                }
+
+                if (dateObj && !isNaN(dateObj.getTime())) {
+                    detailTimestamp.innerText = dateObj.toLocaleString();
+                } else {
+                    detailTimestamp.innerText = 'N/A'; // Show N/A for invalid dates
+                }
+            }
             if (detailMessage) detailMessage.innerText = message.message || 'No message content.';
 
             // Set the mailto link for reply

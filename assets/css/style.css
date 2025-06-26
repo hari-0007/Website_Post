@@ -380,6 +380,29 @@ main {
     border-top: 1px solid var(--border-color);
 }
 
+.formatted-description h5 {
+    margin-top: 15px;
+    margin-bottom: 8px;
+    font-size: 1em;
+    color: var(--text-color);
+    font-weight: bold;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+}
+
+.ai-summary-block {
+    background-color: #f8f9fa;
+    padding: 12px;
+    border-radius: 5px;
+    border-left: 3px solid var(--secondary-color);
+    margin-bottom: 15px;
+}
+
+.ai-summary-block h5 {
+    border-bottom: none;
+    margin-top: 0;
+}
+
 .job-card-meta {
     margin: 10px 0;
 }

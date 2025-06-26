@@ -18,8 +18,13 @@ $newMessagesFlat = [];
 
 if (is_array($allMessages)) {
     foreach ($allMessages as $message) {
-        if (isset($message['timestamp']) && $message['timestamp'] > $lastKnownTimestamp) {
-            $newMessagesFlat[] = $message;
+        if (isset($message['timestamp'])) {
+            $ts = $message['timestamp'];
+            // Handle both Unix timestamps (numeric) and date strings
+            $unix_ts = is_numeric($ts) ? (int)$ts : strtotime($ts);
+            if ($unix_ts > $lastKnownTimestamp) {
+                $newMessagesFlat[] = $message;
+            }
         }
     }
 }
@@ -27,12 +32,13 @@ if (is_array($allMessages)) {
 if (!empty($newMessagesFlat)) {
     // Group new messages by email for easier UI updates
     $newMessagesGrouped = group_feedback_by_email($newMessagesFlat);
-    $latestOverallTimestamp = 0;
-    if (!empty($newMessagesFlat)) {
-         // Get the max timestamp from the new flat messages
-        $timestamps = array_column($newMessagesFlat, 'timestamp');
-        $latestOverallTimestamp = max($timestamps);
-    }
+    // To get the latest timestamp, we need to handle both string and numeric formats
+    $timestamps = array_map(function($msg) {
+        $ts = $msg['timestamp'] ?? 0;
+        return is_numeric($ts) ? (int)$ts : strtotime($ts);
+    }, $newMessagesFlat);
+
+    $latestOverallTimestamp = !empty($timestamps) ? max($timestamps) : $lastKnownTimestamp;
 
     echo json_encode([
         'success' => true,

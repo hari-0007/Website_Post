@@ -103,10 +103,25 @@ function render_job_listings_and_pagination($pagedJobs, $singleJobView, $totalPa
 
             <div class="job-details" style="display: none;">
                 <div class="formatted-description">
-                    <?php
+                    <?php 
+                        $summary_content = $job['ai_summary'] ?? '';
                         $description_content = $job['description'] ?? '';
-                        $summary_content = $job['ai_summary'] ?? 'N/A';
-                        echo formatAiSummary(!empty(trim($description_content)) ? $description_content : $summary_content);
+
+                        // Always show the AI summary if it exists and is not empty.
+                        if (!empty(trim($summary_content))) {
+                            echo '<div class="ai-summary-block">';
+                            echo '<h5>AI-Generated Summary</h5>';
+                            echo '<div>' . formatAiSummary($summary_content) . '</div>';
+                            echo '</div>';
+                        }
+
+                        // Show the full description if it exists and is different from the summary.
+                        if (!empty(trim($description_content)) && trim(strip_tags($description_content)) !== trim(strip_tags($summary_content))) {
+                            echo '<h5>Full Description</h5>';
+                            echo '<div>' . formatAiSummary($description_content) . '</div>';
+                        } elseif (empty(trim($summary_content)) && empty(trim($description_content))) {
+                            echo '<p>No description available for this job.</p>';
+                        }
                     ?>
                 </div>
                 <div class="job-caution-alert-wrapper">

@@ -132,7 +132,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'email' => htmlspecialchars($email),
         'rating' => $rating,
         'message' => htmlspecialchars($message),
-        'timestamp' => date('Y-m-d H:i:s'),
+        'timestamp' => time(), // Store as Unix timestamp
         'read' => false // New messages are unread by default
     ];
     array_unshift($feedbacks, $newFeedback); // Add to the beginning

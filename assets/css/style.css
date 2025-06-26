@@ -406,9 +406,8 @@ main {
     margin-top: 15px;
     padding-top: 15px;
     border-top: 1px solid var(--border-color);
-    min-height: 100px; /* Reserve a minimum height for the ad to render */
-    display: block; /* Ensure it's a block-level element */
-    text-align: center; /* Center the ad if it's smaller than the container */
+    min-height: 100px; /* Give the fluid ad some space to render */
+    display: block;
 }
 
 .job-card-meta {

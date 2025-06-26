@@ -80,8 +80,7 @@ function render_job_listings_and_pagination($pagedJobs, $singleJobView, $totalPa
         <?php endif; ?>
 
         <?php
-        $threeMonthsAgoTimestamp = strtotime('-3 months');
-        $adShownOnPage = false; // Flag to ensure ad shows only once per page load
+        $threeMonthsAgoTimestamp = strtotime('-3 months');$adShownOnPage = false; // Flag to ensure ad shows only once per page load
         foreach ($pagedJobs as $job):
             $isExpired = ($job['posted_on_unix_ts'] ?? 0) < $threeMonthsAgoTimestamp;
         ?>
@@ -125,24 +124,23 @@ function render_job_listings_and_pagination($pagedJobs, $singleJobView, $totalPa
                     ?>
                 </div>
                 
-                <?php if (!$adShownOnPage): // Only show the ad once per page ?>
-                    <!-- In-card Ad Unit -->
-                    <div class="job-card-ad-container">
-                        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5503439974043365"
-                             crossorigin="anonymous"></script>
-                        <ins class="adsbygoogle"
-                             style="display:block"
-                             data-ad-format="fluid"
-                             data-ad-layout-key="-fb+5w+4e-db+86"
-                             data-ad-client="ca-pub-5503439974043365"
-                             data-ad-slot="7781654578"></ins>
-                        <script>
-                             (adsbygoogle = window.adsbygoogle || []).push({});
-                        </script>
-                    </div>
-                <?php $adShownOnPage = true; // Set the flag to true after showing the ad ?>
-                <?php endif; ?>
-
+                <?php if (!$adShownOnPage): ?>
+                <!-- In-card Ad Unit -->
+                <div class="job-card-ad-container">
+                    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5503439974043365"
+                         crossorigin="anonymous"></script>
+                    <ins class="adsbygoogle"
+                         style="display:block; text-align:center;"
+                         data-ad-layout="in-article"
+                         data-ad-format="fluid"
+                         data-ad-client="ca-pub-5503439974043365"
+                         data-ad-slot="9318367026"></ins>
+                    <script>
+                         (adsbygoogle = window.adsbygoogle || []).push({});
+                    </script>
+                </div>
+                <?php $adShownOnPage = true; endif; ?>
+                
                 <div class="job-caution-alert-wrapper">
                     <span class="job-caution-alert" title="Important Security Advice">⚠️</span>
                 </div>

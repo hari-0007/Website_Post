@@ -450,6 +450,49 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /**
      * ------------------------------------------------------------------------
+     *  ADVERTISEMENT LOGIC
+     * ------------------------------------------------------------------------
+     */
+    const refreshAdSlot = (containerId, adConfig) => {
+        const adContainer = document.getElementById(containerId);
+        if (!adContainer) return;
+
+        // Clear previous ad content
+        adContainer.innerHTML = ''; 
+
+        const newAdSlot = document.createElement('ins');
+        newAdSlot.className = 'adsbygoogle';
+        newAdSlot.style.display = 'block';
+        newAdSlot.dataset.adClient = adConfig.client;
+        newAdSlot.dataset.adSlot = adConfig.slot;
+        newAdSlot.dataset.adFormat = adConfig.format;
+        newAdSlot.dataset.adLayoutKey = adConfig.layoutKey;
+
+        adContainer.appendChild(newAdSlot);
+
+        // Request a new ad for the newly created slot.
+        try {
+            (adsbygoogle = window.adsbygoogle || []).push({});
+        } catch (e) {
+            console.error(`AdSense push error for ${containerId}:`, e);
+        }
+    };
+
+    const initAdRefresher = () => {
+        // IMPORTANT: Refreshing ads too frequently can violate Google AdSense policies.
+        // A 30-60 second interval is recommended.
+        const refreshInterval = 30000; // 30 seconds
+
+        const adSlotsToRefresh = [
+            { id: 'ad-slot-1', config: { client: 'ca-pub-5503439974043365', slot: '8172806315', format: 'fluid', layoutKey: '-fb+5w+4e-db+86' } },
+            { id: 'ad-slot-2', config: { client: 'ca-pub-5503439974043365', slot: '2771487589', format: 'fluid', layoutKey: '-gw-3+1f-3d+2z' } }
+        ];
+
+        setInterval(() => adSlotsToRefresh.forEach(ad => refreshAdSlot(ad.id, ad.config)), refreshInterval);
+    };
+
+    /**
+     * ------------------------------------------------------------------------
      *  EVENT LISTENERS & BINDINGS
      * ------------------------------------------------------------------------
      */
@@ -690,7 +733,8 @@ document.addEventListener('DOMContentLoaded', () => {
         updateSidebarCounts();
         updateActiveFilterLinks(window.location.href);
         expandJobFromUrl();
-        initJoinChannelsPopup(); // This was already here, keeping it.
+        initJoinChannelsPopup();
+        initAdRefresher();
     };
 
     init();

@@ -175,7 +175,7 @@ function render_job_listings_and_pagination($pagedJobs, $singleJobView, $totalPa
             $jobCounter++;
             if ($jobCounter === 4): 
         ?>
-        <div class="job-card ad-card">
+        <div class="job-card ad-card" id="ad-slot-1">
             <!-- Ad Slot 1 -->
             <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5503439974043365"
                  crossorigin="anonymous"></script>
@@ -190,7 +190,7 @@ function render_job_listings_and_pagination($pagedJobs, $singleJobView, $totalPa
             </script>
         </div>
         <?php elseif ($jobCounter === 8): ?>
-        <div class="job-card ad-card">
+        <div class="job-card ad-card" id="ad-slot-2">
             <!-- Ad Slot 2 -->
             <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5503439974043365" crossorigin="anonymous"></script>
             <ins class="adsbygoogle" style="display:block" data-ad-format="fluid" data-ad-layout-key="-gw-3+1f-3d+2z" data-ad-client="ca-pub-5503439974043365" data-ad-slot="2771487589"></ins>

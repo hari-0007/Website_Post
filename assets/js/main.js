@@ -446,6 +446,42 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /**
      * ------------------------------------------------------------------------
+     *  ADVERTISEMENT LOGIC
+     * ------------------------------------------------------------------------
+     */
+    const initAdRefresher = () => {
+        // IMPORTANT: Refreshing ads too frequently (e.g., faster than every 30-60 seconds)
+        // can violate Google AdSense policies and is strongly discouraged.
+        // The 5-second interval used here is for demonstration based on the request
+        // and should be increased to a safe value (e.g., 30000 ms) for production.
+        const refreshInterval = 5000; // 5 seconds. CHANGE TO 30000+ FOR PRODUCTION.
+
+        setInterval(() => {
+            const adContainer = document.getElementById('in-feed-ad-container');
+            // Only refresh if the ad container is on the page
+            if (adContainer) {
+                // To refresh, we clear the container and re-insert a new <ins> tag.
+                // This signals to AdSense that there's a new slot to fill.
+                adContainer.innerHTML = ''; // Clear previous ad content
+
+                const newAdSlot = document.createElement('ins');
+                newAdSlot.className = 'adsbygoogle';
+                newAdSlot.style.display = 'block';
+                newAdSlot.dataset.adFormat = 'fluid';
+                newAdSlot.dataset.adLayoutKey = '-fb+5w+4e-db+86';
+                newAdSlot.dataset.adClient = 'ca-pub-5503439974043365';
+                newAdSlot.dataset.adSlot = '8172806315';
+
+                adContainer.appendChild(newAdSlot);
+
+                // Request a new ad for the newly created slot.
+                try { (adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) { console.error("AdSense push error:", e); }
+            }
+        }, refreshInterval);
+    };
+
+    /**
+     * ------------------------------------------------------------------------
      *  EVENT LISTENERS & BINDINGS
      * ------------------------------------------------------------------------
      */
@@ -687,6 +723,7 @@ document.addEventListener('DOMContentLoaded', () => {
         updateActiveFilterLinks(window.location.href);
         expandJobFromUrl();
         initJoinChannelsPopup();
+        initAdRefresher();
     };
 
     init();

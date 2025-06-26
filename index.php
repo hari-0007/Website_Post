@@ -841,6 +841,8 @@ if ($isAjaxRequest) {
     
     <!-- SEO -->
     <script src="https://www.google.com/recaptcha/api.js?onload=onloadRecaptchaCallback&render=explicit" async defer></script>
+    <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5503439974043365" crossorigin="anonymous"></script>
     <link rel="icon" type="image/png" href="/data/images/logo.png">
     <link rel="canonical" href="<?= htmlspecialchars($canonicalUrl) ?>" />
     <?php if ($shouldNoIndexThisPage): ?>

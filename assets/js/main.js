@@ -446,6 +446,73 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /**
      * ------------------------------------------------------------------------
+     *  ADVERTISEMENT LOGIC
+     * ------------------------------------------------------------------------
+     */
+
+    // This function robustly refreshes a single ad slot by recreating it.
+    // This is necessary because simply calling .push() on an already filled slot doesn't work.
+    const refreshSingleAdUnit = (adCard) => {
+        if (!adCard) return;
+
+        const originalIns = adCard.querySelector('ins.adsbygoogle');
+        if (!originalIns) return;
+
+        // Hide the card again before refreshing
+        adCard.style.display = 'none';
+
+        // Create a new <ins> element and copy essential attributes
+        const newIns = document.createElement('ins');
+        newIns.className = 'adsbygoogle';
+        // Copy attributes that define the ad unit
+        ['style', 'data-ad-client', 'data-ad-slot', 'data-ad-format', 'data-ad-layout-key'].forEach(attr => {
+            if (originalIns.hasAttribute(attr)) {
+                newIns.setAttribute(attr, originalIns.getAttribute(attr));
+            }
+        });
+
+        // Replace the old <ins> with the new one
+        adCard.innerHTML = '';
+        adCard.appendChild(newIns);
+
+        // Push the new ad request
+        try {
+            (adsbygoogle = window.adsbygoogle || []).push({});
+        } catch (e) {
+            console.error("AdSense push error during refresh:", e);
+        }
+    };
+
+    // This function sets up the main ad management system.
+    const initAdManager = () => {
+        const adRefreshInterval = 60000; // 60 seconds
+
+        // Use MutationObserver to show ad cards only when an ad has loaded into them.
+        const observer = new MutationObserver((mutationsList) => {
+            for (const mutation of mutationsList) {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'data-ad-status') {
+                    const adInsElement = mutation.target;
+                    if (adInsElement.dataset.adStatus === 'filled') {
+                        const adCard = adInsElement.closest('.ad-card');
+                        if (adCard) {
+                            adCard.style.display = 'flex';
+                        }
+                    }
+                }
+            }
+        });
+
+        // Start observing the document for changes to ad slots.
+        observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['data-ad-status'] });
+
+        // Set up the timed refresher for all visible ads.
+        setInterval(() => {
+            document.querySelectorAll('.ad-card[style*="display: flex"]').forEach(refreshSingleAdUnit);
+        }, adRefreshInterval);
+    };
+
+    /**
+     * ------------------------------------------------------------------------
      *  EVENT LISTENERS & BINDINGS
      * ------------------------------------------------------------------------
      */
@@ -687,6 +754,7 @@ document.addEventListener('DOMContentLoaded', () => {
         updateActiveFilterLinks(window.location.href);
         expandJobFromUrl();
         initJoinChannelsPopup();
+        initAdManager();
     };
 
     init();

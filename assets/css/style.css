@@ -410,6 +410,7 @@ main {
     justify-content: center;
     min-height: 150px; /* Give ad space to render */
     background-color: #fdfdfd; /* Slightly different background */
+    display: none; /* Hide by default, JS will show it when ad loads */
 }
 
 .job-card-meta {

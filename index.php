@@ -173,12 +173,24 @@ function render_job_listings_and_pagination($pagedJobs, $singleJobView, $totalPa
         </div>
         <?php
             $jobCounter++;
-            if ($jobCounter === 4):
+            if ($jobCounter === 1):
+        ?>
+        <div class="job-card ad-card" id="ad-slot-3">
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-format="fluid"
+                 data-ad-layout-key="-gw-3+1f-3d+2z"
+                 data-ad-client="ca-pub-5503439974043365"
+                 data-ad-slot="3795142259"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+        <?php
+            elseif ($jobCounter === 4):
         ?>
         <div class="job-card ad-card" id="ad-slot-1">
             <!-- Ad-1 -->
-            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5503439974043365"
-                 crossorigin="anonymous"></script>
             <ins class="adsbygoogle"
                  style="display:block"
                  data-ad-format="fluid"
@@ -192,8 +204,6 @@ function render_job_listings_and_pagination($pagedJobs, $singleJobView, $totalPa
         <?php elseif ($jobCounter === 8): ?>
         <div class="job-card ad-card" id="ad-slot-2">
             <!-- Ad-2 -->
-            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5503439974043365"
-                 crossorigin="anonymous"></script>
             <ins class="adsbygoogle"
                  style="display:block"
                  data-ad-format="fluid"
@@ -857,6 +867,7 @@ if ($isAjaxRequest) {
     
     <!-- SEO -->
     <script src="https://www.google.com/recaptcha/api.js?onload=onloadRecaptchaCallback&render=explicit" async defer></script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5503439974043365" crossorigin="anonymous"></script>
     <link rel="icon" type="image/png" href="/data/images/logo.png">
     <link rel="canonical" href="<?= htmlspecialchars($canonicalUrl) ?>" />
     <?php if ($shouldNoIndexThisPage): ?>

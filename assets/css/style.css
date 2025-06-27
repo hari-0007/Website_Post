@@ -402,16 +402,6 @@ main {
     margin-top: 0;
 }
 
-.ad-card {
-    cursor: default; /* Override pointer cursor from .job-card */
-    padding: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 150px; /* Give ad space to render */
-    background-color: #fdfdfd; /* Slightly different background */
-}
-
 .job-card-meta {
     margin: 10px 0;
 }

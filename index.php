@@ -175,20 +175,6 @@ function render_job_listings_and_pagination($pagedJobs, $singleJobView, $totalPa
             $jobCounter++;
             if ($jobCounter === 2):
         ?>
-        <div class="job-card ad-card" id="ad-slot-1">
-            <ins class="adsbygoogle"
-                 style="display:block"
-                 data-ad-format="fluid"
-                 data-ad-layout-key="-gw-3+1f-3d+2z"
-                 data-ad-client="ca-pub-5503439974043365"
-                 data-ad-slot="3795142259"></ins>
-            <script>
-                 (adsbygoogle = window.adsbygoogle || []).push({});
-            </script>
-        </div>
-        <?php
-            elseif ($jobCounter === 5):
-        ?>
         <div class="job-card ad-card" id="ad-slot-2">
             <ins class="adsbygoogle"
                  style="display:block"
@@ -200,8 +186,9 @@ function render_job_listings_and_pagination($pagedJobs, $singleJobView, $totalPa
                  (adsbygoogle = window.adsbygoogle || []).push({});
             </script>
         </div>
-        <?php elseif ($jobCounter === 8): ?>
+               <?php elseif ($jobCounter === 8): ?>
         <div class="job-card ad-card" id="ad-slot-3">
+            
             <ins class="adsbygoogle"
                  style="display:block"
                  data-ad-format="fluid"
@@ -211,6 +198,7 @@ function render_job_listings_and_pagination($pagedJobs, $singleJobView, $totalPa
             <script>
                  (adsbygoogle = window.adsbygoogle || []).push({});
             </script>
+     
         </div>
         <?php endif; endforeach; ?>
     <?php endif; ?>

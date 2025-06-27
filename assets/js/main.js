@@ -117,7 +117,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 history.pushState({}, '', url);
                 elements.jobListingsContainer.innerHTML = html;
                 updateActiveFilterLinks(url);
-                elements.jobListingsContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                // After new content is loaded, tell AdSense to find and fill any new ad slots.
+                // This is the correct way to handle ads on AJAX-driven content changes.
+                if (window.adsbygoogle) {
+                    (adsbygoogle = window.adsbygoogle || []).push({});
+                }                elements.jobListingsContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
             })
             .catch(error => {
                 console.error('Error fetching jobs:', error);

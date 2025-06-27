@@ -173,7 +173,7 @@ function render_job_listings_and_pagination($pagedJobs, $singleJobView, $totalPa
         </div>
         <?php
             $jobCounter++;
-            if ($jobCounter === 1):
+            if ($jobCounter === 2):
         ?>
         <div class="job-card ad-card" id="ad-slot-3">
             <ins class="adsbygoogle"
@@ -187,7 +187,7 @@ function render_job_listings_and_pagination($pagedJobs, $singleJobView, $totalPa
             </script>
         </div>
         <?php
-            elseif ($jobCounter === 4):
+            elseif ($jobCounter === 5):
         ?>
         <div class="job-card ad-card" id="ad-slot-1">
             <!-- Ad-1 -->

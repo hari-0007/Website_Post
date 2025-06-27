@@ -566,14 +566,15 @@ if (!$singleJobView &&
 
             foreach ($userWeightedInterests as $interestTerm => $weight) {
               
+                $safeInterestTerm = (string)$interestTerm; // Explicitly cast to string to prevent deprecated notice
 
                 if ( 
-                    (!empty($jobTitle) && stripos($jobTitle, $interestTerm) !== false) || 
-                    (!empty($jobCompany) && stripos($jobCompany, $interestTerm) !== false) ||
-                    (!empty($jobLocation) && stripos($jobLocation, $interestTerm) !== false) ||
-                    (!empty($jobTypeData) && stripos($jobTypeData, $interestTerm) !== false) ||
-                    (!empty($jobSummary) && stripos($jobSummary, $interestTerm) !== false) ||
-                    (!empty($jobDescription) && stripos($jobDescription, $interestTerm) !== false)
+                    (!empty($jobTitle) && stripos($jobTitle, $safeInterestTerm) !== false) || 
+                    (!empty($jobCompany) && stripos($jobCompany, $safeInterestTerm) !== false) ||
+                    (!empty($jobLocation) && stripos($jobLocation, $safeInterestTerm) !== false) ||
+                    (!empty($jobTypeData) && stripos($jobTypeData, $safeInterestTerm) !== false) ||
+                    (!empty($jobSummary) && stripos($jobSummary, $safeInterestTerm) !== false) ||
+                    (!empty($jobDescription) && stripos($jobDescription, $safeInterestTerm) !== false)
                 ) {
                     $matchScore += $weight;
                 }

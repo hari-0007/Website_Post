@@ -117,7 +117,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 history.pushState({}, '', url);
                 elements.jobListingsContainer.innerHTML = html;
                 updateActiveFilterLinks(url);
-                // Ad loading is now handled by inline scripts within the fetched HTML.
+                // After new content is loaded, tell AdSense to find and fill any new ad slots.
+                // This is the correct way to handle ads on AJAX-driven content changes.
+                if (window.adsbygoogle) {
+                    (adsbygoogle = window.adsbygoogle || []).push({});
+                }                
                 elements.jobListingsContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
             })
             .catch(error => {
@@ -445,17 +449,19 @@ document.addEventListener('DOMContentLoaded', () => {
         unlockBackground();
     };
 
+    /**
+     * ------------------------------------------------------------------------
+     *  ADVERTISEMENT LOGIC
+     * ------------------------------------------------------------------------
+     */
+
     // This function robustly refreshes a single ad slot by recreating it.
     // This is necessary because simply calling .push() on an already filled slot doesn't work.
     const refreshSingleAdUnit = (adCard) => {
         if (!adCard) return;
 
         const originalIns = adCard.querySelector('ins.adsbygoogle');
-        if (!originalIns) {
-            // If no ins element found, hide the card and return.
-            adCard.style.display = 'none';
-            return;
-        }
+        if (!originalIns) return;
 
         // Hide the card again before refreshing
         adCard.style.display = 'none';
@@ -463,15 +469,14 @@ document.addEventListener('DOMContentLoaded', () => {
         // Create a new <ins> element and copy essential attributes
         const newIns = document.createElement('ins');
         newIns.className = 'adsbygoogle';
-        // Copy attributes that define the ad unit, excluding AdSense internal ones
-        const attributesToCopy = ['style', 'data-ad-client', 'data-ad-slot', 'data-ad-format', 'data-ad-layout-key', 'data-full-width-responsive'];
-        attributesToCopy.forEach(attr => {
+        // Copy attributes that define the ad unit
+        ['style', 'data-ad-client', 'data-ad-slot', 'data-ad-format', 'data-ad-layout-key'].forEach(attr => {
             if (originalIns.hasAttribute(attr)) {
                 newIns.setAttribute(attr, originalIns.getAttribute(attr));
             }
         });
 
-        // Clear the old content and append the new <ins>
+        // Replace the old <ins> with the new one
         adCard.innerHTML = '';
         adCard.appendChild(newIns);
 
@@ -479,24 +484,31 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             (adsbygoogle = window.adsbygoogle || []).push({});
         } catch (e) {
-            console.error("AdSense push error for ad card:", e);
+            console.error("AdSense push error during refresh:", e);
         }
-
-        // Check for ad load after a short delay and show if loaded
-        setTimeout(() => {
-            // AdSense typically inserts an iframe. Check for its presence and content.
-            const adIframe = adCard.querySelector('iframe');
-            if (adIframe && adIframe.contentWindow && adIframe.contentWindow.document.body.children.length > 0) {
-                adCard.style.display = 'flex'; // Show the card if ad loaded
-            } else {
-                adCard.style.display = 'none'; // Keep it hidden if no ad loaded
-            }
-        }, 1500); // Give AdSense 1.5 seconds to render
     };
 
     // This function sets up the main ad management system.
     const initAdManager = () => {
         const adRefreshInterval = 60000; // 60 seconds
+
+        // Use MutationObserver to show ad cards only when an ad has loaded into them.
+        const observer = new MutationObserver((mutationsList) => {
+            for (const mutation of mutationsList) {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'data-ad-status') {
+                    const adInsElement = mutation.target;
+                    if (adInsElement.dataset.adStatus === 'filled') {
+                        const adCard = adInsElement.closest('.ad-card');
+                        if (adCard) {
+                            adCard.style.display = 'flex';
+                        }
+                    }
+                }
+            }
+        });
+
+        // Start observing the document for changes to ad slots.
+        observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['data-ad-status'] });
 
         // Set up the timed refresher for all visible ads.
         setInterval(() => {

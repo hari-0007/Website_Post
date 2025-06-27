@@ -410,8 +410,7 @@ main {
     justify-content: center;
     min-height: 150px; /* Give ad space to render */
     background-color: #fdfdfd; /* Slightly different background */
-    /* Removed display: none; here. JS will handle hiding/showing based on ad load status. */
-    /* Initial state will be visible, then hidden if ad fails to load. */
+    display: none; /* Hide by default, JS will show it when ad loads */
 }
 
 .job-card-meta {

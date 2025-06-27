@@ -175,7 +175,7 @@ function render_job_listings_and_pagination($pagedJobs, $singleJobView, $totalPa
             $jobCounter++;
             if ($jobCounter === 2):
         ?>
-        <div class="job-card ad-card" id="ad-slot-3">
+        <div class="job-card ad-card" id="ad-slot-1">
             <ins class="adsbygoogle"
                  style="display:block"
                  data-ad-format="fluid"
@@ -189,27 +189,25 @@ function render_job_listings_and_pagination($pagedJobs, $singleJobView, $totalPa
         <?php
             elseif ($jobCounter === 5):
         ?>
-        <div class="job-card ad-card" id="ad-slot-1">
-            <!-- Ad-1 -->
-            <ins class="adsbygoogle"
-                 style="display:block"
-                 data-ad-format="fluid"
-                 data-ad-layout-key="-fb+5w+4e-db+86"
-                 data-ad-client="ca-pub-5503439974043365"
-                 data-ad-slot="8172806315"></ins>
-            <script>
-                 (adsbygoogle = window.adsbygoogle || []).push({});
-            </script>
-        </div>
-        <?php elseif ($jobCounter === 8): ?>
         <div class="job-card ad-card" id="ad-slot-2">
-            <!-- Ad-2 -->
             <ins class="adsbygoogle"
                  style="display:block"
                  data-ad-format="fluid"
                  data-ad-layout-key="-gw-3+1f-3d+2z"
                  data-ad-client="ca-pub-5503439974043365"
-                 data-ad-slot="2771487589"></ins>
+                 data-ad-slot="3795142259"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+        <?php elseif ($jobCounter === 8): ?>
+        <div class="job-card ad-card" id="ad-slot-3">
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-format="fluid"
+                 data-ad-layout-key="-gw-3+1f-3d+2z"
+                 data-ad-client="ca-pub-5503439974043365"
+                 data-ad-slot="3795142259"></ins>
             <script>
                  (adsbygoogle = window.adsbygoogle || []).push({});
             </script>

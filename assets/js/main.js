@@ -503,6 +503,11 @@ document.addEventListener('DOMContentLoaded', () => {
         // --- Job Card Interactions ---
         const jobCard = e.target.closest('.job-card');
         if (jobCard) {
+            // If the card is an ad, do not trigger job card interactions
+            if (jobCard.classList.contains('ad-card')) {
+                return;
+            }
+
             const shareBtn = e.target.closest('.share-button');
             const applyBtn = e.target.closest('.apply-button');
             const cautionBtn = e.target.closest('.job-caution-alert');

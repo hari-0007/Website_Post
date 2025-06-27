@@ -81,7 +81,7 @@ function render_job_listings_and_pagination($pagedJobs, $singleJobView, $totalPa
 
         <?php
         $threeMonthsAgoTimestamp = strtotime('-3 months');
-        
+        $jobCounter = 0; // To position the ad cards
         foreach ($pagedJobs as $job):
             $isExpired = ($job['posted_on_unix_ts'] ?? 0) < $threeMonthsAgoTimestamp;
         ?>
@@ -171,7 +171,40 @@ function render_job_listings_and_pagination($pagedJobs, $singleJobView, $totalPa
                 </div>
             <?php endif; ?>
         </div>
-        <?php endforeach; ?>
+        <?php
+            $jobCounter++;
+            if ($jobCounter === 4):
+        ?>
+        <div class="job-card ad-card" id="ad-slot-1">
+            <!-- Ad-1 -->
+            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5503439974043365"
+                 crossorigin="anonymous"></script>
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-format="fluid"
+                 data-ad-layout-key="-fb+5w+4e-db+86"
+                 data-ad-client="ca-pub-5503439974043365"
+                 data-ad-slot="8172806315"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+        <?php elseif ($jobCounter === 8): ?>
+        <div class="job-card ad-card" id="ad-slot-2">
+            <!-- Ad-2 -->
+            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5503439974043365"
+                 crossorigin="anonymous"></script>
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-format="fluid"
+                 data-ad-layout-key="-gw-3+1f-3d+2z"
+                 data-ad-client="ca-pub-5503439974043365"
+                 data-ad-slot="2771487589"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+        <?php endif; endforeach; ?>
     <?php endif; ?>
 
     <?php if (!$singleJobView && $totalPages > 1): ?>

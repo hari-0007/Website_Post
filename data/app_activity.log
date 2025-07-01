@@ -3082,3 +3082,11 @@
 [2025-07-01 06:35:13] [JOB_POST_SUCCESS] Job ID '1751331913_9387' (Title: 'Do of') posted successfully by 'suthan@jobhunt.top'.
 [2025-07-01 06:35:13] [AI_IMAGE_WARNING] GD library not available. Cannot create placeholder image for job ID '1751331913_9387'.
 [2025-07-01 06:35:13] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-01 06:42:54] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-01 06:43:05] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Me': API Key is placeholder or empty.
+[2025-07-01 06:43:08] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Me'.
+[2025-07-01 06:43:08] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Me') ready for review.
+[2025-07-01 06:43:08] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-01 06:43:10] [JOB_POST_SUCCESS] Job ID '1751332390_1928' (Title: 'Me') posted successfully by 'suthan@jobhunt.top'.
+[2025-07-01 06:43:10] [AI_IMAGE_WARNING] GD library not available. Cannot create placeholder image for job ID '1751332390_1928'.
+[2025-07-01 06:43:10] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.

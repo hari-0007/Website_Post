@@ -236,7 +236,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'experience' => $jobData['experience'],
             'salary' => $jobData['salary'],
             'description' => $jobData['ai_summary'],
-            'url' => rtrim(APP_BASE_URL, '/') . '/job_detail.php?id=' . $jobData['id']
+            'url' => rtrim(APP_BASE_URL, '/') . '/job_detail.php?job_id=' . $jobData['id']
         ];
         $_SESSION['show_share_popup_data'] = $shareData;
         $successMessage = 'Job posted successfully! You can now share the opening.';

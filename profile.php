@@ -3,6 +3,9 @@ ob_start();
 session_start();
 date_default_timezone_set('Asia/Kolkata'); // Ensure consistent timezone for timestamps
 
+// Include the configuration file to get access to constants like APP_BASE_URL
+require_once __DIR__ . '/admin/includes/config.php';
+
 // Redirect to login page if the user is not logged in.
 if (!isset($_SESSION['user_id'])) {
     header('Location: auth.php?action=login');
@@ -526,6 +529,34 @@ if ($userRole === 'jobseeker') {
             color: #721c24;
             border: 1px solid #f5c6cb;
         }
+        /* --- New Share Button Styles --- */
+        .job-share-actions {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #f0f0f0;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
+        }
+        .share-button {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 4px;
+            color: white !important;
+            text-decoration: none;
+            font-size: 0.85em;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .share-button:hover {
+            opacity: 0.85;
+        }
+        .share-button.whatsapp { background-color: #25D366; }
+        .share-button.telegram { background-color: #0088cc; }
+        .share-button.copy-link { background-color: #777; }
     </style>
 </head>
 <body>
@@ -702,6 +733,21 @@ if ($userRole === 'jobseeker') {
                         <span><strong>Posted on:</strong> <?= htmlspecialchars($job['posted_on']) ?></span>
                     </div>
                     
+                    <?php
+                        // --- New: Prepare share links for each job ---
+                        $jobShareUrl = rtrim(APP_BASE_URL, '/') . '/index.php?job_id=' . htmlspecialchars($job['id']);
+                        $shareMessage = "*Job Opportunity: " . htmlspecialchars($job['title']) . "* at " . htmlspecialchars($job['company']) . ".\n\n" .
+                                     "Find out more and apply here:\n" . $jobShareUrl;
+                        $whatsappLink = "https://api.whatsapp.com/send?text=" . urlencode($shareMessage);
+                        $telegramLink = "https://t.me/share/url?url=" . urlencode($jobShareUrl) . "&text=" . urlencode($shareMessage);
+                    ?>
+                    <div class="job-share-actions">
+                        <strong>Share:</strong>
+                        <a href="<?= $whatsappLink ?>" class="share-button whatsapp" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+                        <a href="<?= $telegramLink ?>" class="share-button telegram" target="_blank" rel="noopener noreferrer">Telegram</a>
+                        <button class="share-button copy-link" data-url="<?= $jobShareUrl ?>">Copy Link</button>
+                    </div>
+
                     <div class="applicant-list">
                         <h4>Applicants (<?= count($job['applicants']) ?>)</h4>
                         <?php if (empty($job['applicants'])): ?>
@@ -745,6 +791,58 @@ if ($userRole === 'jobseeker') {
 
 </div>
 
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // --- JavaScript for "Copy Link" buttons with fallback for non-secure contexts ---
+
+    function fallbackCopyTextToClipboard(text, button) {
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        
+        // Avoid scrolling to bottom
+        textArea.style.top = "0";
+        textArea.style.left = "0";
+        textArea.style.position = "fixed";
+
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+
+        try {
+            document.execCommand('copy');
+            const originalText = button.textContent;
+            button.textContent = 'Copied!';
+            button.style.backgroundColor = '#28a745'; // Green feedback
+            setTimeout(() => {
+                button.textContent = originalText;
+                button.style.backgroundColor = '#777'; // Revert color
+            }, 2000);
+        } catch (err) {
+            console.error('Fallback: Unable to copy', err);
+            alert('Failed to copy link.');
+        }
+
+        document.body.removeChild(textArea);
+    }
+
+    const copyButtons = document.querySelectorAll('.copy-link');
+    copyButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const urlToCopy = this.getAttribute('data-url');
+
+            if (!navigator.clipboard) {
+                fallbackCopyTextToClipboard(urlToCopy, this);
+                return;
+            }
+            // If navigator.clipboard is available, use it
+            navigator.clipboard.writeText(urlToCopy).catch(err => {
+                console.error('Async copy failed, trying fallback: ', err);
+                fallbackCopyTextToClipboard(urlToCopy, this); // Try fallback on error
+            });;
+        });
+    });
+});
+</script>
 </body>
 </html>
 <?php

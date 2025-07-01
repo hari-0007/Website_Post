@@ -1,6 +1,6 @@
 <?php
 
-// admin/post_job.php - Handles the job posting form submission
+// admin/post_job.php - Handles the job posting form submission in a two-step process.
 
 session_start(); // Start the session to access session variables
 
@@ -10,14 +10,11 @@ require_once __DIR__ . '/includes/job_helpers.php';
 
 $loggedInUsernameForLog = $_SESSION['admin_username'] ?? 'UnknownAdmin'; // For logging
 
-
 // Check if the form was submitted via POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $action = $_POST['action'] ?? 'initial_post'; // New: Differentiate actions
+    $action = $_POST['action'] ?? 'initial_post'; // Differentiate actions
 
     // --- Retrieve and sanitize form inputs (common for both steps) ---
-    // For initial_post, these come from the first form.
-    // For final_post, these will be resubmitted from the review form.
     $title = trim($_POST['title'] ?? '');
     $company = trim($_POST['company'] ?? '');
     $location = trim($_POST['location'] ?? '');
@@ -26,11 +23,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $custom_experience = trim($_POST['custom_experience'] ?? ''); // Custom experience text
 
     $experience = $experienceValue; // Use the select value by default
-    if ($experience === 'other') {
-        $experience = trim($_POST['custom_experience'] ?? ''); // Use the custom input value
+    if ($experience === 'other' && !empty($custom_experience)) {
+        $experience = $custom_experience; // Use the custom input value
     }
     $type = trim($_POST['type'] ?? 'Full Time'); // Default to Full Time
-    $salary = trim($_POST['salary'] ?? '0'); // Default to 0
+    $salary = trim($_POST['salary'] ?? ''); // Allow empty salary
     $phones = trim($_POST['phones'] ?? '');
     $emails = trim($_POST['emails'] ?? '');
     $vacant_positions = intval($_POST['vacant_positions'] ?? 1); // Default to 1
@@ -178,9 +175,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } catch (Exception $e) { 
                 error_log('[AI_SUMMARY_EXCEPTION] Error generating AI summary: ' . $e->getMessage()); 
             }        
-        
-
-        // Store all data in session for the review step, regardless of whether summary was generated
+       
+        // Store all data in session for the review step
         $_SESSION['review_job_data'] = [
             'title' => $title, 'company' => $company, 'location' => $location,
             'description' => $description, 
@@ -189,35 +185,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'type' => $type,
             'salary' => $salary, 'phones' => $phones, 'emails' => $emails,
             'vacant_positions' => $vacant_positions,
-            'ai_summary' => trim($generatedAiSummary) // The newly generated summary (will be empty if not generated)
+            'ai_summary' => trim($generatedAiSummary)
         ];
 
         // Redirect to the post_job view, which will now be in "review mode"
-        log_app_activity("Job post by '$loggedInUsernameForLog' (Title: '$title') ready for review. AI Summary generated (length: " . strlen(trim($generatedAiSummary)) . ").", "JOB_POST_REVIEW_READY");
+        log_app_activity("Job post by '$loggedInUsernameForLog' (Title: '$title') ready for review.", "JOB_POST_REVIEW_READY");
         header('Location: dashboard.php?view=post_job&step=review');
         exit();
 
-    } elseif ($action === 'final_post') { // ... rest of the final_post logic
+    } elseif ($action === 'final_post') {
         // --- Step 2: Final Post - Save the job with potentially edited AI summary ---
-        // The $aiSummary variable is already populated from $_POST['ai_summary'] at the top.
-        // All other fields ($title, $company, etc.) are also repopulated from $_POST.
-
-        // Basic validation for final post (though most fields should be pre-filled and non-empty)
         if (empty($title) || (empty($phones) && empty($emails))) {
             $_SESSION['admin_status'] = ['message' => 'Error: Required fields are missing for final submission.', 'type' => 'error'];
             log_app_activity("Final job post by '$loggedInUsernameForLog' (Title: '$title') failed: Required fields missing.", "JOB_POST_FINAL_VALIDATION_ERROR");
-            // Re-populate form data for review again if something went wrong
-            $_SESSION['review_job_data'] = $_POST; // Use current POST data
+            $_SESSION['review_job_data'] = $_POST;
             header('Location: dashboard.php?view=post_job&step=review');
             exit();
         }
 
-        // No need for duplicate check here again, as it was done in step 1.
-        // If a strict check is needed again, it could be added, but might be redundant.
-
         // Prepare job data for saving
-        $jobIdForLog = time() . '_' . rand(1000, 9999); // Generate ID before creating array to log it
-        $jobData = [ // Keep this structure
+        $jobData = [
             'id' => time() . '_' . rand(1000, 9999),
             'title' => $title, 'company' => $company, 'location' => $location,
             'description' => $description, // Original description
@@ -226,10 +213,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'phones' => $phones, 'emails' => $emails, 'vacant_positions' => $vacant_positions,
             'posted_on' => date('Y-m-d H:i:s'),
             'posted_on_unix_ts' => time(),
-            // Add the logged-in user's ID
             'posted_by_user_id' => $_SESSION['admin_username'] ?? null,
-            'total_views_count' => 0, // Initialize new field
-            'total_shares_count' => 0  // Initialize new field
+            'total_views_count' => 0,
+            'total_shares_count' => 0
         ];
 
         $jobsFile = __DIR__ . '/../data/jobs.json';
@@ -237,223 +223,71 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!is_array($allExistingJobs)) { $allExistingJobs = []; }
 
         array_unshift($allExistingJobs, $jobData);
-        file_put_contents($jobsFile, json_encode($allExistingJobs, JSON_PRETTY_PRINT));
+        file_put_contents($jobsFile, json_encode($allExistingJobs, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
 
         unset($_SESSION['review_job_data']); // Clear review data from session
         log_app_activity("Job ID '{$jobData['id']}' (Title: '$title') posted successfully by '$loggedInUsernameForLog'.", "JOB_POST_SUCCESS");
-        $_SESSION['admin_status'] = ['message' => 'Job posted successfully!', 'type' => 'success'];
-         // --- AI Image Generation for Job Poster ---
-         // --- WHATSAPP AUTOMATION INTEGRATION ---
-        // This block is copied and adapted from actions/process_job_post.php
-        $whatsappEnabled = true; // Make this configurable
-        if ($whatsappEnabled) {
-            // Use the specific Group ID for reliability
-            $targetWhatsappGroupId = '120363401972837358@g.us'; // Specific Group ID for "Auto Post Job"
 
-            if (empty($targetWhatsappGroupId)) { // Should not be empty if hardcoded, but good practice
-                error_log("WhatsApp Automation (from post_job.php): Target WhatsApp Group ID is not configured. Skipping message for job ID '{$jobData['id']}'.");
-                if (isset($_SESSION['admin_status']['message'])) {
-                     $_SESSION['admin_status']['message'] .= ' (WhatsApp notification skipped: Target Group Name not configured)';
-                }
-            } else {
-                // Construct the link to the job detail page on your website
-                $jobDisplayLink = rtrim(APP_BASE_URL, '/') . '/job_detail.php?id=' . $jobData['id'];
-                
-                // Format the message for WhatsApp
-                $whatsappMessage = "📢 *New Job Opportunity Posted!* 📢\n\n" .
-                                   "✨ *Title:* " . ($jobData['title'] ?? 'N/A') . "\n" .
-                                   "🏢 *Company:* " . ($jobData['company'] ?? 'N/A') . "\n" .
-                                   "📍 *Location:* " . ($jobData['location'] ?? 'N/A') . "\n";
-                if (!empty($jobData['type'])) { // Assuming 'type' is the job type field in $jobData
-                    $whatsappMessage .= "⏰ *Type:* " . $jobData['type'] . "\n";
-                }
-                // Use ai_summary if available and not empty, otherwise fallback to a snippet of description
-                $descriptionSnippet = !empty($jobData['ai_summary']) ? $jobData['ai_summary'] : substr(strip_tags($jobData['description'] ?? ''), 0, 150) . "...";
-                $whatsappMessage .= "\n📝 *Summary:* " . $descriptionSnippet . "\n\n" .
-                                   "🔗 *Apply Here & More Info:* " . $jobDisplayLink . "\n\n" .
-                                   "Good luck! 🚀";
+        // --- Prepare data for the share popup ---
+        $shareData = [
+            'title' => $jobData['title'],
+            'company' => $jobData['company'],
+            'vacancies' => $jobData['vacant_positions'],
+            'experience' => $jobData['experience'],
+            'salary' => $jobData['salary'],
+            'description' => $jobData['ai_summary'],
+            'url' => rtrim(APP_BASE_URL, '/') . '/job_detail.php?id=' . $jobData['id']
+        ];
+        $_SESSION['show_share_popup_data'] = $shareData;
+        $successMessage = 'Job posted successfully! You can now share the opening.';
 
-                // URL to your whatsapp_manager.php script
-                $whatsappManagerUrl = rtrim(APP_BASE_URL, '/') . '/admin/whatsapp_manager.php';
-
-                $postDataForWhatsApp = [
-                    'action' => 'send_whatsapp_message',
-                    'target_identifier' => $targetWhatsappGroupId, // Use the Group ID
-                    'message' => $whatsappMessage,
-                ];
-                
-                error_log("WhatsApp Automation: Attempting to call whatsapp_manager.php at URL: " . $whatsappManagerUrl); // Add this line
-
-               // ...
-$ch_wa = curl_init();
-curl_setopt($ch_wa, CURLOPT_URL, $whatsappManagerUrl);
-curl_setopt($ch_wa, CURLOPT_POST, true);
-curl_setopt($ch_wa, CURLOPT_POSTFIELDS, http_build_query($postDataForWhatsApp));
-curl_setopt($ch_wa, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch_wa, CURLOPT_TIMEOUT, 45);
-curl_setopt($ch_wa, CURLOPT_CONNECTTIMEOUT, 10); // Timeout for the connection phase (seconds)
-curl_setopt($ch_wa, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4); // Force IPv4 resolution
-
-// --- Start Enhanced Debugging for cURL ---
-curl_setopt($ch_wa, CURLOPT_VERBOSE, true);
-$verbose_log_wa = fopen('php://temp', 'w+'); // Capture verbose output to a temporary stream
-curl_setopt($ch_wa, CURLOPT_STDERR, $verbose_log_wa);
-// --- End Enhanced Debugging for cURL ---
-
-// --- Start Pre-cURL Call Logging ---
-error_log("[post_job.php] WhatsApp Notification: Attempting cURL call.");
-error_log("[post_job.php] Target URL: " . $whatsappManagerUrl);
-error_log("[post_job.php] POST Data: " . http_build_query($postDataForWhatsApp));
-$urlPartsForLog = parse_url($whatsappManagerUrl);
-if (isset($urlPartsForLog['scheme']) && $urlPartsForLog['scheme'] === 'https') {
-    if (defined('APP_ENV') && APP_ENV === 'development' && ($urlPartsForLog['host'] === 'localhost' || $urlPartsForLog['host'] === '127.0.0.1')) {
-        error_log("[post_job.php] SSL verification bypass is ON for this local HTTPS request.");
-    } else {
-        error_log("[post_job.php] SSL verification bypass is OFF. Standard SSL verification will apply for this HTTPS request.");
-    }
-} else {
-    error_log("[post_job.php] This is an HTTP request. No SSL verification applicable.");
-}
-// --- End Pre-cURL Call Logging ---
-if (isset($_COOKIE[session_name()])) {
-    curl_setopt($ch_wa, CURLOPT_COOKIE, session_name() . '=' . $_COOKIE[session_name()]);
-}
-
-// --- Adjust SSL verification bypass for local development HTTPS ---
-// --- SSL Verification Handling for cURL ---
-$urlPartsWA_post = parse_url($whatsappManagerUrl); // Use a unique variable name to avoid scope issues if included elsewhere
-$isLocalHttpsRequest_post = (isset($urlPartsWA_post['scheme']) && $urlPartsWA_post['scheme'] === 'https' &&
-                           isset($urlPartsWA_post['host']) && ($urlPartsWA_post['host'] === 'localhost' || $urlPartsWA_post['host'] === '127.0.0.1'));
-
-if ($isLocalHttpsRequest_post) {
-    // Unconditionally disable SSL verification for https://localhost or https://127.0.0.1
-    error_log("[post_job.php] cURL Info: Local HTTPS detected for URL: {$whatsappManagerUrl}. Disabling SSL peer/host verification.");
-    curl_setopt($ch_wa, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($ch_wa, CURLOPT_SSL_VERIFYHOST, false);
-} elseif (defined('APP_ENV') && APP_ENV === 'development' && isset($urlPartsWA_post['scheme']) && $urlPartsWA_post['scheme'] === 'https') {
-    // For other HTTPS URLs in a development environment (e.g., https://myproject.local with self-signed cert)
-    error_log("[post_job.php] cURL Info: Development environment HTTPS detected for URL: {$whatsappManagerUrl} (APP_ENV=development). Disabling SSL peer/host verification.");
-        curl_setopt($ch_wa, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch_wa, CURLOPT_SSL_VERIFYHOST, false);
-}
-// --- End SSL Verification Handling ---
-
-
-                $responseJson_wa = curl_exec($ch_wa);
-                $httpCode_wa = curl_getinfo($ch_wa, CURLINFO_HTTP_CODE);
-                $curlError_wa = curl_error($ch_wa);
-
-                // --- Retrieve and log verbose output ---
-                rewind($verbose_log_wa);
-                $verboseOutput_wa = stream_get_contents($verbose_log_wa);
-                fclose($verbose_log_wa);
-                if (!empty($verboseOutput_wa)) {
-                    error_log("WhatsApp Automation cURL VERBOSE (from post_job.php) for job ID '{$jobData['id']}': " . trim($verboseOutput_wa));
-                }
-                // --- End Retrieve and log verbose output ---
-
-                curl_close($ch_wa);
-
-                if ($curlError_wa) {
-                    // Log the specific cURL error, the URL, and the HTTP code if available
-                    error_log("WhatsApp Automation cURL Error (from post_job.php) for job ID '{$jobData['id']}': " . $curlError_wa . ". URL: " . $whatsappManagerUrl . ". HTTP Code: " . $httpCode_wa);
-                    $_SESSION['admin_status']['message'] .= ' (WhatsApp notification failed: cURL error - please check server logs for details)';
-                } else {
-                    $waResponse = json_decode($responseJson_wa, true);
-                    if ($httpCode_wa === 200 && $waResponse && isset($waResponse['success']) && $waResponse['success']) {
-                        log_app_activity("WhatsApp notification sent (from post_job.php) for job ID '{$jobData['id']}' to target '{$targetWhatsappGroupId}'. Controller: " . ($waResponse['message'] ?? 'OK'), "WHATSAPP_SENT");
-                        $_SESSION['admin_status']['message'] .= ' (WhatsApp: ' . htmlspecialchars($waResponse['message'] ?? 'Notification sent.') . ')';
-                    } else {
-                        $waErrorMsg = $waResponse['message'] ?? 'Unknown WhatsApp controller error';
-                        error_log("WhatsApp Automation Failed (from post_job.php) for job ID '{$jobData['id']}'. HTTP Code: {$httpCode_wa}. Controller Msg: " . $waErrorMsg . ". Raw Response: " . $responseJson_wa);
-                        $_SESSION['admin_status']['message'] .= ' (WhatsApp notification failed: ' . htmlspecialchars($waErrorMsg) . ')';
-                    }
-                }
-            }
-        }
-        // --- END WHATSAPP AUTOMATION INTEGRATION ---
-
+        // --- AI Image Generation ---
         $posterImageStoragePath = __DIR__ . '/../data/job_posters/';
         if (!is_dir($posterImageStoragePath)) {
             if (!mkdir($posterImageStoragePath, 0777, true)) {
                 log_app_activity("Failed to create job poster image directory: {$posterImageStoragePath}", "AI_IMAGE_ERROR");
-                error_log("[AI_IMAGE_ERROR] Failed to create directory: {$posterImageStoragePath}");
             }
         }
 
         if (is_dir($posterImageStoragePath) && is_writable($posterImageStoragePath)) {
             $imageJobId = $jobData['id'];
-// Refined prompt for image generation
-            $imagePrompt = "Create a professional and visually appealing poster for a job opening. " .
-                           "Job Title: '{$jobData['title']}'. " .
-                           "Company: '{$jobData['company']}'. " .
-                           "Location: '{$jobData['location']}'. " .
-                           "Key elements to convey: opportunity, growth, modern workplace. " .
-                           "Style: Clean, corporate, with a touch of innovation. " .
-                           "Dominant colors: blues, greys, with an accent color like teal or orange. " .
-                           "Include abstract representations of collaboration or technology if appropriate. Avoid text clutter.";
-                        
-            // Placeholder for actual AI image generation
-            // In a real scenario, you would call an AI image generation API here.
-            // For now, we'll simulate it and create a dummy file or just log.
             $generatedImagePath = $posterImageStoragePath . $imageJobId . '.png';
             $imageGenerationSuccess = false;
 
-            // --- Replace this block with your actual AI Image Generation API call ---
-            try {
-                // Example: Simulate creating a placeholder image file
-                // For a real implementation, you'd get image data from an API
-                // and use file_put_contents($generatedImagePath, $imageDataFromApi);
-                
-               // Fallback: For now, we'll just log that the real API call is needed
-                // and create an empty file as a placeholder.
-                error_log("[AI_IMAGE_INFO] Placeholder: Actual AI image generation API call needed for job ID '{$imageJobId}'. Prompt: '{$imagePrompt}'");
-                           // ... inside the try block ...
-            error_log("[AI_IMAGE_INFO] Placeholder: Attempting to generate GD placeholder for job ID '{$imageJobId}'. Prompt: '{$imagePrompt}'");
             if (function_exists('imagecreatetruecolor')) {
-                $width = 200; // Small placeholder
-                $height = 100;
+                $width = 200; $height = 100;
                 $img = @imagecreatetruecolor($width, $height);
                 if ($img) {
-                    $bgColor = imagecolorallocate($img, 240, 240, 240); // Light grey
-                    $textColor = imagecolorallocate($img, 50, 50, 50);   // Dark grey
+                    $bgColor = imagecolorallocate($img, 240, 240, 240);
+                    $textColor = imagecolorallocate($img, 50, 50, 50);
                     imagefill($img, 0, 0, $bgColor);
                     imagestring($img, 3, 10, 40, "Placeholder", $textColor);
                     if (imagepng($img, $generatedImagePath)) {
                         $imageGenerationSuccess = true;
-                    } else {
-                        error_log("[AI_IMAGE_ERROR] GD: Failed to save PNG for job ID '{$imageJobId}'. Check path/permissions for {$generatedImagePath}");
                     }
                     imagedestroy($img);
-                } else {
-                     error_log("[AI_IMAGE_ERROR] GD: imagecreatetruecolor() failed for job ID '{$imageJobId}'.");
                 }
             } else {
-                error_log("[AI_IMAGE_INFO] GD library not available. Cannot create GD placeholder for job ID '{$imageJobId}'. No image file will be created by placeholder logic.");
-                // $imageGenerationSuccess remains false
+                log_app_activity("GD library not available. Cannot create placeholder image for job ID '{$imageJobId}'.", "AI_IMAGE_WARNING");
+                $successMessage .= ' (Note: Poster image not generated; GD library missing.)';
             }
-            // ... rest of the try block ...
-
-            } catch (Exception $e) {
-                log_app_activity("Exception during AI image generation for job ID '{$imageJobId}': " . $e->getMessage(), "AI_IMAGE_ERROR");
-                error_log("[AI_IMAGE_EXCEPTION] for job ID '{$imageJobId}': " . $e->getMessage());
-            }
-            // --- End of AI Image Generation API call block ---
 
             if ($imageGenerationSuccess) {
-                log_app_activity("AI poster image generated successfully for job ID '{$imageJobId}' at '{$generatedImagePath}'. Prompt: '{$imagePrompt}'", "AI_IMAGE_SUCCESS");
-                error_log("[AI_IMAGE_SUCCESS] Poster generated for job ID '{$imageJobId}'. Path: {$generatedImagePath}");
-            } else {
-                log_app_activity("AI poster image generation FAILED for job ID '{$imageJobId}'. Prompt: '{$imagePrompt}'", "AI_IMAGE_ERROR");
-                error_log("[AI_IMAGE_ERROR] Failed to generate poster for job ID '{$imageJobId}'.");
+                log_app_activity("Placeholder poster image generated for job ID '{$imageJobId}'.", "AI_IMAGE_SUCCESS");
+            } elseif (function_exists('imagecreatetruecolor')) {
+                log_app_activity("Placeholder poster image generation FAILED for job ID '{$imageJobId}'.", "AI_IMAGE_ERROR");
             }
         } else {
             log_app_activity("Job poster image directory is not writable or does not exist: {$posterImageStoragePath}", "AI_IMAGE_ERROR");
-            error_log("[AI_IMAGE_ERROR] Directory not writable/exists: {$posterImageStoragePath}");
+            $successMessage .= ' (Warning: Could not save poster image, directory is not writable.)';
         }
         // --- End AI Image Generation ---
 
-        header('Location: dashboard.php?view=manage_jobs');
+        // Set the final status message
+        $_SESSION['admin_status'] = ['message' => $successMessage, 'type' => 'success'];
+
+        // Redirect to the post job page to show the share modal
+        header('Location: dashboard.php?view=post_job&posted=1');
         exit();
     } else {
         // Invalid action
@@ -465,14 +299,10 @@ if ($isLocalHttpsRequest_post) {
 
 } else {
     // Not a POST request, or some other issue
-    // If accessed directly, redirect to the initial post job form
-    // This also handles clearing any stale review data if the user navigates away and back
     if (isset($_GET['view']) && $_GET['view'] === 'post_job' && (!isset($_GET['step']) || $_GET['step'] !== 'review')) {
         unset($_SESSION['review_job_data']); // Clear review data for a fresh form
         log_app_activity("Job post form accessed directly by '$loggedInUsernameForLog', review data cleared.", "JOB_POST_FORM_ACCESS");
     }
-    // This redirect was missing in the original file if it's not a POST request.
-    // It should redirect to the view that displays the form.
     header('Location: dashboard.php?view=post_job'); 
     exit();
 }

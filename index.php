@@ -115,11 +115,12 @@ function render_job_listings_and_pagination($pagedJobs, $singleJobView, $totalPa
                             echo '</div>';
                         }
 
-                        // Show the full description if it exists and is different from the summary.
-                        if (!empty(trim($description_content)) && trim(strip_tags($description_content)) !== trim(strip_tags($summary_content))) {
-                            echo '<h5>Full Description</h5>';
+                        // If no AI summary, fall back to the original description.
+                        elseif (!empty(trim($description_content))) {
                             echo '<div>' . formatAiSummary($description_content) . '</div>';
-                        } elseif (empty(trim($summary_content)) && empty(trim($description_content))) {
+                        } 
+                        // If neither exists, show a message.
+                        else {
                             echo '<p>No description available for this job.</p>';
                         }
                     ?>

@@ -3,6 +3,16 @@
 // admin/views/post_job_view.php - Form for posting a new job, with review step
 
 // This file is included by dashboard.php when $requestedView is 'post_job'.
+
+// --- NEW --- Check for successful post to show share modal
+$showSharePopup = false;
+$shareData = [];
+if (isset($_GET['posted']) && $_GET['posted'] == '1' && isset($_SESSION['show_share_popup_data'])) {
+    $showSharePopup = true;
+    $shareData = $_SESSION['show_share_popup_data'];
+    unset($_SESSION['show_share_popup_data']); // Unset it so it doesn't show again on refresh
+}
+// --- END NEW ---
 // It assumes $formData is available (for pre-filling on validation errors).
 // Determine if we are in review mode
 $isReviewMode = isset($_GET['step']) && $_GET['step'] === 'review';
@@ -118,6 +128,128 @@ $formActionValue = $isReviewMode ? "final_post" : "initial_post";
         color: var(--info-text); /* Use theme info text color */
         font-size: 1rem;
     }
+
+    /* --- Share Modal Styles --- */
+    .modal {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 1050; /* Sit on top of everything */
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgba(0,0,0,0.6); /* Darker overlay */
+    }
+
+    .modal-content {
+        background-color: #fefefe;
+        margin: 10% auto;
+        padding: 25px 30px;
+        border: 1px solid #888;
+        width: 90%;
+        max-width: 550px;
+        border-radius: var(--border-radius);
+        box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        position: relative;
+        animation: animatetop 0.4s;
+    }
+
+    @keyframes animatetop {
+        from {top: -300px; opacity: 0}
+        to {top: 0; opacity: 1}
+    }
+
+    .close-button {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        line-height: 1;
+        cursor: pointer;
+    }
+
+    .close-button:hover,
+    .close-button:focus {
+        color: black;
+        text-decoration: none;
+    }
+
+    .modal-content h2 {
+        text-align: center;
+        color: var(--success-color);
+        border-bottom: none;
+        margin-top: 0;
+        margin-bottom: 10px;
+    }
+    
+    .modal-content > p {
+        text-align: center;
+        color: var(--text-color-light);
+        margin-bottom: 20px;
+    }
+
+    .job-details-share {
+        margin-top: 15px;
+        padding: 15px;
+        background-color: #f9f9f9;
+        border-radius: 5px;
+        border: 1px solid #eee;
+        text-align: left;
+    }
+
+    .job-details-share h3 {
+        margin-top: 0;
+        color: var(--primary-color);
+        font-size: 1.2em;
+    }
+
+    .job-details-share p {
+        margin: 8px 0;
+        font-size: 0.95rem;
+        line-height: 1.4;
+    }
+    
+    .job-details-share p strong {
+        color: var(--text-color);
+    }
+
+    .share-buttons {
+        text-align: center;
+        margin-top: 25px;
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+    }
+
+    .share-btn {
+        display: inline-block;
+        padding: 10px 20px;
+        border-radius: 5px;
+        color: white !important; /* Override link colors */
+        text-decoration: none;
+        font-weight: bold;
+        transition: opacity 0.3s;
+        border: none;
+        cursor: pointer;
+    }
+    .share-btn:hover {
+        opacity: 0.85;
+        text-decoration: none;
+    }
+
+    .share-btn.whatsapp {
+        background-color: #25D366;
+    }
+
+    .share-btn.telegram {
+        background-color: #0088cc;
+    }
+
+    .share-btn.copy-link {
+        background-color: var(--primary-color);
+        width: 100%; /* Make it a prominent, single button */
+    }
 </style>
 
 <div class="post-job-container">
@@ -230,6 +362,141 @@ $formActionValue = $isReviewMode ? "final_post" : "initial_post";
         <button type="submit" class="button"><?= htmlspecialchars($submitButtonText) ?></button>
     </form>
 </div>
+
+<?php if ($showSharePopup): ?>
+<!-- Share Modal -->
+<div id="shareModal" class="modal">
+    <div class="modal-content">
+        <span class="close-button">&times;</span>
+        <h2>Job Posted Successfully!</h2>
+        <p>Your job has been posted. Share it with your network!</p>
+        
+        <div class="job-details-share">
+            <h3><?= htmlspecialchars($shareData['title'] ?? '') ?></h3>
+            <p><strong>Company:</strong> <?= htmlspecialchars($shareData['company'] ?? 'N/A') ?></p>
+            <p><strong>Vacancies:</strong> <?= htmlspecialchars($shareData['vacancies'] ?? 'N/A') ?></p>
+            <p><strong>Experience:</strong> <?= htmlspecialchars($shareData['experience'] ?? 'N/A') ?></p>
+            <p><strong>Salary:</strong> <?= htmlspecialchars($shareData['salary'] ?? 'Not Disclosed') ?></p>
+            <!-- <p><strong>Brief:</strong><br><?= nl2br(htmlspecialchars(substr($shareData['description'] ?? '', 0, 250))) ?>...</p> -->
+            <p><strong>Link:</strong> <a href="<?= htmlspecialchars($shareData['url'] ?? '#') ?>" target="_blank"><?= htmlspecialchars($shareData['url'] ?? '') ?></a></p>
+        </div>
+
+        <div class="share-buttons">
+            <button id="copy-share-link-btn" class="share-btn copy-link">Copy Job Details</button>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // This script block is only rendered when a job is successfully posted.
+    const modal = document.getElementById('shareModal');
+    const closeBtn = document.querySelector('.close-button');
+    const copyBtn = document.getElementById('copy-share-link-btn');
+
+    // PHP data safely injected into JavaScript
+    const jobData = <?= json_encode($shareData) ?>;
+
+    // Function to show the modal
+    const showModal = () => {
+        if (modal) modal.style.display = 'block';
+    };
+
+    // Function to hide the modal
+    const hideModal = () => {
+        if (modal) modal.style.display = 'none';
+    };
+
+    // Event listeners to close the modal
+    closeBtn.onclick = hideModal;
+    window.onclick = (event) => {
+        if (event.target == modal) {
+            hideModal();
+        }
+    };
+
+    // --- Copy Link Logic with Fallback ---
+    function showCopyFeedback(button) {
+        const originalText = button.textContent;
+        button.textContent = 'Copied!';
+        button.style.backgroundColor = '#28a745'; // Success green
+        button.disabled = true;
+
+        setTimeout(() => {
+            button.textContent = originalText;
+            button.style.backgroundColor = ''; // Revert to stylesheet color
+            button.disabled = false;
+        }, 2000);
+    }
+
+    function fallbackCopyTextToClipboard(text, button) {
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        textArea.style.position = 'fixed';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        try {
+            document.execCommand('copy');
+            showCopyFeedback(button);
+        } catch (err) {
+            console.error('Fallback: Unable to copy', err);
+            alert('Failed to copy link.');
+        }
+        document.body.removeChild(textArea);
+    }
+
+    if (copyBtn) {
+        copyBtn.addEventListener('click', function() {
+            if (this.disabled) return;
+
+            // Construct the full job content string, omitting empty fields.
+            let jobContentToCopy = `*Job Opportunity!* 📢\n\n`;
+            jobContentToCopy += `*Title:* ${jobData.title || 'N/A'}\n`;
+
+            if (jobData.company && jobData.company.trim()) {
+                jobContentToCopy += `*Company:* ${jobData.company.trim()}\n`;
+            }
+
+            // Only add experience if it's a meaningful value (not empty or '0')
+            if (jobData.experience && jobData.experience !== '0' && jobData.experience.trim()) {
+                jobContentToCopy += `*Experience:* ${jobData.experience.trim()}\n`;
+            }
+
+            if (jobData.salary && jobData.salary.trim()) {
+                jobContentToCopy += `*Salary:* ${jobData.salary.trim()}\n`;
+            }
+
+            // Add a newline for spacing if any optional details were present
+            if ((jobData.company && jobData.company.trim()) || (jobData.experience && jobData.experience !== '0' && jobData.experience.trim()) || (jobData.salary && jobData.salary.trim())) {
+                jobContentToCopy += `\n`;
+            }
+
+            // if (jobData.description && jobData.description.trim()) {
+            //     jobContentToCopy += `*Description:*\n${jobData.description.trim()}\n\n`;
+            // }
+
+            jobContentToCopy += `*Apply Here & More Info:*\n${jobData.url || '#'}`;
+
+            if (!navigator.clipboard) {
+                fallbackCopyTextToClipboard(jobContentToCopy, this);
+                return;
+            }
+            
+            navigator.clipboard.writeText(jobContentToCopy).then(() => {
+                showCopyFeedback(this);
+            }).catch(err => {
+                console.error('Async copy failed, trying fallback: ', err);
+                fallbackCopyTextToClipboard(jobContentToCopy, this);
+            });
+        });
+    }
+
+    // Show the modal automatically
+    showModal();
+});
+</script>
+<?php endif; ?>
 
 <script>
     function toggleCustomExperience(selectElement) {

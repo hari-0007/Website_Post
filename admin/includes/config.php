@@ -13,14 +13,12 @@ require_once __DIR__ . '/log_helpers.php'; // Assuming this defines logging func
 define('APP_ENV', 'development'); // CHANGE TO 'production' ON YOUR LIVE SERVER
 
 // Define the base URL of your application
-// IMPORTANT: Replace 'http://localhost/Job_Post/' with the actual URL of your application.
+// IMPORTANT: Replace 'http://localhost:8000' with the actual URL of your application.
 // This is crucial for generating correct links and for API/AJAX calls.
-// Ensure it ends with a trailing slash if your other code expects it,
-// or use rtrim(APP_BASE_URL, '/') . '/path' as used in other scripts.
 if (APP_ENV === 'production') {
-    define('APP_BASE_URL', 'https://localhost:8000/'); // REPLACE with your live domain's base URL, e.g., https://www.yourjobsite.com/
+    define('APP_BASE_URL', 'https://jobhunt.top/'); // REPLACE with your live domain's base URL
 } else {
-    define('APP_BASE_URL', 'http://localhost:8000/'); // Base URL for local development
+    define('APP_BASE_URL', 'http://jobhunt.top/'); // Base URL for local development
 }
 
 // --- Error Reporting ---
@@ -58,14 +56,15 @@ define('MAX_USER_INTERESTS', 5); // Example, if used elsewhere for interests
 
 // --- Site Specifics ---
 // Your website URL (used in generated messages, meta tags, etc.)
-// This might be the same as APP_BASE_URL without the protocol for some uses, or just the domain.
-define('SITE_URL', (APP_ENV === 'production' ? 'https://localhost:8000' : 'http://localhost:8000')); // REPLACE with your website's primary domain name
-define('SITE_NAME', 'localhost'); // Example site name
+define('SITE_URL', rtrim(APP_BASE_URL, '/')); // Use the base URL without the trailing slash
+define('SITE_NAME', 'Job Hunt'); // Example site name
 
-// --- API Keys (Store securely, consider environment variables for production) ---
-// Example: define('GEMINI_API_KEY', 'YOUR_GEMINI_API_KEY_HERE');
-// It's better to load sensitive keys from environment variables or a non-web-accessible config file in production.
-// For now, if you have it hardcoded in post_job.php, ensure it's correct there.
+// --- API Keys (Store securely) ---
+// --- Google Gemini API Key ---
+// Replace 'YOUR_ACTUAL_API_KEY_HERE' with the key you generated from Google AI Studio.
+// IMPORTANT: Keep this key secret. Do not commit it to public repositories.
+define('GEMINI_API_KEY', 'AIzaSyCWoj7th8DArYw7PGf83JAVcYsXBJHFjAk');
+
 
 // --- Other Global Settings ---
 // define('ITEMS_PER_PAGE', 10); // Example for pagination

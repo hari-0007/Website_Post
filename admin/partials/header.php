@@ -642,35 +642,45 @@ if (isset($loggedIn) && $loggedIn) { // Apply only when in a logged-in admin con
                 <a href="dashboard.php?view=messages" class="<?php echo ($requestedView === 'messages') ? 'active' : ''; ?>">
                     <span class="nav-icon">✉️</span> Messages
                     <?php 
-                    // Use a fixed count of 13 for messages as requested, or fallback to dynamic count
-                    // $displayMessagesCount = $unreadMessagesCount ?? 13; // Use dynamic if available, else 13
-                    $displayMessagesCount = 13; // Hardcoded as per a previous request
-                    if (isset($unreadMessagesCount) && $unreadMessagesCount > 0) { // If dynamic is available and >0, prefer it
-                        $displayMessagesCount = $unreadMessagesCount;
-                    }
+                    $displayMessagesCount = $unreadMessagesCount ?? 0;
 
                     if ($displayMessagesCount > 0): 
                     ?>
                         <span class="unread-badge"><?php echo $displayMessagesCount; ?></span>
                     <?php endif; ?>
                 </a>
-                <a href="dashboard.php?view=manage_jobs" class="<?php echo ($requestedView === 'manage_jobs' || $requestedView === 'edit_job') ? 'active' : ''; ?>">
+                <?php
+                // --- Manage Jobs Sub-menu ---
+                $jobViews = ['manage_jobs', 'edit_job', 'post_job', 'reported_jobs', 'blocked_jobs', 'generate_message'];
+                $isAnyJobViewActive = in_array($requestedView, $jobViews);
+                ?>
+                <a href="dashboard.php?view=manage_jobs" class="<?php echo $isAnyJobViewActive ? 'active' : ''; ?>">
                     <span class="nav-icon">💼</span> Manage Jobs
                 </a>
-                 <a href="dashboard.php?view=post_job" class="<?php echo ($requestedView === 'post_job') ? 'active' : ''; ?>">
-                    <span class="nav-icon">➕</span> Post New Job
-                </a>
-                <a href="dashboard.php?view=reported_jobs" class="<?php echo ($requestedView === 'reported_jobs') ? 'active' : ''; ?>">
-                    <span class="nav-icon">🚩</span> Reported Jobs
-                </a>
+                <?php if ($isAnyJobViewActive): ?>
+                    <div class="sidebar-submenu-container">
+                        <a href="dashboard.php?view=post_job" class="submenu-link <?php echo ($requestedView === 'post_job') ? 'active' : ''; ?>">
+                            <span class="nav-icon sub-icon" style="font-size: 0.8em; width: auto; margin-right: 8px;">↳</span> Post New Job
+                        </a>
+                        <a href="dashboard.php?view=manage_jobs" class="submenu-link <?php echo ($requestedView === 'manage_jobs' || $requestedView === 'edit_job') ? 'active' : ''; ?>">
+                            <span class="nav-icon sub-icon" style="font-size: 0.8em; width: auto; margin-right: 8px;">↳</span> Jobs List
+                        </a>
+                        <a href="dashboard.php?view=generate_message" class="submenu-link <?php echo ($requestedView === 'generate_message') ? 'active' : ''; ?>">
+                            <span class="nav-icon sub-icon" style="font-size: 0.8em; width: auto; margin-right: 8px;">↳</span> Generate Post
+                        </a>
+                        <a href="dashboard.php?view=reported_jobs" class="submenu-link <?php echo ($requestedView === 'reported_jobs') ? 'active' : ''; ?>">
+                            <span class="nav-icon sub-icon" style="font-size: 0.8em; width: auto; margin-right: 8px;">↳</span> Reported Jobs
+                        </a>
+                        <a href="dashboard.php?view=blocked_jobs" class="submenu-link <?php echo ($requestedView === 'blocked_jobs') ? 'active' : ''; ?>">
+                            <span class="nav-icon sub-icon" style="font-size: 0.8em; width: auto; margin-right: 8px;">↳</span> Blocked Jobs
+                        </a>
+                    </div>
+                <?php endif; ?>
                 <a href="dashboard.php?view=manage_users" class="<?php echo ($requestedView === 'manage_users' || $requestedView === 'edit_user') ? 'active' : ''; ?>">
                     <span class="nav-icon">👥</span> User Manager
                 </a>
                 <a href="dashboard.php?view=achievements" class="<?php echo ($requestedView === 'achievements') ? 'active' : ''; ?>">
                     <span class="nav-icon">🏆</span> Achievements
-                </a>
-                <a href="dashboard.php?view=generate_message" class="<?php echo ($requestedView === 'generate_message') ? 'active' : ''; ?>">
-                    <span class="nav-icon">📝</span> Generate Post
                 </a>
                 <a href="dashboard.php?view=logs" class="<?php echo ($requestedView === 'logs') ? 'active' : ''; ?>">
                     <span class="nav-icon">📜</span> Logs

@@ -87,7 +87,13 @@ function group_feedback_by_email(array $flatMessages) {
         }
 
         if (!isset($groupedByEmail[$emailKey])) {
-            $groupedByEmail[$emailKey] = ['messages' => [], 'latest_timestamp' => 0, 'names' => []];
+            $groupedByEmail[$emailKey] = [
+                'messages' => [], 
+                'latest_timestamp' => 0, 
+                'names' => [],
+                'total_rating' => 0,
+                'rating_count' => 0
+            ];
         }
 
         $groupedByEmail[$emailKey]['messages'][] = $submission;
@@ -102,11 +108,23 @@ function group_feedback_by_email(array $flatMessages) {
         if ($currentSubmissionTimestamp > $groupedByEmail[$emailKey]['latest_timestamp']) {
             $groupedByEmail[$emailKey]['latest_timestamp'] = $currentSubmissionTimestamp;
         }
+
+        // Sum ratings for averaging
+        if (isset($submission['rating']) && is_numeric($submission['rating']) && $submission['rating'] > 0) {
+            $groupedByEmail[$emailKey]['total_rating'] += (int)$submission['rating'];
+            $groupedByEmail[$emailKey]['rating_count']++;
+        }
     }
 
     // Sort messages within each group by timestamp (newest first)
+    // and calculate average rating
     foreach ($groupedByEmail as &$groupData) {
         usort($groupData['messages'], fn($a, $b) => ($b['timestamp'] ?? 0) <=> ($a['timestamp'] ?? 0));
+        if ($groupData['rating_count'] > 0) {
+            $groupData['average_rating'] = round($groupData['total_rating'] / $groupData['rating_count']);
+        } else {
+            $groupData['average_rating'] = 0;
+        }
     }
     unset($groupData);
 

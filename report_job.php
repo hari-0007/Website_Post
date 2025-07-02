@@ -36,7 +36,7 @@ function verifyRecaptcha($recaptchaResponse, $secretKey) { // Consider moving th
 }
 
 $input_data = json_decode(file_get_contents('php://input'), true);
-$recaptchaSecretKey = '6LcF92ErAAAAAHO38liOFIgrapN-KriFuVxK3zwq'; // <-- REPLACE WITH YOUR ACTUAL SECRET KEY
+$recaptchaSecretKey = '6LdejG0rAAAAAMh22pP5fDpL47ym5YCwst3Qf9H8'; // Use the correct, working secret key
 $userRecaptchaResponse = $input_data['g-recaptcha-response'] ?? '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !verifyRecaptcha($userRecaptchaResponse, $recaptchaSecretKey)) {

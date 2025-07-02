@@ -83,6 +83,31 @@ $pagedJobs = array_slice($filteredJobs, $startIndex, $jobsPerPage);
                             <?= htmlspecialchars(date('M d, Y', strtotime($job['posted_at'] ?? $job['posted_on'] ?? 'now'))) ?>
                         </td>
                         <td class="actions-column">
+                            <?php
+                                $siteProtocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
+                                $siteHost = $_SERVER['HTTP_HOST'];
+                                $baseUrl = rtrim($siteProtocol . $siteHost, '/');
+                                $jobUrl = $baseUrl . '/index.php?job_id=' . urlencode($job['id']);
+
+                                // Conditionally build the text to copy
+                                $detailsToCopy = [];
+                                if (!empty($job['title'])) {
+                                    $detailsToCopy[] = "✨ Position: " . trim($job['title']);
+                                }
+                                if (!empty($job['company'])) {
+                                    $detailsToCopy[] = "🏢 Company: " . trim($job['company']);
+                                }
+                                if (!empty($job['location'])) {
+                                    $detailsToCopy[] = "📍 Location: " . trim($job['location']);
+                                }
+
+                                $copyText = "📢 Job Opportunity! 📢\n\n";
+                                if (!empty($detailsToCopy)) {
+                                    $copyText .= implode("\n", $detailsToCopy) . "\n\n";
+                                }
+                                $copyText .= "🔗 Apply Now & More Details: \n" . $jobUrl;
+                            ?>
+                            <button class="button button-small button-secondary copy-job-details-btn" data-copy-text="<?= htmlspecialchars($copyText) ?>" title="Copy Job Details">📋</button>
                             <a href="dashboard.php?view=edit_job&id=<?= urlencode($job['id']) ?>" class="button button-small button-edit">Edit</a>
                             <a href="job_actions.php?action=delete_job&id=<?= urlencode($job['id']) ?>" class="button button-small button-danger" onclick="return confirm('Are you sure you want to delete this job? This action cannot be undone.')">Delete</a>
                         </td>
@@ -469,4 +494,58 @@ $pagedJobs = array_slice($filteredJobs, $startIndex, $jobsPerPage);
             closePostJobModal();
         }
     });
+
+    // --- New script for Copy Job Details button ---
+    document.addEventListener('click', function(e) {
+        // Check if a copy button was clicked by its class
+        // Using .closest() to handle clicks on the icon inside the button
+        const copyButton = e.target.closest('.copy-job-details-btn');
+        if (copyButton) {
+            const textToCopy = copyButton.dataset.copyText;
+
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    showCopySuccess(copyButton);
+                }).catch(err => {
+                    console.error('Failed to copy text: ', err);
+                    alert('Failed to copy text.');
+                });
+            } else {
+                // Fallback for older browsers
+                fallbackCopyTextToClipboard(textToCopy, copyButton);
+            }
+        }
+    });
+
+    function showCopySuccess(button) {
+        const originalContent = button.innerHTML; // Use innerHTML for emoji
+        button.innerHTML = 'Copied!';
+        button.disabled = true;
+        button.style.backgroundColor = 'var(--success-color)';
+        button.style.borderColor = 'var(--success-color)';
+
+        setTimeout(() => {
+            button.innerHTML = originalContent;
+            button.disabled = false;
+            button.style.backgroundColor = ''; // Revert to original class-based color
+            button.style.borderColor = '';
+        }, 2000);
+    }
+
+    function fallbackCopyTextToClipboard(text, button) {
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        textArea.style.position = "fixed"; // Avoid scrolling to bottom
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        try {
+            document.execCommand('copy');
+            showCopySuccess(button);
+        } catch (err) {
+            console.error('Fallback: Unable to copy', err);
+            alert('Failed to copy text.');
+        }
+        document.body.removeChild(textArea);
+    }
 </script>

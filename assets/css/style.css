@@ -767,6 +767,21 @@ main {
 .share-option-button.linkedin { background-color: #0077b5; }
 .share-option-button.email { background-color: #7f8c8d; }
 
+/* Join Channels Popup */
+#joinChannelsPopup .join-whatsapp {
+    background-color: #25D366; /* WhatsApp brand green */
+    border-color: #25D366;
+}
+
+#joinChannelsPopup .join-whatsapp:hover {
+    background-color: #1ebe59; /* Darker green for hover */
+    border-color: #1ebe59;
+}
+
+#joinChannelsPopup .join-telegram {
+    margin-left: 10px; /* Replaces the inline style for spacing */
+}
+
 /* Caution Modal */
 .caution-message-modal {
     display: none;

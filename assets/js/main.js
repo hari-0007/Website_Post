@@ -308,10 +308,20 @@ document.addEventListener('DOMContentLoaded', () => {
         elements.shareModal.querySelector('#copyJobLinkButton').dataset.url = jobUrl;
         elements.shareModal.querySelector('#shareViaWhatsApp').href = `https://wa.me/?text=${encodedText}%20${encodedUrl}`;
         elements.shareModal.querySelector('#shareViaLinkedIn').href = `https://www.linkedin.com/shareArticle?mini=true&url=${encodedUrl}&title=${encodedText}`;
-        elements.shareModal.querySelector('#shareViaEmail').href = `mailto:?subject=${encodedText}&body=${encodedText}%0A%0A${jobUrl}`;
+        elements.shareModal.querySelector('#shareViaEmail').href = `mailto:?subject=${encodedText}&body=${encodedText}%0A%0A${encodedUrl}`;
 
         lockBackground();
         elements.shareModal.style.display = 'flex';
+    };
+
+    const closeShareModal = () => {
+        if (elements.shareModal) {
+            elements.shareModal.style.display = 'none';
+            // Also reset the feedback text
+            const feedbackEl = elements.shareModal.querySelector('#copyLinkFeedback');
+            if (feedbackEl) feedbackEl.textContent = '';
+        }
+        unlockBackground();
     };
 
     // --- Caution & Report Modal ---
@@ -534,18 +544,50 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 
-    // --- Feedback Form Interactivity ---
+    // --- Feedback Form Logic ---
+    const showFeedbackExtras = () => {
+        const starsContainer = document.getElementById('feedbackStarsContainer');
+        const recaptchaContainer = document.getElementById('feedbackRecaptchaContainer');
+        if (starsContainer) starsContainer.style.display = 'block';
+        if (recaptchaContainer) recaptchaContainer.style.display = 'block';
+    };
+
+    const resetFeedbackForm = () => {
+        const starsContainer = document.getElementById('feedbackStarsContainer');
+        const recaptchaContainer = document.getElementById('feedbackRecaptchaContainer');
+        const feedbackTextarea = elements.feedbackForm?.querySelector('textarea[name="message"]');
+        const ratingInput = document.getElementById('feedbackRatingInput');
+        const stars = document.querySelectorAll('#feedbackStarRating span');
+
+        // Reset form fields (name, email, message)
+        if (elements.feedbackForm) elements.feedbackForm.reset();
+
+        // Hide containers
+        if (starsContainer) starsContainer.style.display = 'none';
+        if (recaptchaContainer) recaptchaContainer.style.display = 'none';
+
+        // Reset star rating visual and input value
+        if (ratingInput) ratingInput.value = '0';
+        stars.forEach(s => s.classList.remove('selected', 'hover'));
+
+        // Reset reCAPTCHA widget
+        if (state.feedbackRecaptchaId !== null) {
+            grecaptcha.reset(state.feedbackRecaptchaId);
+        }
+
+        // Re-attach the listener to show extras on the next input
+        if (feedbackTextarea) {
+            feedbackTextarea.addEventListener('input', showFeedbackExtras, { once: true });
+        }
+    };
+
+    // Initial setup for feedback form interactivity
     const feedbackTextarea = elements.feedbackForm?.querySelector('textarea[name="message"]');
     if (feedbackTextarea) {
-        feedbackTextarea.addEventListener('input', () => {
-            const starsContainer = document.getElementById('feedbackStarsContainer');
-            const recaptchaContainer = document.getElementById('feedbackRecaptchaContainer');
-            if (starsContainer) starsContainer.style.display = 'block';
-            if (recaptchaContainer) recaptchaContainer.style.display = 'block';
-        }, { once: true }); // Use { once: true } so the listener removes itself after the first input
+        feedbackTextarea.addEventListener('input', showFeedbackExtras, { once: true });
     }
 
-    // Star Rating Logic
+    // Star Rating Click/Hover Logic
     const stars = document.querySelectorAll('#feedbackStarRating span');
     const ratingInput = document.getElementById('feedbackRatingInput');
     if (stars.length > 0 && ratingInput) {
@@ -637,15 +679,17 @@ document.addEventListener('DOMContentLoaded', () => {
             navigator.clipboard.writeText(urlToCopy).then(() => {
                 feedbackEl.textContent = 'Link copied!';
                 feedbackEl.style.color = 'green';
-                setTimeout(() => { // Also unlock background when share modal auto-closes
-                    if (elements.shareModal) elements.shareModal.style.display = 'none';
-                    feedbackEl.textContent = '';
-                }, 1500);
+                setTimeout(closeShareModal, 1500);
             }).catch(err => {
                 feedbackEl.textContent = 'Failed to copy.';
                 feedbackEl.style.color = 'red';
                 console.error('Failed to copy link:', err);
             });
+        }
+
+        // --- Share Modal Close Button ---
+        if (e.target.matches('.share-modal-close-button')) {
+            closeShareModal();
         }
 
         // --- Caution Modal Buttons ---
@@ -726,9 +770,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     responseBox.className = `feedback-message ${data.success ? 'success' : 'error'}`;
                     responseBox.style.display = 'block';
                     if (data.success) {
-                        elements.feedbackForm.reset();
+                        resetFeedbackForm();
+                    } else {
+                        // On failure, just reset the captcha so the user can try again
+                        grecaptcha.reset(state.feedbackRecaptchaId);
                     }
-                    grecaptcha.reset(state.feedbackRecaptchaId);
                     setTimeout(() => responseBox.style.display = 'none', 5000);
                 })
                 .catch(err => {

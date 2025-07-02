@@ -451,20 +451,20 @@ document.addEventListener('DOMContentLoaded', function() {
             if (this.disabled) return;
 
             // Construct the full job content string, omitting empty fields.
-            let jobContentToCopy = `*Job Opportunity!* 📢\n\n`;
-            jobContentToCopy += `*Title:* ${jobData.title || 'N/A'}\n`;
+            let jobContentToCopy = `Job Opportunity! 📢\n\n`;
+            jobContentToCopy += `Title: ${jobData.title || 'N/A'}\n`;
 
             if (jobData.company && jobData.company.trim()) {
-                jobContentToCopy += `*Company:* ${jobData.company.trim()}\n`;
+                jobContentToCopy += `Company: ${jobData.company.trim()}\n`;
             }
 
             // Only add experience if it's a meaningful value (not empty or '0')
             if (jobData.experience && jobData.experience !== '0' && jobData.experience.trim()) {
-                jobContentToCopy += `*Experience:* ${jobData.experience.trim()}\n`;
+                jobContentToCopy += `Experience: ${jobData.experience.trim()}\n`;
             }
 
             if (jobData.salary && jobData.salary.trim()) {
-                jobContentToCopy += `*Salary:* ${jobData.salary.trim()}\n`;
+                jobContentToCopy += `Salary: ${jobData.salary.trim()}\n`;
             }
 
             // Add a newline for spacing if any optional details were present
@@ -476,7 +476,7 @@ document.addEventListener('DOMContentLoaded', function() {
             //     jobContentToCopy += `*Description:*\n${jobData.description.trim()}\n\n`;
             // }
 
-            jobContentToCopy += `*Apply Here & More Info:*\n${jobData.url || '#'}`;
+            jobContentToCopy += `Apply Here & More Info:\n${jobData.url || '#'}`;
 
             if (!navigator.clipboard) {
                 fallbackCopyTextToClipboard(jobContentToCopy, this);

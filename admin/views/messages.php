@@ -50,6 +50,11 @@ usort($allMessagesFlat, function ($a, $b) {
     $tsB = $b['timestamp'] ?? 0;
     $unixA = is_numeric($tsA) ? (int)$tsA : strtotime($tsA);
     $unixB = is_numeric($tsB) ? (int)$tsB : strtotime($tsB);
+
+    // Ensure that when timestamps are equal (or invalid), sorting falls back to a consistent field, like 'id'
+    if ($unixA === $unixB) {
+        return ($b['id'] ?? '') <=> ($a['id'] ?? '');
+    }
     return $unixB <=> $unixA; // Newest first
 });
 
@@ -67,6 +72,18 @@ usort($allMessagesFlat, function ($a, $b) {
             <div class="email-group card">
                 <div class="card-header">
                     Conversation with: <?php echo htmlspecialchars($email); ?>
+                    <?php if (isset($groupData['average_rating']) && $groupData['average_rating'] > 0): ?>
+                        <span class="conversation-rating-stars">
+                            (Overall: 
+                            <?php 
+                                $avg_rating = (int) $groupData['average_rating'];
+                                echo str_repeat('★', $avg_rating);
+                                echo str_repeat('☆', 5 - $avg_rating);
+                            ?>
+                            )
+                        </span>
+                    <?php endif; ?>
+
                     <?php if (!empty($groupData['names'])): ?>
                         <br><small class="text-muted">(Associated Names: <?php echo htmlspecialchars(implode(', ', $groupData['names'])); ?>)</small>
                     <?php endif; ?>
@@ -99,6 +116,15 @@ usort($allMessagesFlat, function ($a, $b) {
                                 <a href="dashboard.php?view=messages&action=<?php echo (isset($message['read']) && $message['read']) ? 'mark_unread' : 'mark_read'; ?>&message_id=<?php echo htmlspecialchars($message['id']); ?>" class="btn btn-sm <?php echo (isset($message['read']) && $message['read']) ? 'btn-secondary' : 'btn-primary'; ?> action-link" onclick="event.stopPropagation();">
                                     Mark as <?php echo (isset($message['read']) && $message['read']) ? 'Unread' : 'Read'; ?>
                                 </a>
+                                <?php if (isset($message['rating']) && $message['rating'] > 0): ?>
+                                    <br><strong>Rating:</strong> 
+                                    <span class="message-rating-stars">
+                                        <?php 
+                                            echo str_repeat('★', (int)$message['rating']);
+                                            echo str_repeat('☆', 5 - (int)$message['rating']);
+                                        ?>
+                                    </span>
+                                <?php endif; ?>
                             </p>
                             <div class="message-content">
                                 <?php echo nl2br(htmlspecialchars(substr($message['message'] ?? '', 0, 150))) . (strlen($message['message'] ?? '') > 150 ? '...' : ''); ?>
@@ -117,6 +143,7 @@ usort($allMessagesFlat, function ($a, $b) {
                 <div class="message-details-content">
                     <p><strong>From:</strong> <span id="detailName"></span> &lt;<span id="detailEmail"></span>&gt;</p>
                     <p><strong>Received On:</strong> <span id="detailTimestamp"></span></p>
+                    <p><strong>Rating:</strong> <span id="detailRating">Not provided</span></p>
                     <div class="message-body-container">
                         <h4>Message:</h4>
                         <p id="detailMessage" class="message-body"></p>
@@ -176,6 +203,18 @@ usort($allMessagesFlat, function ($a, $b) {
     .status-unread { color: #fff; background-color: #007bff; }
     /* Styles from messages_view.php */
     /* Table Styles */
+    .message-rating-stars {
+        color: #ffc107; /* Gold color for stars */
+        font-size: 1.1em;
+        letter-spacing: 1px;
+    }
+    .conversation-rating-stars {
+        color: #ffc107; /* Gold color for stars */
+        font-size: 0.9em;
+        font-weight: normal;
+        margin-left: 10px;
+    }
+
     /* ... (Keep all table styles from messages_view.php here) ... */
     /* Button Styles */
     /* ... (Keep all button styles from messages_view.php here) ... */
@@ -401,6 +440,7 @@ usort($allMessagesFlat, function ($a, $b) {
         const detailEmail = document.getElementById('detailEmail');
         const detailTimestamp = document.getElementById('detailTimestamp');
         const detailMessage = document.getElementById('detailMessage');
+        const detailRating = document.getElementById('detailRating');
         const replyLink = document.getElementById('replyLink');
 
         // Clear previous status messages when opening a new message
@@ -427,6 +467,16 @@ usort($allMessagesFlat, function ($a, $b) {
                 }
             }
             if (detailMessage) detailMessage.innerText = message.message || 'No message content.';
+            if (detailRating) {
+                if (message.rating && parseInt(message.rating, 10) > 0) {
+                    const ratingValue = parseInt(message.rating, 10);
+                    detailRating.innerHTML = '★'.repeat(ratingValue) + '☆'.repeat(5 - ratingValue);
+                    detailRating.classList.add('message-rating-stars');
+                } else {
+                    detailRating.innerText = 'Not provided';
+                    detailRating.classList.remove('message-rating-stars');
+                }
+            }
 
             // Set the mailto link for reply
             if (replyLink) {

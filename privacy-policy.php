@@ -75,7 +75,7 @@
 
             <h2>8. Contact Us</h2>
             <p>If you have any questions about this Privacy Policy, please contact us:</p>
-            <p>By email: <a href="mailto:privacy@yourjobportaldomain.com">privacy@yourjobportaldomain.com</a></p> <?php // Replace with your actual privacy contact email ?>
+            <p>By email: <a href="mailto:privacy@jobhunt.top">privacy@jobhunt.top</a></p>
         </div>
     </div>
 </body>

@@ -1094,8 +1094,8 @@ if ($isAjaxRequest) {
             <span class="close" onclick="closeJoinChannelsPopup()">&times;</span>
             <h4>🚀 Stay Ahead!</h4>
             <p>Don't miss out on the latest job opportunities. Join our channels for daily updates:</p>
-            <a href="https://whatsapp.com/channel/0029VbBMdgCI7BeBLRm1Au1I" target="_blank" class="join-now button" onclick="handleJoinChannelsClick()">Join WhatsApp</a>
-            <a href="https://t.me/uaejobprofessionals" target="_blank" class="join-telegram button" onclick="handleJoinChannelsClick()" style="margin-left: 10px;">Join Telegram</a>
+            <a href="https://whatsapp.com/channel/0029VbBMdgCI7BeBLRm1Au1I" target="_blank" class="join-now button join-whatsapp" onclick="handleJoinChannelsClick()">Join WhatsApp</a>
+            <a href="https://t.me/uaejobprofessionals" target="_blank" class="join-telegram button" onclick="handleJoinChannelsClick()">Join Telegram</a>
         </div>
     </div>
 

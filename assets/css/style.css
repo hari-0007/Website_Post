@@ -167,15 +167,25 @@ a:hover {
    ========================================================================== */
 .content-wrapper {
     display: flex;
+    flex-wrap: wrap;
     gap: 20px;
     padding: 0 20px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 main {
-    flex: 1;
+    flex: 1 1 0;
     min-width: 0;
+    width: 100%;
     position: relative;
     z-index: 2;
+    box-sizing: border-box;
+}
+
+.job-card {
+    width: 100%;
+    box-sizing: border-box;
 }
 
 /* ==========================================================================
@@ -341,6 +351,7 @@ main {
 }
 
 .job-card h3 {
+    font-size: 1.3em;
     margin-top: 0;
     margin-bottom: 5px;
     text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
@@ -363,15 +374,6 @@ main {
 
 .job-card-company-location {
     margin: 0 0 10px 0;
-}
-
-.job-summary {
-    display: -webkit-box;
-    -webkit-line-clamp: 5;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    margin: 5px 0;
 }
 
 .job-details {
@@ -411,6 +413,14 @@ main {
     min-height: 150px; /* Give ad space to render */
     background-color: #fdfdfd; /* Slightly different background */
     display: none; /* Hide by default, JS will show it when ad loads */
+}
+
+.job-summary {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3; /* Adjust as needed */
+    -webkit-box-orient: vertical;
 }
 
 .job-card-meta {
@@ -1120,11 +1130,15 @@ body.mobile-nav-open .mobile-nav-overlay { display: block; }
 @media (max-width: 768px) {
     /* Add padding to the bottom of the body to prevent content from being hidden by the fixed ad bar */
     .container {
-        padding: 0 10px;
+        padding: 0 5px;
     }
     .content-wrapper {
         flex-direction: column;
-        padding: 0; /* Rely on .container for padding on mobile */
+        padding: 0;
+        gap: 0;
+    }
+    main {
+        width: 100%;
     }
     .sidebar {
         display: none;

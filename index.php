@@ -222,7 +222,7 @@ function render_job_listings_and_pagination($pagedJobs, $singleJobView, $totalPa
     <div class="pagination-container">
         <?php
         $baseQuery = "?search=" . urlencode($search) . "&filter=" . urlencode($filter) . "&type=" . urlencode($jobType) . ($isRecommendationsView ? "&recommendations=1" : "");
-        if ($page > 1) {
+        if ($page > 1 && $totalPages > 0) {
             echo '<a href="' . $baseQuery . '&page=1" class="nav-arrow first-arrow"><span class="short-text">««</span><span class="long-text"> First</span></a>';
             echo '<a href="' . $baseQuery . '&page=' . ($page - 1) . '" class="nav-arrow prev-arrow"><span class="short-text">«</span><span class="long-text"> Previous</span></a>';
         } else {
@@ -233,14 +233,22 @@ function render_job_listings_and_pagination($pagedJobs, $singleJobView, $totalPa
         <div class="page-numbers">
             <?php
                 $num_links_to_show = 3;
-                if ($totalPages <= $num_links_to_show) {
-                    for ($i = 1; $i <= $totalPages; $i++) echo '<a href="' . $baseQuery . '&page=' . $i . '" class="' . ($i == $page ? 'current-page' : '') . '">' . $i . '</a>';
-                } else {
-                    echo '<a href="' . $baseQuery . '&page=1" class="' . (1 == $page ? 'current-page' : '') . '">1</a>';
-                    if ($page > 2) echo '<span class="ellipsis">...</span>';
-                    if ($page > 1 && $page < $totalPages) echo '<a href="' . $baseQuery . '&page=' . $page . '" class="current-page">' . $page . '</a>';
-                    if ($page < $totalPages - 1) echo '<span class="ellipsis">...</span>';
-                    echo '<a href="' . $baseQuery . '&page=' . $totalPages . '" class="' . ($totalPages == $page ? 'current-page' : '') . '">' . $totalPages . '</a>';
+                if($totalPages > 0) {
+                    if ($totalPages <= $num_links_to_show) {
+                        for ($i = 1; $i <= $totalPages; $i++) echo '<a href="' . $baseQuery . '&page=' . $i . '" class="' . ($i == $page ? 'current-page' : '') . '">' . $i . '</a>';
+                    } else {
+                        $start_page = max(1, $page - floor($num_links_to_show / 2));
+                        $end_page = min($totalPages, $page + floor($num_links_to_show / 2));
+                        if ($start_page > 1) {
+                            echo '<a href="' . $baseQuery . '&page=1">1</a>';
+                            if ($start_page > 2) echo '<span class="ellipsis">...</span>';
+                        }
+                        for ($i = $start_page; $i <= $end_page; $i++) echo '<a href="' . $baseQuery . '&page=' . $i . '" class="' . ($i == $page ? 'current-page' : '') . '">' . $i . '</a>';
+                        if ($end_page < $totalPages) {
+                            if ($end_page < $totalPages - 1) echo '<span class="ellipsis">...</span>';
+                            echo '<a href="' . $baseQuery . '&page=' . $totalPages . '">' . $totalPages . '</a>';
+                        }
+                    }
                 }
             ?>
         </div>
@@ -843,7 +851,6 @@ $shouldNoIndexThisPage = false;
 if (!$singleJobView && empty($pagedJobs) && ($search_param !== '' || $type_param !== '' || $filter_param !== 'all' || $isRecommendationsView)) {
     $shouldNoIndexThisPage = true;
 }
-
 // =============================================================================
 // 8. AJAX HANDLING
 // =============================================================================

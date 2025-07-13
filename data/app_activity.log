@@ -3199,3 +3199,482 @@
 [2025-07-02 05:30:41] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
 [2025-07-02 05:31:55] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
 [2025-07-02 05:32:48] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-07-13 13:15:14] [AUTH_SUCCESS] User 'suthan@jobhunt.top' logged in successfully. Role: 'super_admin'.
+[2025-07-13 13:15:14] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-07-13 13:15:28] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-07-13 13:18:39] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-07-13 13:18:44] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 13:18:59] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'fwfw': API Key is placeholder or empty.
+[2025-07-13 13:19:08] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'fwfw'.
+[2025-07-13 13:19:08] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'fwfw') ready for review.
+[2025-07-13 13:19:08] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 13:22:31] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 13:22:39] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'fwfw': API Key is placeholder or empty.
+[2025-07-13 13:22:41] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'fwfw'.
+[2025-07-13 13:22:41] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'fwfw') ready for review.
+[2025-07-13 13:22:41] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 13:25:24] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 13:25:33] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 13:25:34] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 13:28:47] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 13:29:22] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 13:44:12] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 13:44:35] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 13:44:37] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 13:44:38] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 13:44:39] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 13:44:41] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 13:46:42] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 13:46:47] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'fwfw': API Key is placeholder or empty.
+[2025-07-13 13:46:50] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'fwfw'.
+[2025-07-13 13:46:50] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'fwfw') ready for review.
+[2025-07-13 13:46:50] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 13:52:27] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 13:52:36] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'fwfw': API Key is placeholder or empty.
+[2025-07-13 13:52:39] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'fwfw'.
+[2025-07-13 13:52:39] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'fwfw') ready for review.
+[2025-07-13 13:52:39] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 13:52:58] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-07-13 13:53:00] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-07-13 13:53:01] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 13:53:47] [AUTH_SUCCESS] User 'suthan@jobhunt.top' logged in successfully. Role: 'super_admin'.
+[2025-07-13 13:53:47] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-07-13 13:53:54] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-07-13 13:53:59] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 13:54:35] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'ncnc': API Key is placeholder or empty.
+[2025-07-13 13:54:39] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'ncnc'.
+[2025-07-13 13:54:39] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'ncnc') ready for review.
+[2025-07-13 13:54:39] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 13:58:16] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 13:58:17] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 13:58:18] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 13:58:19] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 13:58:24] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 13:58:25] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 13:58:26] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 13:59:53] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 13:59:55] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'ncnc': API Key is placeholder or empty.
+[2025-07-13 13:59:57] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'ncnc'.
+[2025-07-13 13:59:57] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'ncnc') ready for review.
+[2025-07-13 13:59:57] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 14:00:11] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 14:02:52] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 14:03:21] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 14:06:34] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 14:06:40] [JOB_POST_SUCCESS] Job ID '1752395800_6468' (Title: 'ncnc') posted successfully by 'suthan@jobhunt.top'.
+[2025-07-13 14:06:40] [AI_IMAGE_WARNING] GD library not available. Cannot create placeholder image for job ID '1752395800_6468'.
+[2025-07-13 14:06:40] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 14:07:14] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'jhjh': API Key is placeholder or empty.
+[2025-07-13 14:07:17] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'jhjh'.
+[2025-07-13 14:07:17] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'jhjh') ready for review.
+[2025-07-13 14:07:17] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 14:07:29] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 14:14:18] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 14:14:21] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 14:14:27] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 14:14:32] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 14:14:33] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 14:14:34] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 14:14:37] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 14:14:46] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 14:14:46] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 14:14:47] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 14:14:48] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 14:14:49] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 14:18:20] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 14:18:22] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 14:18:24] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 14:19:11] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 14:19:12] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'jhjh': API Key is placeholder or empty.
+[2025-07-13 14:19:13] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'jhjh'.
+[2025-07-13 14:19:13] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'jhjh') ready for review.
+[2025-07-13 14:19:13] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 14:19:29] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'jhjh': API Key is placeholder or empty.
+[2025-07-13 14:19:31] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'jhjh'.
+[2025-07-13 14:19:31] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'jhjh') ready for review.
+[2025-07-13 14:19:31] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 14:19:59] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'jhjh': API Key is placeholder or empty.
+[2025-07-13 14:20:01] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'jhjh'.
+[2025-07-13 14:20:01] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'jhjh') ready for review.
+[2025-07-13 14:20:01] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 14:20:12] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'jhjh': API Key is placeholder or empty.
+[2025-07-13 14:20:13] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'jhjh'.
+[2025-07-13 14:20:13] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'jhjh') ready for review.
+[2025-07-13 14:20:13] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 14:20:27] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 14:20:30] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'jhjh': API Key is placeholder or empty.
+[2025-07-13 14:20:32] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'jhjh'.
+[2025-07-13 14:20:32] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'jhjh') ready for review.
+[2025-07-13 14:20:33] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 14:20:40] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 14:20:42] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 14:20:43] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-07-13 14:20:43] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-07-13 14:20:46] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-07-13 14:20:47] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 14:21:05] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Hari 41,m': API Key is placeholder or empty.
+[2025-07-13 14:21:09] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Hari 41,m'.
+[2025-07-13 14:21:09] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Hari 41,m') ready for review.
+[2025-07-13 14:21:09] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 14:22:15] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 14:22:17] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 14:22:53] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 14:22:56] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Hari 41,m': API Key is placeholder or empty.
+[2025-07-13 14:22:58] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Hari 41,m'.
+[2025-07-13 14:22:58] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Hari 41,m') ready for review.
+[2025-07-13 14:22:58] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 14:23:35] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Hari 41,m': API Key is placeholder or empty.
+[2025-07-13 14:23:40] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Hari 41,m'.
+[2025-07-13 14:23:40] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Hari 41,m') ready for review.
+[2025-07-13 14:23:40] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 14:24:04] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Hari 41,m': API Key is placeholder or empty.
+[2025-07-13 14:24:09] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Hari 41,m'.
+[2025-07-13 14:24:09] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Hari 41,m') ready for review.
+[2025-07-13 14:24:09] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 14:24:13] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 14:24:32] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Hari 41n': API Key is placeholder or empty.
+[2025-07-13 14:24:35] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Hari 41n'.
+[2025-07-13 14:24:35] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Hari 41n') ready for review.
+[2025-07-13 14:24:35] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 14:24:39] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 14:24:43] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 14:25:10] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 14:25:14] [JOB_POST_SUCCESS] Job ID '1752396914_8152' (Title: 'Hari 41n') posted successfully by 'suthan@jobhunt.top'.
+[2025-07-13 14:25:14] [AI_IMAGE_WARNING] GD library not available. Cannot create placeholder image for job ID '1752396914_8152'.
+[2025-07-13 14:25:14] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 14:32:21] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Hari 41nn': API Key is placeholder or empty.
+[2025-07-13 14:32:24] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Hari 41nn'.
+[2025-07-13 14:32:24] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Hari 41nn') ready for review.
+[2025-07-13 14:32:24] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 14:32:31] [JOB_POST_SUCCESS] Job ID '1752397351_9684' (Title: 'Hari 41nn') posted successfully by 'suthan@jobhunt.top'.
+[2025-07-13 14:32:31] [AI_IMAGE_WARNING] GD library not available. Cannot create placeholder image for job ID '1752397351_9684'.
+[2025-07-13 14:32:31] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 14:33:35] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Accountantj': API Key is placeholder or empty.
+[2025-07-13 14:33:39] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Accountantj'.
+[2025-07-13 14:33:39] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Accountantj') ready for review.
+[2025-07-13 14:33:39] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 14:33:41] [JOB_POST_SUCCESS] Job ID '1752397421_6250' (Title: 'Accountantj') posted successfully by 'suthan@jobhunt.top'.
+[2025-07-13 14:33:41] [AI_IMAGE_WARNING] GD library not available. Cannot create placeholder image for job ID '1752397421_6250'.
+[2025-07-13 14:33:41] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 14:42:36] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'hjsakjcxkan': API Key is placeholder or empty.
+[2025-07-13 14:42:40] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'hjsakjcxkan'.
+[2025-07-13 14:42:40] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'hjsakjcxkan') ready for review.
+[2025-07-13 14:42:40] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 14:42:44] [JOB_POST_SUCCESS] Job ID '1752397964_2372' (Title: 'hjsakjcxkan') posted successfully by 'suthan@jobhunt.top'.
+[2025-07-13 14:42:44] [AI_IMAGE_WARNING] GD library not available. Cannot create placeholder image for job ID '1752397964_2372'.
+[2025-07-13 14:42:44] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 14:44:09] [JOB_POST_SUCCESS] Job ID '1752398049_3215' (Title: 'hjsakjcxkan') posted successfully by 'suthan@jobhunt.top'.
+[2025-07-13 14:44:09] [AI_IMAGE_WARNING] GD library not available. Cannot create placeholder image for job ID '1752398049_3215'.
+[2025-07-13 14:44:09] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 14:45:52] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 14:46:06] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer IIi': API Key is placeholder or empty.
+[2025-07-13 14:46:10] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Network Engineer IIi'.
+[2025-07-13 14:46:10] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer IIi') ready for review.
+[2025-07-13 14:46:10] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 14:46:17] [JOB_POST_SUCCESS] Job ID '1752398177_5649' (Title: 'Network Engineer IIi') posted successfully by 'suthan@jobhunt.top'.
+[2025-07-13 14:46:17] [AI_IMAGE_WARNING] GD library not available. Cannot create placeholder image for job ID '1752398177_5649'.
+[2025-07-13 14:46:17] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 14:50:40] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 14:50:55] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer IIj': API Key is placeholder or empty.
+[2025-07-13 14:50:59] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Network Engineer IIj'.
+[2025-07-13 14:50:59] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer IIj') ready for review.
+[2025-07-13 14:50:59] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 14:51:01] [JOB_POST_SUCCESS] Job ID '1752398461_9093' (Title: 'Network Engineer IIj') posted successfully by 'suthan@jobhunt.top'.
+[2025-07-13 14:51:01] [AI_IMAGE_WARNING] GD library not available. Cannot create placeholder image for job ID '1752398461_9093'.
+[2025-07-13 14:51:01] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 14:52:29] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 14:52:55] [JOB_POST_VALIDATION_ERROR] Job post attempt by 'suthan@jobhunt.top' (Title: 'Network Engineer IIf') failed: Contact info missing.
+[2025-07-13 14:52:55] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 14:53:04] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer IIf': API Key is placeholder or empty.
+[2025-07-13 14:53:08] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Network Engineer IIf'.
+[2025-07-13 14:53:08] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer IIf') ready for review.
+[2025-07-13 14:53:08] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 14:53:09] [JOB_POST_SUCCESS] Job ID '1752398589_5555' (Title: 'Network Engineer IIf') posted successfully by 'suthan@jobhunt.top'.
+[2025-07-13 14:53:09] [AI_IMAGE_WARNING] GD library not available. Cannot create placeholder image for job ID '1752398589_5555'.
+[2025-07-13 14:53:09] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 14:56:09] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 14:56:21] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer IIs': API Key is placeholder or empty.
+[2025-07-13 14:56:25] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Network Engineer IIs'.
+[2025-07-13 14:56:25] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer IIs') ready for review.
+[2025-07-13 14:56:25] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 15:03:50] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 15:04:02] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Hari 41g': API Key is placeholder or empty.
+[2025-07-13 15:04:07] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Hari 41g'.
+[2025-07-13 15:04:07] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Hari 41g') ready for review.
+[2025-07-13 15:04:07] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 15:48:05] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 15:48:42] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 15:48:50] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 15:49:41] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 15:49:43] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 18:56:15] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 18:56:17] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 19:06:21] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 19:06:26] [JOB_POST_INVALID_ACTION] Invalid job posting action 'regenerate_summary' attempted by 'suthan@jobhunt.top'.
+[2025-07-13 19:06:26] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 19:06:32] [JOB_POST_INVALID_ACTION] Invalid job posting action 'regenerate_summary' attempted by 'suthan@jobhunt.top'.
+[2025-07-13 19:06:32] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 19:06:33] [JOB_POST_INVALID_ACTION] Invalid job posting action 'regenerate_summary' attempted by 'suthan@jobhunt.top'.
+[2025-07-13 19:06:33] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 19:09:16] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 19:09:26] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Hari 41s': API Key is placeholder or empty.
+[2025-07-13 19:09:30] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Hari 41s'.
+[2025-07-13 19:09:30] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Hari 41s') ready for review.
+[2025-07-13 19:09:30] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 19:09:35] [JOB_POST_INVALID_ACTION] Invalid job posting action 'regenerate_summary' attempted by 'suthan@jobhunt.top'.
+[2025-07-13 19:09:35] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 19:09:39] [JOB_POST_INVALID_ACTION] Invalid job posting action 'regenerate_summary' attempted by 'suthan@jobhunt.top'.
+[2025-07-13 19:09:39] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 19:09:40] [JOB_POST_INVALID_ACTION] Invalid job posting action 'regenerate_summary' attempted by 'suthan@jobhunt.top'.
+[2025-07-13 19:09:40] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 19:09:41] [JOB_POST_INVALID_ACTION] Invalid job posting action 'regenerate_summary' attempted by 'suthan@jobhunt.top'.
+[2025-07-13 19:09:41] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 19:10:24] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 19:12:23] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 19:16:30] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 19:16:37] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Hari 41s': API Key is placeholder or empty.
+[2025-07-13 19:16:41] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Hari 41s'.
+[2025-07-13 19:16:41] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Hari 41s') ready for review.
+[2025-07-13 19:16:41] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 19:24:34] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 19:24:45] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer IIhh': API Key is placeholder or empty.
+[2025-07-13 19:24:53] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Network Engineer IIhh'.
+[2025-07-13 19:24:53] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer IIhh') ready for review.
+[2025-07-13 19:24:53] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 19:27:38] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 19:30:08] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 19:30:17] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 19:30:21] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer IIhh': API Key is placeholder or empty.
+[2025-07-13 19:30:25] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Network Engineer IIhh'.
+[2025-07-13 19:30:25] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer IIhh') ready for review.
+[2025-07-13 19:30:25] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 19:30:35] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer IIhh': API Key is placeholder or empty.
+[2025-07-13 19:30:38] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Network Engineer IIhh'.
+[2025-07-13 19:30:38] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer IIhh') ready for review.
+[2025-07-13 19:30:38] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 19:30:43] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 19:30:49] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 19:30:50] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 19:30:51] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 19:30:51] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 19:32:02] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer IIhh': API Key is placeholder or empty.
+[2025-07-13 19:32:06] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Network Engineer IIhh'.
+[2025-07-13 19:32:06] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer IIhh') ready for review.
+[2025-07-13 19:32:06] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 19:32:20] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 19:32:28] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer IIkk': API Key is placeholder or empty.
+[2025-07-13 19:32:32] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Network Engineer IIkk'.
+[2025-07-13 19:32:32] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer IIkk') ready for review.
+[2025-07-13 19:32:32] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 19:33:23] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 19:33:26] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 19:33:27] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 19:33:31] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 19:42:38] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 19:42:51] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer IIgg': API Key is placeholder or empty.
+[2025-07-13 19:42:55] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Network Engineer IIgg'.
+[2025-07-13 19:42:55] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer IIgg') ready for review.
+[2025-07-13 19:42:55] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 19:43:10] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer IIgg': API Key is placeholder or empty.
+[2025-07-13 19:43:15] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Network Engineer IIgg'.
+[2025-07-13 19:43:15] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer IIgg') ready for review.
+[2025-07-13 19:43:15] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 19:43:57] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer IIgg': API Key is placeholder or empty.
+[2025-07-13 19:44:01] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Network Engineer IIgg'.
+[2025-07-13 19:44:01] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer IIgg') ready for review.
+[2025-07-13 19:44:01] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 19:44:06] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 19:44:10] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 19:44:20] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer IIjj': API Key is placeholder or empty.
+[2025-07-13 19:44:24] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Network Engineer IIjj'.
+[2025-07-13 19:44:24] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer IIjj') ready for review.
+[2025-07-13 19:44:24] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 19:45:09] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 19:45:20] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Hari 41jj': API Key is placeholder or empty.
+[2025-07-13 19:45:25] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Hari 41jj'.
+[2025-07-13 19:45:25] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Hari 41jj') ready for review.
+[2025-07-13 19:45:25] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 19:45:31] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 19:48:11] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 19:48:22] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Hari 41j': API Key is placeholder or empty.
+[2025-07-13 19:48:26] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Hari 41j'.
+[2025-07-13 19:48:26] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Hari 41j') ready for review.
+[2025-07-13 19:48:26] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 19:48:52] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 19:48:53] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 19:48:54] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 19:48:57] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 19:48:58] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 19:49:00] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 19:49:03] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 19:56:31] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 19:57:09] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Hari 41hh': API Key is placeholder or empty.
+[2025-07-13 19:57:12] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Hari 41hh'.
+[2025-07-13 19:57:12] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Hari 41hh') ready for review.
+[2025-07-13 19:57:12] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 19:57:22] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 19:57:24] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 19:57:25] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 19:57:33] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:08:08] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-07-13 20:08:19] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-07-13 20:08:20] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:08:38] [JOB_POST_VALIDATION_ERROR] Job post attempt by 'suthan@jobhunt.top' (Title: 'Network Engineer II') failed: Contact info missing.
+[2025-07-13 20:08:38] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:08:46] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer II': API Key is placeholder or empty.
+[2025-07-13 20:08:49] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Network Engineer II'.
+[2025-07-13 20:08:49] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer II') ready for review.
+[2025-07-13 20:08:49] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:10:48] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:11:27] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Hari 41': API Key is placeholder or empty.
+[2025-07-13 20:11:29] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Hari 41'.
+[2025-07-13 20:11:29] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Hari 41') ready for review.
+[2025-07-13 20:11:29] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:11:37] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:11:38] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:11:38] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:11:39] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:11:41] [JOB_POST_SUCCESS] Job ID '1752417701_8442' (Title: 'Hari 41') posted successfully by 'suthan@jobhunt.top'.
+[2025-07-13 20:11:41] [AI_IMAGE_WARNING] GD library not available. Cannot create placeholder image for job ID '1752417701_8442'.
+[2025-07-13 20:11:41] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:13:05] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:13:21] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer II': API Key is placeholder or empty.
+[2025-07-13 20:13:22] [AI_SUMMARY_ERROR] AI summary generation FAILED for job 'Network Engineer II'. API HTTP Code: 429. Response: {  "error": {    "code": 429,    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.",    "status": "RESOURCE_EXHAUSTED",    "details": [      {        "@type": "type.googleapis.com/google.rpc.QuotaFailure",        "violations": [          {            "quotaMetric": "generativelanguage.googleapis.com/generate_content_free_tier_requests",            "quotaId": "GenerateRequestsPerDayPerProjectPerModel-FreeTier",            "quotaDimensions": {              "location": "global",              "model": "gemini-1.5-flash"            },            "quotaValue": "50"          }        ]      },      {        "@type": "type.googleapis.com/google.rpc.Help",        "links": [          {            "description": "Learn more about Gemini API quotas",            "url": "https://ai.google.dev/gemini-api/docs/rate-limits"          }        ]      },      {        "@type": "type.googleapis.com/google.rpc.RetryInfo",        "retryDelay": "2s"      }    ]  }}
+[2025-07-13 20:13:22] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer II') ready for review.
+[2025-07-13 20:13:22] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:13:28] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:13:29] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:13:30] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:13:30] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:13:31] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:13:32] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:13:34] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer II': API Key is placeholder or empty.
+[2025-07-13 20:13:35] [AI_SUMMARY_ERROR] AI summary generation FAILED for job 'Network Engineer II'. API HTTP Code: 429. Response: {  "error": {    "code": 429,    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.",    "status": "RESOURCE_EXHAUSTED",    "details": [      {        "@type": "type.googleapis.com/google.rpc.QuotaFailure",        "violations": [          {            "quotaMetric": "generativelanguage.googleapis.com/generate_content_free_tier_requests",            "quotaId": "GenerateRequestsPerDayPerProjectPerModel-FreeTier",            "quotaDimensions": {              "location": "global",              "model": "gemini-1.5-flash"            },            "quotaValue": "50"          }        ]      },      {        "@type": "type.googleapis.com/google.rpc.Help",        "links": [          {            "description": "Learn more about Gemini API quotas",            "url": "https://ai.google.dev/gemini-api/docs/rate-limits"          }        ]      },      {        "@type": "type.googleapis.com/google.rpc.RetryInfo",        "retryDelay": "49s"      }    ]  }}
+[2025-07-13 20:13:35] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer II') ready for review.
+[2025-07-13 20:13:35] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:13:42] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer II': API Key is placeholder or empty.
+[2025-07-13 20:13:43] [AI_SUMMARY_ERROR] AI summary generation FAILED for job 'Network Engineer II'. API HTTP Code: 429. Response: {  "error": {    "code": 429,    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.",    "status": "RESOURCE_EXHAUSTED",    "details": [      {        "@type": "type.googleapis.com/google.rpc.QuotaFailure",        "violations": [          {            "quotaMetric": "generativelanguage.googleapis.com/generate_content_free_tier_requests",            "quotaId": "GenerateRequestsPerDayPerProjectPerModel-FreeTier",            "quotaDimensions": {              "location": "global",              "model": "gemini-1.5-flash"            },            "quotaValue": "50"          }        ]      },      {        "@type": "type.googleapis.com/google.rpc.Help",        "links": [          {            "description": "Learn more about Gemini API quotas",            "url": "https://ai.google.dev/gemini-api/docs/rate-limits"          }        ]      },      {        "@type": "type.googleapis.com/google.rpc.RetryInfo",        "retryDelay": "41s"      }    ]  }}
+[2025-07-13 20:13:43] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer II') ready for review.
+[2025-07-13 20:13:43] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:13:56] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:13:58] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer II': API Key is placeholder or empty.
+[2025-07-13 20:13:59] [AI_SUMMARY_ERROR] AI summary generation FAILED for job 'Network Engineer II'. API HTTP Code: 429. Response: {  "error": {    "code": 429,    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.",    "status": "RESOURCE_EXHAUSTED",    "details": [      {        "@type": "type.googleapis.com/google.rpc.QuotaFailure",        "violations": [          {            "quotaMetric": "generativelanguage.googleapis.com/generate_content_free_tier_requests",            "quotaId": "GenerateRequestsPerDayPerProjectPerModel-FreeTier",            "quotaDimensions": {              "model": "gemini-1.5-flash",              "location": "global"            },            "quotaValue": "50"          }        ]      },      {        "@type": "type.googleapis.com/google.rpc.Help",        "links": [          {            "description": "Learn more about Gemini API quotas",            "url": "https://ai.google.dev/gemini-api/docs/rate-limits"          }        ]      },      {        "@type": "type.googleapis.com/google.rpc.RetryInfo",        "retryDelay": "25s"      }    ]  }}
+[2025-07-13 20:13:59] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer II') ready for review.
+[2025-07-13 20:13:59] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:14:02] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:14:19] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:14:27] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer IIn': API Key is placeholder or empty.
+[2025-07-13 20:14:28] [AI_SUMMARY_ERROR] AI summary generation FAILED for job 'Network Engineer IIn'. API HTTP Code: 429. Response: {  "error": {    "code": 429,    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.",    "status": "RESOURCE_EXHAUSTED",    "details": [      {        "@type": "type.googleapis.com/google.rpc.QuotaFailure",        "violations": [          {            "quotaMetric": "generativelanguage.googleapis.com/generate_content_free_tier_requests",            "quotaId": "GenerateRequestsPerDayPerProjectPerModel-FreeTier",            "quotaDimensions": {              "location": "global",              "model": "gemini-1.5-flash"            },            "quotaValue": "50"          }        ]      },      {        "@type": "type.googleapis.com/google.rpc.Help",        "links": [          {            "description": "Learn more about Gemini API quotas",            "url": "https://ai.google.dev/gemini-api/docs/rate-limits"          }        ]      },      {        "@type": "type.googleapis.com/google.rpc.RetryInfo",        "retryDelay": "56s"      }    ]  }}
+[2025-07-13 20:14:28] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer IIn') ready for review.
+[2025-07-13 20:14:28] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:14:39] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer IInjj': API Key is placeholder or empty.
+[2025-07-13 20:14:41] [AI_SUMMARY_ERROR] AI summary generation FAILED for job 'Network Engineer IInjj'. API HTTP Code: 429. Response: {  "error": {    "code": 429,    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.",    "status": "RESOURCE_EXHAUSTED",    "details": [      {        "@type": "type.googleapis.com/google.rpc.QuotaFailure",        "violations": [          {            "quotaMetric": "generativelanguage.googleapis.com/generate_content_free_tier_requests",            "quotaId": "GenerateRequestsPerDayPerProjectPerModel-FreeTier",            "quotaDimensions": {              "location": "global",              "model": "gemini-1.5-flash"            },            "quotaValue": "50"          }        ]      },      {        "@type": "type.googleapis.com/google.rpc.Help",        "links": [          {            "description": "Learn more about Gemini API quotas",            "url": "https://ai.google.dev/gemini-api/docs/rate-limits"          }        ]      },      {        "@type": "type.googleapis.com/google.rpc.RetryInfo",        "retryDelay": "43s"      }    ]  }}
+[2025-07-13 20:14:41] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer IInjj') ready for review.
+[2025-07-13 20:14:41] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:14:53] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:14:55] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:14:58] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer IInjj': API Key is placeholder or empty.
+[2025-07-13 20:14:58] [AI_SUMMARY_ERROR] AI summary generation FAILED for job 'Network Engineer IInjj'. API HTTP Code: 429. Response: {  "error": {    "code": 429,    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.",    "status": "RESOURCE_EXHAUSTED",    "details": [      {        "@type": "type.googleapis.com/google.rpc.QuotaFailure",        "violations": [          {            "quotaMetric": "generativelanguage.googleapis.com/generate_content_free_tier_requests",            "quotaId": "GenerateRequestsPerDayPerProjectPerModel-FreeTier",            "quotaDimensions": {              "location": "global",              "model": "gemini-1.5-flash"            },            "quotaValue": "50"          }        ]      },      {        "@type": "type.googleapis.com/google.rpc.Help",        "links": [          {            "description": "Learn more about Gemini API quotas",            "url": "https://ai.google.dev/gemini-api/docs/rate-limits"          }        ]      },      {        "@type": "type.googleapis.com/google.rpc.RetryInfo",        "retryDelay": "26s"      }    ]  }}
+[2025-07-13 20:14:58] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer IInjj') ready for review.
+[2025-07-13 20:14:58] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:15:03] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:15:14] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer IIjn': API Key is placeholder or empty.
+[2025-07-13 20:15:15] [AI_SUMMARY_ERROR] AI summary generation FAILED for job 'Network Engineer IIjn'. API HTTP Code: 429. Response: {  "error": {    "code": 429,    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.",    "status": "RESOURCE_EXHAUSTED",    "details": [      {        "@type": "type.googleapis.com/google.rpc.QuotaFailure",        "violations": [          {            "quotaMetric": "generativelanguage.googleapis.com/generate_content_free_tier_requests",            "quotaId": "GenerateRequestsPerDayPerProjectPerModel-FreeTier",            "quotaDimensions": {              "location": "global",              "model": "gemini-1.5-flash"            },            "quotaValue": "50"          }        ]      },      {        "@type": "type.googleapis.com/google.rpc.Help",        "links": [          {            "description": "Learn more about Gemini API quotas",            "url": "https://ai.google.dev/gemini-api/docs/rate-limits"          }        ]      },      {        "@type": "type.googleapis.com/google.rpc.RetryInfo",        "retryDelay": "9s"      }    ]  }}
+[2025-07-13 20:15:15] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer IIjn') ready for review.
+[2025-07-13 20:15:15] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:15:35] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:15:37] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer IIjn': API Key is placeholder or empty.
+[2025-07-13 20:15:38] [AI_SUMMARY_ERROR] AI summary generation FAILED for job 'Network Engineer IIjn'. API HTTP Code: 429. Response: {  "error": {    "code": 429,    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.",    "status": "RESOURCE_EXHAUSTED",    "details": [      {        "@type": "type.googleapis.com/google.rpc.QuotaFailure",        "violations": [          {            "quotaMetric": "generativelanguage.googleapis.com/generate_content_free_tier_requests",            "quotaId": "GenerateRequestsPerDayPerProjectPerModel-FreeTier",            "quotaDimensions": {              "location": "global",              "model": "gemini-1.5-flash"            },            "quotaValue": "50"          }        ]      },      {        "@type": "type.googleapis.com/google.rpc.Help",        "links": [          {            "description": "Learn more about Gemini API quotas",            "url": "https://ai.google.dev/gemini-api/docs/rate-limits"          }        ]      },      {        "@type": "type.googleapis.com/google.rpc.RetryInfo",        "retryDelay": "45s"      }    ]  }}
+[2025-07-13 20:15:38] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer IIjn') ready for review.
+[2025-07-13 20:15:38] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:15:44] [AUTH_INFO] User 'suthan@jobhunt.top' logged out.
+[2025-07-13 20:15:48] [AUTH_SUCCESS] User 'suthan@jobhunt.top' logged in successfully. Role: 'super_admin'.
+[2025-07-13 20:15:48] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-07-13 20:15:52] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-07-13 20:15:54] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:16:07] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Hari 41jjjj': API Key is placeholder or empty.
+[2025-07-13 20:16:08] [AI_SUMMARY_ERROR] AI summary generation FAILED for job 'Hari 41jjjj'. API HTTP Code: 429. Response: {  "error": {    "code": 429,    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.",    "status": "RESOURCE_EXHAUSTED",    "details": [      {        "@type": "type.googleapis.com/google.rpc.QuotaFailure",        "violations": [          {            "quotaMetric": "generativelanguage.googleapis.com/generate_content_free_tier_requests",            "quotaId": "GenerateRequestsPerDayPerProjectPerModel-FreeTier",            "quotaDimensions": {              "location": "global",              "model": "gemini-1.5-flash"            },            "quotaValue": "50"          }        ]      },      {        "@type": "type.googleapis.com/google.rpc.Help",        "links": [          {            "description": "Learn more about Gemini API quotas",            "url": "https://ai.google.dev/gemini-api/docs/rate-limits"          }        ]      },      {        "@type": "type.googleapis.com/google.rpc.RetryInfo",        "retryDelay": "16s"      }    ]  }}
+[2025-07-13 20:16:08] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Hari 41jjjj') ready for review.
+[2025-07-13 20:16:08] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:16:12] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:16:13] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:16:44] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-07-13 20:16:50] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-07-13 20:16:51] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:17:01] [AI_SUMMARY_SKIP] AI Summary generation skipped for job '14qheehhh': API Key is placeholder or empty.
+[2025-07-13 20:17:02] [AI_SUMMARY_ERROR] AI summary generation FAILED for job '14qheehhh'. API HTTP Code: 429. Response: {  "error": {    "code": 429,    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.",    "status": "RESOURCE_EXHAUSTED",    "details": [      {        "@type": "type.googleapis.com/google.rpc.QuotaFailure",        "violations": [          {            "quotaMetric": "generativelanguage.googleapis.com/generate_content_free_tier_requests",            "quotaId": "GenerateRequestsPerDayPerProjectPerModel-FreeTier",            "quotaDimensions": {              "location": "global",              "model": "gemini-1.5-flash"            },            "quotaValue": "50"          }        ]      },      {        "@type": "type.googleapis.com/google.rpc.Help",        "links": [          {            "description": "Learn more about Gemini API quotas",            "url": "https://ai.google.dev/gemini-api/docs/rate-limits"          }        ]      },      {        "@type": "type.googleapis.com/google.rpc.RetryInfo",        "retryDelay": "22s"      }    ]  }}
+[2025-07-13 20:17:02] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: '14qheehhh') ready for review.
+[2025-07-13 20:17:02] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:17:48] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:17:49] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:17:52] [AI_SUMMARY_SKIP] AI Summary generation skipped for job '14qheehhh': API Key is placeholder or empty.
+[2025-07-13 20:17:53] [AI_SUMMARY_ERROR] AI summary generation FAILED for job '14qheehhh'. API HTTP Code: 429. Response: {  "error": {    "code": 429,    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.",    "status": "RESOURCE_EXHAUSTED",    "details": [      {        "@type": "type.googleapis.com/google.rpc.QuotaFailure",        "violations": [          {            "quotaMetric": "generativelanguage.googleapis.com/generate_content_free_tier_requests",            "quotaId": "GenerateRequestsPerDayPerProjectPerModel-FreeTier",            "quotaDimensions": {              "location": "global",              "model": "gemini-1.5-flash"            },            "quotaValue": "50"          }        ]      },      {        "@type": "type.googleapis.com/google.rpc.Help",        "links": [          {            "description": "Learn more about Gemini API quotas",            "url": "https://ai.google.dev/gemini-api/docs/rate-limits"          }        ]      },      {        "@type": "type.googleapis.com/google.rpc.RetryInfo",        "retryDelay": "30s"      }    ]  }}
+[2025-07-13 20:17:53] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: '14qheehhh') ready for review.
+[2025-07-13 20:17:53] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:18:45] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:18:46] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:20:24] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:20:26] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:20:28] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:20:31] [AI_SUMMARY_SKIP] AI Summary generation skipped for job '14qheehhh': API Key is placeholder or empty.
+[2025-07-13 20:20:31] [AI_SUMMARY_ERROR] AI summary generation FAILED for job '14qheehhh'. API HTTP Code: 429. Response: {  "error": {    "code": 429,    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.",    "status": "RESOURCE_EXHAUSTED",    "details": [      {        "@type": "type.googleapis.com/google.rpc.QuotaFailure",        "violations": [          {            "quotaMetric": "generativelanguage.googleapis.com/generate_content_free_tier_requests",            "quotaId": "GenerateRequestsPerDayPerProjectPerModel-FreeTier",            "quotaDimensions": {              "model": "gemini-1.5-flash",              "location": "global"            },            "quotaValue": "50"          }        ]      },      {        "@type": "type.googleapis.com/google.rpc.Help",        "links": [          {            "description": "Learn more about Gemini API quotas",            "url": "https://ai.google.dev/gemini-api/docs/rate-limits"          }        ]      },      {        "@type": "type.googleapis.com/google.rpc.RetryInfo",        "retryDelay": "53s"      }    ]  }}
+[2025-07-13 20:20:31] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: '14qheehhh') ready for review.
+[2025-07-13 20:20:31] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:21:18] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:21:19] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:21:20] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:21:20] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:21:21] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:21:28] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:21:51] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:22:04] [AI_SUMMARY_SKIP] AI Summary generation skipped for job '14qheehhhjj': API Key is placeholder or empty.
+[2025-07-13 20:22:05] [AI_SUMMARY_ERROR] AI summary generation FAILED for job '14qheehhhjj'. API HTTP Code: 429. Response: {  "error": {    "code": 429,    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.",    "status": "RESOURCE_EXHAUSTED",    "details": [      {        "@type": "type.googleapis.com/google.rpc.QuotaFailure",        "violations": [          {            "quotaMetric": "generativelanguage.googleapis.com/generate_content_free_tier_requests",            "quotaId": "GenerateRequestsPerDayPerProjectPerModel-FreeTier",            "quotaDimensions": {              "model": "gemini-1.5-flash",              "location": "global"            },            "quotaValue": "50"          }        ]      },      {        "@type": "type.googleapis.com/google.rpc.Help",        "links": [          {            "description": "Learn more about Gemini API quotas",            "url": "https://ai.google.dev/gemini-api/docs/rate-limits"          }        ]      },      {        "@type": "type.googleapis.com/google.rpc.RetryInfo",        "retryDelay": "19s"      }    ]  }}
+[2025-07-13 20:22:05] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: '14qheehhhjj') ready for review.
+[2025-07-13 20:22:05] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:25:24] [AI_SUMMARY_SKIP] AI Summary generation skipped for job '14qheehhhjj': API Key is placeholder or empty.
+[2025-07-13 20:25:25] [AI_SUMMARY_ERROR] AI summary generation FAILED for job '14qheehhhjj'. API HTTP Code: 429. Response: {  "error": {    "code": 429,    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.",    "status": "RESOURCE_EXHAUSTED",    "details": [      {        "@type": "type.googleapis.com/google.rpc.QuotaFailure",        "violations": [          {            "quotaMetric": "generativelanguage.googleapis.com/generate_content_free_tier_requests",            "quotaId": "GenerateRequestsPerDayPerProjectPerModel-FreeTier",            "quotaDimensions": {              "location": "global",              "model": "gemini-1.5-flash"            },            "quotaValue": "50"          }        ]      },      {        "@type": "type.googleapis.com/google.rpc.Help",        "links": [          {            "description": "Learn more about Gemini API quotas",            "url": "https://ai.google.dev/gemini-api/docs/rate-limits"          }        ]      },      {        "@type": "type.googleapis.com/google.rpc.RetryInfo",        "retryDelay": "59s"      }    ]  }}
+[2025-07-13 20:25:25] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: '14qheehhhjj') ready for review.
+[2025-07-13 20:25:25] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:48:11] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:48:12] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:49:06] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:49:07] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:49:08] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:49:09] [AI_SUMMARY_SKIP] AI Summary generation skipped for job '14qheehhhjj': API Key is placeholder or empty.
+[2025-07-13 20:49:11] [AI_SUMMARY_ERROR] AI summary generation FAILED for job '14qheehhhjj'. API HTTP Code: 429. Response: {  "error": {    "code": 429,    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.",    "status": "RESOURCE_EXHAUSTED",    "details": [      {        "@type": "type.googleapis.com/google.rpc.QuotaFailure",        "violations": [          {            "quotaMetric": "generativelanguage.googleapis.com/generate_content_free_tier_requests",            "quotaId": "GenerateRequestsPerDayPerProjectPerModel-FreeTier",            "quotaDimensions": {              "location": "global",              "model": "gemini-1.5-flash"            },            "quotaValue": "50"          }        ]      },      {        "@type": "type.googleapis.com/google.rpc.Help",        "links": [          {            "description": "Learn more about Gemini API quotas",            "url": "https://ai.google.dev/gemini-api/docs/rate-limits"          }        ]      },      {        "@type": "type.googleapis.com/google.rpc.RetryInfo",        "retryDelay": "13s"      }    ]  }}
+[2025-07-13 20:49:11] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: '14qheehhhjj') ready for review.
+[2025-07-13 20:49:11] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:49:14] [AI_SUMMARY_SKIP] AI Summary generation skipped for job '14qheehhhjj': API Key is placeholder or empty.
+[2025-07-13 20:49:14] [AI_SUMMARY_ERROR] AI summary generation FAILED for job '14qheehhhjj'. API HTTP Code: 429. Response: {  "error": {    "code": 429,    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.",    "status": "RESOURCE_EXHAUSTED",    "details": [      {        "@type": "type.googleapis.com/google.rpc.QuotaFailure",        "violations": [          {            "quotaMetric": "generativelanguage.googleapis.com/generate_content_free_tier_requests",            "quotaId": "GenerateRequestsPerDayPerProjectPerModel-FreeTier",            "quotaDimensions": {              "location": "global",              "model": "gemini-1.5-flash"            },            "quotaValue": "50"          }        ]      },      {        "@type": "type.googleapis.com/google.rpc.Help",        "links": [          {            "description": "Learn more about Gemini API quotas",            "url": "https://ai.google.dev/gemini-api/docs/rate-limits"          }        ]      },      {        "@type": "type.googleapis.com/google.rpc.RetryInfo",        "retryDelay": "9s"      }    ]  }}
+[2025-07-13 20:49:14] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: '14qheehhhjj') ready for review.
+[2025-07-13 20:49:15] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:49:50] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:49:51] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:49:54] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:50:39] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 20:50:42] [AI_SUMMARY_SKIP] AI Summary generation skipped for job '14qheehhhjj': API Key is placeholder or empty.
+[2025-07-13 20:50:43] [AI_SUMMARY_ERROR] AI summary generation FAILED for job '14qheehhhjj'. API HTTP Code: 429. Response: {  "error": {    "code": 429,    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.",    "status": "RESOURCE_EXHAUSTED",    "details": [      {        "@type": "type.googleapis.com/google.rpc.QuotaFailure",        "violations": [          {            "quotaMetric": "generativelanguage.googleapis.com/generate_content_free_tier_requests",            "quotaId": "GenerateRequestsPerDayPerProjectPerModel-FreeTier",            "quotaDimensions": {              "location": "global",              "model": "gemini-1.5-flash"            },            "quotaValue": "50"          }        ]      },      {        "@type": "type.googleapis.com/google.rpc.Help",        "links": [          {            "description": "Learn more about Gemini API quotas",            "url": "https://ai.google.dev/gemini-api/docs/rate-limits"          }        ]      },      {        "@type": "type.googleapis.com/google.rpc.RetryInfo",        "retryDelay": "41s"      }    ]  }}
+[2025-07-13 20:50:43] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: '14qheehhhjj') ready for review.
+[2025-07-13 20:50:43] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 21:07:37] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 21:08:37] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 21:19:26] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 21:19:28] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 21:19:29] [AI_SUMMARY_SKIP] AI Summary generation skipped for job '14qheehhhjj': API Key is placeholder or empty.
+[2025-07-13 21:19:30] [AI_SUMMARY_ERROR] AI summary generation FAILED for job '14qheehhhjj'. API HTTP Code: 404. Response: {  "error": {    "code": 404,    "message": "models/gemini-2.0-flash-latest is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",    "status": "NOT_FOUND"  }}
+[2025-07-13 21:19:30] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: '14qheehhhjj') ready for review.
+[2025-07-13 21:19:30] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 21:20:58] [AI_SUMMARY_SKIP] AI Summary generation skipped for job '14qheehhhjj': API Key is placeholder or empty.
+[2025-07-13 21:21:01] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job '14qheehhhjj'.
+[2025-07-13 21:21:01] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: '14qheehhhjj') ready for review.
+[2025-07-13 21:21:01] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 21:22:38] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'blocked_jobs'.
+[2025-07-13 21:22:38] [INVALID_VIEW_ERROR] User 'suthan@jobhunt.top' attempted to access invalid view: 'blocked_jobs'.
+[2025-07-13 21:22:40] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'blocked_jobs'.
+[2025-07-13 21:22:40] [INVALID_VIEW_ERROR] User 'suthan@jobhunt.top' attempted to access invalid view: 'blocked_jobs'.
+[2025-07-13 21:22:42] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'blocked_jobs'.
+[2025-07-13 21:22:42] [INVALID_VIEW_ERROR] User 'suthan@jobhunt.top' attempted to access invalid view: 'blocked_jobs'.
+[2025-07-13 21:22:45] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'reported_jobs'.
+[2025-07-13 21:22:45] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'reported_jobs' view.
+[2025-07-13 21:22:55] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'generate_message'.
+[2025-07-13 21:22:55] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'generate_message' view. WhatsApp generated: Yes. Telegram generated: Yes.

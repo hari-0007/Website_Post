@@ -775,6 +775,24 @@ if (isset($loggedIn) && $loggedIn) { // Apply only when in a logged-in admin con
                     localStorage.setItem('sidebarState', 'closed');
                 }
             });
+            
+            // Close sidebar when clicking outside
+            // Named function for handling clicks outside the sidebar
+            function handleOutsideSidebarClick(event) {
+                if (bodyElement.classList.contains('sidebar-open')) {
+                    // If the click is outside the sidebar
+                    if (!document.getElementById('adminSidebar').contains(event.target) &&
+                        !document.getElementById('sidebarToggleBtn').contains(event.target)) {
+                        bodyElement.classList.remove('sidebar-open');
+                        localStorage.setItem('sidebarState', 'closed');
+                    }
+                }
+            }
+
+            // Add the global click listener for closing the sidebar by clicking outside
+            // Use capture phase to ensure it's the first listener to run
+            window.addEventListener('click', handleOutsideSidebarClick, true);
+
         }
     });
 </script>

@@ -329,7 +329,7 @@ $formActionValue = $isReviewMode ? "final_post" : "initial_post";
             <input type="text" id="emails" name="emails" value="<?= htmlspecialchars($formData['emails'] ?? '') ?>">
         </div>       
         <div class="form-group">
-            <label for="description">Key Responsibilities/Details:</label>
+            <label for="description">Key Responsibilities/Details: <span class="required">*</span></label>
             <textarea id="description" name="description" rows="8" <?= $isReviewMode ? 'readonly' : '' ?>><?= htmlspecialchars($formData['description'] ?? '') ?></textarea>
             <!-- <?php if ($isReviewMode): ?>
                 <small>Original description is locked during review. Edit the AI summary below.</small>
@@ -358,7 +358,7 @@ $formActionValue = $isReviewMode ? "final_post" : "initial_post";
                 <textarea id="ai_summary" name="ai_summary" rows="10" required><?= htmlspecialchars($formData['ai_summary'] ?? '') ?></textarea>
             </div>
         <?php endif; ?>
-
+        <?php if ($isReviewMode): ?><button type="button" id="regenerate-ai-summary-btn" class="button" style="margin-left: 10px;">Regenerate AI Summary</button><?php endif; ?>
         <button type="submit" class="button"><?= htmlspecialchars($submitButtonText) ?></button>
     </form>
 </div>
@@ -372,18 +372,33 @@ $formActionValue = $isReviewMode ? "final_post" : "initial_post";
         <p>Your job has been posted. Share it with your network!</p>
         
         <div class="job-details-share">
-            <h3><?= htmlspecialchars($shareData['title'] ?? '') ?></h3>
-            <p><strong>Company:</strong> <?= htmlspecialchars($shareData['company'] ?? 'N/A') ?></p>
-            <p><strong>Vacancies:</strong> <?= htmlspecialchars($shareData['vacancies'] ?? 'N/A') ?></p>
-            <p><strong>Experience:</strong> <?= htmlspecialchars($shareData['experience'] ?? 'N/A') ?></p>
-            <p><strong>Salary:</strong> <?= htmlspecialchars($shareData['salary'] ?? 'Not Disclosed') ?></p>
-            <!-- <p><strong>Brief:</strong><br><?= nl2br(htmlspecialchars(substr($shareData['description'] ?? '', 0, 250))) ?>...</p> -->
-            <p><strong>Link:</strong> <a href="<?= htmlspecialchars($shareData['url'] ?? '#') ?>" target="_blank"><?= htmlspecialchars($shareData['url'] ?? '') ?></a></p>
-        </div>
+            <?php if (!empty($shareData['title'])): ?>
+                <h3><?= htmlspecialchars($shareData['title']) ?></h3>
+            <?php endif; ?>
+
+            <?php if (!empty($shareData['company'])): ?>
+                <p><strong>Company:</strong> <?= htmlspecialchars($shareData['company']) ?></p>
+            <?php endif; ?>
+
+            <?php if (!empty($shareData['vacancies'])): ?>
+                <p><strong>Vacancies:</strong> <?= htmlspecialchars($shareData['vacancies']) ?></p>
+            <?php endif; ?>
+
+            <?php if (!empty($shareData['experience'])): ?>
+                <p><strong>Experience:</strong> <?= htmlspecialchars($shareData['experience']) ?></p>
+            <?php endif; ?>
+
+            <?php if (!empty($shareData['salary'])): ?>
+                <p><strong>Salary:</strong> <?= htmlspecialchars($shareData['salary']) ?></p>
+            <?php endif; ?>
+
+            <?php if (!empty($shareData['url'])): ?>
+                <p><strong>Link:</strong> <a href="<?= htmlspecialchars($shareData['url']) ?>" target="_blank"><?= htmlspecialchars($shareData['url']) ?></a></p>
+            <?php endif; ?>
+         </div>
 
         <div class="share-buttons">
             <button id="copy-share-link-btn" class="share-btn copy-link">Copy Job Details</button>
-        </div>
     </div>
 </div>
 
@@ -451,24 +466,31 @@ document.addEventListener('DOMContentLoaded', function() {
             if (this.disabled) return;
 
             // Construct the full job content string, omitting empty fields.
-            let jobContentToCopy = `Job Opportunity! 📢\n\n`;
+            let jobContentToCopy = `✨ Job Opportunity! 📢\n\n`;
             jobContentToCopy += `Title: ${jobData.title || 'N/A'}\n`;
 
             if (jobData.company && jobData.company.trim()) {
                 jobContentToCopy += `Company: ${jobData.company.trim()}\n`;
             }
 
-            // Only add experience if it's a meaningful value (not empty or '0')
-            if (jobData.experience && jobData.experience !== '0' && jobData.experience.trim()) {
-                jobContentToCopy += `Experience: ${jobData.experience.trim()}\n`;
+            // Extract experience and format for sharing, handling "other" and custom values
+            let sharedExperience = '';
+            if (jobData.experience && jobData.experience !== '0') {
+                if (jobData.experience === 'other' && jobData.custom_experience && jobData.custom_experience.trim()) {
+                    sharedExperience = jobData.custom_experience.trim();
+                } else {
+                    sharedExperience = jobData.experience; // Use the selected value directly (or it might need display text map)
+                    // You might need to expand this with a map if experience values (e.g., '1') 
+                    // don't directly match display text (e.g., '1 year').
+                }
+            }
+
+            if (sharedExperience) {
+                jobContentToCopy += `Experience: ${sharedExperience}\n`;
             }
 
             if (jobData.salary && jobData.salary.trim()) {
                 jobContentToCopy += `Salary: ${jobData.salary.trim()}\n`;
-            }
-
-            // Add a newline for spacing if any optional details were present
-            if ((jobData.company && jobData.company.trim()) || (jobData.experience && jobData.experience !== '0' && jobData.experience.trim()) || (jobData.salary && jobData.salary.trim())) {
                 jobContentToCopy += `\n`;
             }
 
@@ -476,7 +498,7 @@ document.addEventListener('DOMContentLoaded', function() {
             //     jobContentToCopy += `*Description:*\n${jobData.description.trim()}\n\n`;
             // }
 
-            jobContentToCopy += `Apply Here & More Info:\n${jobData.url || '#'}`;
+            jobContentToCopy += `Apply Here & More Info:\n${(jobData.url.replace('http://', 'www.').replace('job_detail.php', 'index.php')) || '#'}`;
 
             if (!navigator.clipboard) {
                 fallbackCopyTextToClipboard(jobContentToCopy, this);
@@ -518,4 +540,40 @@ document.addEventListener('DOMContentLoaded', function() {
             toggleCustomExperience(experienceSelect);
         }
     });
+
+    function validateForm() {
+        const description = document.getElementById('description').value.trim();
+        if (!description) {
+            alert('Key Responsibilities/Details are required.');
+            return false;
+        }
+        return true; // Form is valid
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const regenBtn = document.getElementById('regenerate-ai-summary-btn');
+        const form = document.getElementById('postJobForm');
+
+        if (regenBtn && form) {
+            regenBtn.addEventListener('click', function() {
+                const formData = new FormData(form);
+                formData.append('action', 'regenerate_summary'); // Action for backend
+                
+                regenBtn.disabled = true;
+                regenBtn.textContent = 'Generating...';
+
+                window.location.reload();  // Refresh the page
+            });
+        }
+    });
+
+    // Add form validation before submission (if not in review mode)
+    const form = document.getElementById('postJobForm');
+    if (form && !<?= json_encode($isReviewMode) ?>) {
+        form.addEventListener('submit', function(event) {
+            if (!validateForm()) {
+                event.preventDefault();
+            }
+        });
+    }
 </script>

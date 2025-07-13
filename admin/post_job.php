@@ -109,7 +109,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     error_log("[AI_SUMMARY_ERROR] API Key is a placeholder or potentially invalid. Please set a valid API key.");
                     // Optionally, you could set $generatedAiSummary to an error message here or skip the API call.
                 }
-                $apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=' . $apiKey; // Using gemini-1.5-flash-latest as an example
+                $apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' . $apiKey; // Using gemini-1.5-flash-latest as an example
                 // Construct a more detailed prompt using all available fields
                 $prompt = "Generate a professional job description based on the following details:\n\n";
                 $prompt .= "- Job Title: $title\n";

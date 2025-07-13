@@ -76,7 +76,7 @@ function generateAISummary(array $jobDetails) {
     $apiKey = 'AIzaSyCWoj7th8DArYw7PGf83JAVcYsXBJHFjAk'; // WARNING: Hardcoded API Key
     // The post_job.php used gemini-2.0-flash, but gemini-1.5-flash-latest is often more readily available and effective.
     // If gemini-2.0-flash is specifically required and available, you can change this.
-    $apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=' . $apiKey;
+    $apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' . $apiKey;
 
     $title = htmlspecialchars($jobDetails['title'] ?? 'N/A');
     $company = htmlspecialchars($jobDetails['company'] ?? '');
@@ -96,7 +96,7 @@ function generateAISummary(array $jobDetails) {
     if (!empty($type)) $prompt .= "Job Type: $type\n";
     if (!empty($salary) && strtolower($salary) !== 'not disclosed' && $salary !== '0') $prompt .= "Salary: $salary\n";
     if (!empty($description)) $prompt .= "Original Description/Core Responsibilities: " . $description . "\n"; // Use full original description
-    $prompt .= "\nGenerate the full job description now.";
+    $prompt .= "\n Generate the full job description now.";
 
     $data = [
         'contents' => [['parts' => [['text' => $prompt]]]],

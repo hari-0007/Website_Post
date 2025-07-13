@@ -55,10 +55,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         // --- Check for Duplicate Job (within last 7 days) BEFORE AI Summary ---
-        $jobsFile = __DIR__ . '/../data/jobs.json';
-        $allExistingJobs = file_exists($jobsFile) ? json_decode(file_get_contents($jobsFile), true) : [];
-        if (!is_array($allExistingJobs)) {
-            $allExistingJobs = []; 
+       $jobsFile = __DIR__ . '/../data/jobs.json';
+       $allExistingJobs = file_exists($jobsFile) ? json_decode(file_get_contents($jobsFile), true) : [];
+       if (!is_array($allExistingJobs)) {
+           $allExistingJobs = [];
         }
 
         $sevenDaysAgo = strtotime('-7 days');
@@ -72,20 +72,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $newJobEmailsArray = array_map('trim', explode(',', strtolower($emails)));
         $newJobPhonesArray = array_map('trim', explode(',', strtolower($phones)));
 
+        $newJobCompanyLower = strtolower(trim($company));
+        $newJobLocationLower = strtolower(trim($location));
+
         foreach ($recentJobs as $recentJob) {
             $existingTitleLower = strtolower(trim($recentJob['title'] ?? ''));
             if ($existingTitleLower === $newJobTitleLower) {
                 $existingJobEmailsArray = array_map('trim', explode(',', strtolower($recentJob['emails'] ?? '')));
                 $existingJobPhonesArray = array_map('trim', explode(',', strtolower($recentJob['phones'] ?? '')));
-                if (!empty(array_intersect($newJobEmailsArray, $existingJobEmailsArray)) || !empty(array_intersect($newJobPhonesArray, $existingJobPhonesArray))) {
-                    $isDuplicateInRecent = true;
-                    break;
-                }
+                $existingJobCompanyLower = strtolower(trim($recentJob['company'] ?? ''));
+                $existingJobLocationLower = strtolower(trim($recentJob['location'] ?? ''));
+
+                // Check company and location only if they are provided in the new job post
+                $companyLocationMatch = (!empty($newJobCompanyLower) && !empty($newJobLocationLower)) ?
+                                        ($existingJobCompanyLower === $newJobCompanyLower && $existingJobLocationLower === $newJobLocationLower) : true;
+
+                if (($companyLocationMatch || empty($newJobCompanyLower) || empty($newJobLocationLower)) && (!empty(array_intersect($newJobEmailsArray, $existingJobEmailsArray)) || !empty(array_intersect($newJobPhonesArray, $existingJobPhonesArray)))) $isDuplicateInRecent = true;
             }
         }
 
         if ($isDuplicateInRecent) {
-            $_SESSION['admin_status'] = ['message' => 'Error: This job (based on title and contact info) seems to be a duplicate of one posted in the last 7 days.', 'type' => 'error'];
+            $_SESSION['admin_status'] = ['message' => 'Error: This job (based on title and contact info) seems to be a duplicate of one posted in the last 30 days.', 'type' => 'error'];
             log_app_activity("Duplicate job post attempt by '$loggedInUsernameForLog'. Title: '$title'. Contacts: P-$phones E-$emails.", "JOB_POST_DUPLICATE");
             $_SESSION['form_data'] = $_POST; 
             header('Location: dashboard.php?view=post_job');

@@ -3678,3 +3678,97 @@
 [2025-07-13 21:22:45] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'reported_jobs' view.
 [2025-07-13 21:22:55] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'generate_message'.
 [2025-07-13 21:22:55] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'generate_message' view. WhatsApp generated: Yes. Telegram generated: Yes.
+[2025-07-13 22:43:54] [AUTH_SUCCESS] User 'suthan@jobhunt.top' logged in successfully. Role: 'super_admin'.
+[2025-07-13 22:43:54] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-07-13 22:44:02] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-07-13 22:44:04] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 22:44:19] [AI_SUMMARY_SKIP] AI Summary generation skipped for job '14qheehhhjj': API Key is placeholder or empty.
+[2025-07-13 22:44:23] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job '14qheehhhjj'.
+[2025-07-13 22:44:23] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: '14qheehhhjj') ready for review.
+[2025-07-13 22:44:23] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 22:44:26] [JOB_POST_SUCCESS] Job ID '1752426866_8217' (Title: '14qheehhhjj') posted successfully by 'suthan@jobhunt.top'.
+[2025-07-13 22:44:26] [AI_IMAGE_WARNING] GD library not available. Cannot create placeholder image for job ID '1752426866_8217'.
+[2025-07-13 22:44:26] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 22:44:36] [JOB_POST_DUPLICATE] Duplicate job post attempt by 'suthan@jobhunt.top'. Title: '14qheehhhjj'. Contacts: P-9789765026 E-s.ariharasuthan@gmail.com.
+[2025-07-13 22:44:36] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 22:45:50] [JOB_POST_DUPLICATE] Duplicate job post attempt by 'suthan@jobhunt.top'. Title: '14qheehhhjj'. Contacts: P-9789765026 E-s.ariharasuthan@gmail.com.
+[2025-07-13 22:45:50] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 22:45:57] [JOB_POST_DUPLICATE] Duplicate job post attempt by 'suthan@jobhunt.top'. Title: '14qheehhhjj'. Contacts: P-9789765026 E-s.ariharasuthan@gmail.com.
+[2025-07-13 22:45:57] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 22:46:05] [JOB_POST_DUPLICATE] Duplicate job post attempt by 'suthan@jobhunt.top'. Title: '14qheehhhjj'. Contacts: P-9789765026 E-s.ariharasuthan@gmail.com.
+[2025-07-13 22:46:05] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 22:46:11] [JOB_POST_DUPLICATE] Duplicate job post attempt by 'suthan@jobhunt.top'. Title: '14qheehhhjj'. Contacts: P-9789765026 E-.
+[2025-07-13 22:46:11] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 22:46:19] [AI_SUMMARY_SKIP] AI Summary generation skipped for job '14qheehhhjj': API Key is placeholder or empty.
+[2025-07-13 22:46:24] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job '14qheehhhjj'.
+[2025-07-13 22:46:24] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: '14qheehhhjj') ready for review.
+[2025-07-13 22:46:24] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 22:46:54] [JOB_POST_SUCCESS] Job ID '1752427014_6127' (Title: '14qheehhhjj') posted successfully by 'suthan@jobhunt.top'.
+[2025-07-13 22:46:54] [AI_IMAGE_WARNING] GD library not available. Cannot create placeholder image for job ID '1752427014_6127'.
+[2025-07-13 22:46:54] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 22:48:01] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'fwfw': API Key is placeholder or empty.
+[2025-07-13 22:48:11] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'fwfw'.
+[2025-07-13 22:48:11] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'fwfw') ready for review.
+[2025-07-13 22:48:11] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 22:48:34] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 22:48:46] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'fwfw': API Key is placeholder or empty.
+[2025-07-13 22:48:50] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'fwfw'.
+[2025-07-13 22:48:50] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'fwfw') ready for review.
+[2025-07-13 22:48:51] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 22:49:03] [JOB_POST_SUCCESS] Job ID '1752427143_9444' (Title: 'fwfw') posted successfully by 'suthan@jobhunt.top'.
+[2025-07-13 22:49:03] [AI_IMAGE_WARNING] GD library not available. Cannot create placeholder image for job ID '1752427143_9444'.
+[2025-07-13 22:49:03] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 23:34:05] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 23:34:13] [JOB_POST_DUPLICATE] Duplicate job post attempt by 'suthan@jobhunt.top'. Title: 'fwfw'. Contacts: P-9789765026 E-s.ariharasuthan@gmail.com.
+[2025-07-13 23:34:13] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 23:34:34] [JOB_POST_DUPLICATE] Duplicate job post attempt by 'suthan@jobhunt.top'. Title: 'fwfw'. Contacts: P-9789765026 E-s.ariharasuthan@gmail.comg.
+[2025-07-13 23:34:34] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 23:34:50] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'fwfw': API Key is placeholder or empty.
+[2025-07-13 23:34:53] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'fwfw'.
+[2025-07-13 23:34:53] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'fwfw') ready for review.
+[2025-07-13 23:34:53] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 23:34:57] [JOB_POST_SUCCESS] Job ID '1752429897_1315' (Title: 'fwfw') posted successfully by 'suthan@jobhunt.top'.
+[2025-07-13 23:34:57] [AI_IMAGE_WARNING] GD library not available. Cannot create placeholder image for job ID '1752429897_1315'.
+[2025-07-13 23:34:57] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 23:35:27] [AI_SUMMARY_SKIP] AI Summary generation skipped for job '14qheehhh': API Key is placeholder or empty.
+[2025-07-13 23:35:34] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job '14qheehhh'.
+[2025-07-13 23:35:34] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: '14qheehhh') ready for review.
+[2025-07-13 23:35:34] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 23:35:36] [JOB_POST_SUCCESS] Job ID '1752429936_8249' (Title: '14qheehhh') posted successfully by 'suthan@jobhunt.top'.
+[2025-07-13 23:35:36] [AI_IMAGE_WARNING] GD library not available. Cannot create placeholder image for job ID '1752429936_8249'.
+[2025-07-13 23:35:37] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 23:37:08] [JOB_POST_DUPLICATE] Duplicate job post attempt by 'suthan@jobhunt.top'. Title: '14qheehhh'. Contacts: P-9789765026 E-s.ariharasuthan@gmail.com.
+[2025-07-13 23:37:08] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 23:37:15] [AI_SUMMARY_SKIP] AI Summary generation skipped for job '14qheehhdsfs': API Key is placeholder or empty.
+[2025-07-13 23:37:19] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job '14qheehhdsfs'.
+[2025-07-13 23:37:19] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: '14qheehhdsfs') ready for review.
+[2025-07-13 23:37:19] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 23:37:29] [JOB_POST_SUCCESS] Job ID '1752430049_7314' (Title: '14qheehhdsfs') posted successfully by 'suthan@jobhunt.top'.
+[2025-07-13 23:37:29] [AI_IMAGE_WARNING] GD library not available. Cannot create placeholder image for job ID '1752430049_7314'.
+[2025-07-13 23:37:29] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 23:38:31] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 23:38:48] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Internet': API Key is placeholder or empty.
+[2025-07-13 23:39:01] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Internet'.
+[2025-07-13 23:39:01] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Internet') ready for review.
+[2025-07-13 23:39:01] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Internet': API Key is placeholder or empty.
+[2025-07-13 23:39:09] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Internet'.
+[2025-07-13 23:39:09] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Internet') ready for review.
+[2025-07-13 23:39:09] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 23:39:15] [JOB_POST_SUCCESS] Job ID '1752430155_2098' (Title: 'Internet') posted successfully by 'suthan@jobhunt.top'.
+[2025-07-13 23:39:15] [AI_IMAGE_WARNING] GD library not available. Cannot create placeholder image for job ID '1752430155_2098'.
+[2025-07-13 23:39:15] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 23:39:35] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 23:39:53] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer III': API Key is placeholder or empty.
+[2025-07-13 23:39:59] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Network Engineer III'.
+[2025-07-13 23:39:59] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer III') ready for review.
+[2025-07-13 23:39:59] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 23:40:08] [JOB_POST_SUCCESS] Job ID '1752430208_4109' (Title: 'Network Engineer III') posted successfully by 'suthan@jobhunt.top'.
+[2025-07-13 23:40:08] [AI_IMAGE_WARNING] GD library not available. Cannot create placeholder image for job ID '1752430208_4109'.
+[2025-07-13 23:40:08] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 23:40:46] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer I': API Key is placeholder or empty.
+[2025-07-13 23:40:50] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Network Engineer I'.
+[2025-07-13 23:40:50] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer I') ready for review.
+[2025-07-13 23:40:50] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-07-13 23:40:52] [JOB_POST_SUCCESS] Job ID '1752430252_7512' (Title: 'Network Engineer I') posted successfully by 'suthan@jobhunt.top'.
+[2025-07-13 23:40:52] [AI_IMAGE_WARNING] GD library not available. Cannot create placeholder image for job ID '1752430252_7512'.
+[2025-07-13 23:40:52] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.

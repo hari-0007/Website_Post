@@ -491,14 +491,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (jobData.salary && jobData.salary.trim()) {
                 jobContentToCopy += `Salary: ${jobData.salary.trim()}\n`;
-                jobContentToCopy += `\n`;
+                jobContentToCopy += ``;
             }
 
             // if (jobData.description && jobData.description.trim()) {
             //     jobContentToCopy += `*Description:*\n${jobData.description.trim()}\n\n`;
             // }
 
-            jobContentToCopy += `Apply Here & More Info:\n${(jobData.url.replace('http://', 'www.').replace('job_detail.php', 'index.php')) || '#'}`;
+            jobContentToCopy += `\nApply Here & More Info:\n${(jobData.url.replace('http://', 'www.').replace('job_detail.php', 'index.php')) || '#'}`;
 
             if (!navigator.clipboard) {
                 fallbackCopyTextToClipboard(jobContentToCopy, this);

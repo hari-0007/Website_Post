@@ -81,7 +81,7 @@ function render_job_listings_and_pagination($pagedJobs, $singleJobView, $totalPa
 
         <?php
         $threeMonthsAgoTimestamp = strtotime('-3 months');
-        $jobCounter = 0; // To position the ad cards
+        $jobCounter = 0;
         foreach ($pagedJobs as $job):
             $isExpired = ($job['posted_on_unix_ts'] ?? 0) < $threeMonthsAgoTimestamp;
         ?>
@@ -144,20 +144,29 @@ function render_job_listings_and_pagination($pagedJobs, $singleJobView, $totalPa
                 <p class="job-card-meta"><strong>💰 Salary:</strong> <?= htmlspecialchars($job['salary']) ?></p>
             <?php endif; ?>
 
-            <?php if (!isset($job['posted_by_id'])): ?>
-                <?php if (!empty($job['phones'])): ?>
-                    <p class="job-card-meta"><strong>📞 Phone:</strong>
-                    <?php if ($isExpired): ?><span class="blurred-text">05X-XXX-XXXX</span>
-                    <?php else: foreach (explode(',', $job['phones']) as $phone): ?><a href="tel:<?= htmlspecialchars(trim($phone)) ?>"><?= htmlspecialchars(trim($phone)) ?></a>&nbsp;<?php endforeach; endif; ?>
-                    </p>
-                <?php endif; ?>
-                <?php if (!empty($job['emails'])): ?>
-                    <p class="job-card-meta"><strong>📧 Email:</strong>
-                    <?php if ($isExpired): ?><span class="blurred-text">support@jobhunt.top</span>
-                    <?php else: foreach (explode(',', $job['emails']) as $email): ?><a href="mailto:<?= htmlspecialchars(trim($email)) ?>"><?= htmlspecialchars(trim($email)) ?></a>&nbsp;<?php endforeach; endif; ?>
-                    </p>
-                <?php endif; ?>
-            <?php endif; ?>
+<?php if (!isset($job['posted_by_id'])): ?>
+    <?php if (!empty($job['phones'])): ?>
+        <p class="job-card-meta"><strong>📞 Phone:</strong>
+        <?php if ($isExpired): ?>
+            <span class="blurred-text">05X-XXX-XXXX</span>
+        <?php elseif (!$isExpired): ?>
+            <span class="phone-numbers" style="display: none;"></span> <span class="show-phone-numbers" style="cursor: pointer;">🔒 Show Numbers</span>
+        <?php endif; ?>
+        </p>
+    <?php endif; ?>
+    <?php if (!empty($job['emails'])): ?>
+        <p class="job-card-meta"><strong>📧 Email:</strong>
+        <?php if ($isExpired): ?>
+            <span class="blurred-text">support@jobhunt.top</span>
+        <?php elseif (!$isExpired): ?>
+            <span class="show-email-addresses" style="cursor: pointer;">🔒 Show Emails</span><span class="email-addresses" style="display: none;" data-email=""></span>
+        <?php endif; ?>
+        </p>
+
+       
+     <?php endif; ?>
+
+<?php endif; ?>
 
             <small>Posted on <?= htmlspecialchars($job['posted_on'] ?? 'N/A') ?></small>
 
@@ -174,48 +183,11 @@ function render_job_listings_and_pagination($pagedJobs, $singleJobView, $totalPa
         </div>
         <?php
             $jobCounter++;
-            if ($jobCounter === 1):
+            // REMOVE ALL AD CARDS HERE
+            // Previously, ad-card blocks were inserted at $jobCounter === 1, 4, 8
+            // They are now removed.
         ?>
-        <div class="job-card ad-card" id="ad-slot-3">
-            <ins class="adsbygoogle"
-                 style="display:block"
-                 data-ad-format="fluid"
-                 data-ad-layout-key="-gw-3+1f-3d+2z"
-                 data-ad-client="ca-pub-5503439974043365"
-                 data-ad-slot="3795142259"></ins>
-            <script>
-                 (adsbygoogle = window.adsbygoogle || []).push({});
-            </script>
-        </div>
-        <?php
-            elseif ($jobCounter === 4):
-        ?>
-        <div class="job-card ad-card" id="ad-slot-1">
-            <!-- Ad-1 -->
-            <ins class="adsbygoogle"
-                 style="display:block"
-                 data-ad-format="fluid"
-                 data-ad-layout-key="-fb+5w+4e-db+86"
-                 data-ad-client="ca-pub-5503439974043365"
-                 data-ad-slot="8172806315"></ins>
-            <script>
-                 (adsbygoogle = window.adsbygoogle || []).push({});
-            </script>
-        </div>
-        <?php elseif ($jobCounter === 8): ?>
-        <div class="job-card ad-card" id="ad-slot-2">
-            <!-- Ad-2 -->
-            <ins class="adsbygoogle"
-                 style="display:block"
-                 data-ad-format="fluid"
-                 data-ad-layout-key="-gw-3+1f-3d+2z"
-                 data-ad-client="ca-pub-5503439974043365"
-                 data-ad-slot="2771487589"></ins>
-            <script>
-                 (adsbygoogle = window.adsbygoogle || []).push({});
-            </script>
-        </div>
-        <?php endif; endforeach; ?>
+        <?php endforeach; ?>
     <?php endif; ?>
 
     <?php if (!$singleJobView && $totalPages > 1): ?>
@@ -875,7 +847,6 @@ if ($isAjaxRequest) {
     
     <!-- SEO -->
     <script src="https://www.google.com/recaptcha/api.js?onload=onloadRecaptchaCallback&render=explicit" async defer></script>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5503439974043365" crossorigin="anonymous"></script>
     <link rel="icon" type="image/png" href="/data/images/logo.png">
     <link rel="canonical" href="<?= htmlspecialchars($canonicalUrl) ?>" />
     <?php if ($shouldNoIndexThisPage): ?>

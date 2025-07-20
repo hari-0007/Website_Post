@@ -419,7 +419,7 @@ main {
     overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;
-    -webkit-line-clamp: 3; /* Adjust as needed */
+    -webkit-line-clamp: 7; /* Adjust as needed */
     -webkit-box-orient: vertical;
 }
 
@@ -447,7 +447,7 @@ main {
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     transition: background-color 0.2s, transform 0.2s, box-shadow 0.2s;
     text-decoration: none;
     text-align: center;
@@ -457,7 +457,7 @@ main {
 .job-card-action-button:hover,
 .job-card-action-button:focus {
     background-color: var(--primary-color-dark);
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.20);
     transform: translateY(-3px);
     outline: none;
 }

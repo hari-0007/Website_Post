@@ -1,10 +1,26 @@
+// Make reCAPTCHA callback globally available
+window.onloadRecaptchaCallback = function() {
+    const feedbackContainer = document.getElementById('feedbackRecaptchaContainer');
+    if (feedbackContainer && serverData.recaptchaSiteKey) {
+        window.state = window.state || {};
+        window.state.feedbackRecaptchaId = grecaptcha.render(feedbackContainer, {
+            'sitekey': serverData.recaptchaSiteKey
+        });
+    }
+    const reportContainer = document.getElementById('reportRecaptchaContainer');
+    if (reportContainer && serverData.recaptchaSiteKey) {
+        window.state = window.state || {};
+        window.state.reportRecaptchaId = grecaptcha.render(reportContainer, {
+            'sitekey': serverData.recaptchaSiteKey
+        });
+    }
+};
+
 document.addEventListener('DOMContentLoaded', () => {
-    /**
-     * ------------------------------------------------------------------------
-     *  STATE & CONFIG
-     * ------------------------------------------------------------------------
-     */
-    const state = {
+    // ------------------------------------------------------------------------
+    // STATE & CONFIG
+    // ------------------------------------------------------------------------
+    const state = window.state || {
         feedbackRecaptchaId: null,
         reportRecaptchaId: null,
         currentJobIdForReport: null,
@@ -19,16 +35,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const allJobs = serverData.jobs || [];
 
-    /**
-     * ------------------------------------------------------------------------
-     *  DOM ELEMENTS
-     * ------------------------------------------------------------------------
-     */
+    // ------------------------------------------------------------------------
+    // DOM ELEMENTS
+    // ------------------------------------------------------------------------
     const elements = {
-        // Main containers
         jobListingsContainer: document.getElementById('job-listings-container'),
         mainContainer: document.querySelector('.container'),
-        // Modals
         authModal: document.getElementById('authModal'),
         shareModal: document.getElementById('jobShareModal'),
         cautionModal: document.getElementById('jobCautionModal'),
@@ -38,15 +50,12 @@ document.addEventListener('DOMContentLoaded', () => {
         cautionUnderstoodBtn: document.getElementById('cautionUnderstoodBtn'),
         reportStatusMessage: document.getElementById('reportStatusMessage'),
         joinChannelsPopup: document.getElementById('joinChannelsPopup'),
-        // Forms
         searchForm: document.querySelector('.search-bar form'),
         loginForm: document.getElementById('loginForm'),
         registerForm: document.getElementById('registerForm'),
         feedbackForm: document.getElementById('feedbackForm'),
         reportForm: document.getElementById('reportForm'),
-        // Banners
         cookieBanner: document.getElementById('cookieConsentBanner'),
-        // Interactive areas
         menuToggle: document.getElementById('menuToggle'),
         mobileNav: document.getElementById('mobileNav'),
         mobileNavOverlay: document.getElementById('mobileNavOverlay'),
@@ -55,11 +64,9 @@ document.addEventListener('DOMContentLoaded', () => {
         mobileFilters: document.querySelector('.mobile-filters'),
     };
 
-    /**
-     * ------------------------------------------------------------------------
-     *  HELPER FUNCTIONS
-     * ------------------------------------------------------------------------
-     */
+    // ------------------------------------------------------------------------
+    // HELPER FUNCTIONS
+    // ------------------------------------------------------------------------
     const setCookie = (name, value, days) => {
         let expires = "";
         if (days) {
@@ -90,19 +97,13 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.classList.remove('modal-open');
     };
 
-    /**
-     * ------------------------------------------------------------------------
-     *  CORE LOGIC
-     * ------------------------------------------------------------------------
-     */
-
-    // --- AJAX Navigation ---
+    // ------------------------------------------------------------------------
+    // CORE LOGIC
+    // ------------------------------------------------------------------------
     const handleAjaxNavigation = (url) => {
         const ajaxUrl = new URL(url, window.location.origin);
         ajaxUrl.searchParams.set('ajax', '1');
-
         if (!elements.jobListingsContainer) return;
-
         elements.jobListingsContainer.classList.add('loading-content');
         const spinner = document.createElement('div');
         spinner.className = 'loading-spinner';
@@ -129,15 +130,11 @@ document.addEventListener('DOMContentLoaded', () => {
             });
     };
 
-    // --- Job Card Interaction ---
     const toggleJobDetails = (jobCard) => {
         const details = jobCard.querySelector('.job-details');
         const summary = jobCard.querySelector('.job-summary');
         if (!details || !summary) return;
-
         const isCurrentlyCollapsed = details.style.display === 'none';
-
-        // Collapse all other cards
         document.querySelectorAll('.job-card.job-card-active').forEach(activeCard => {
             if (activeCard !== jobCard) {
                 activeCard.querySelector('.job-details').style.display = 'none';
@@ -145,8 +142,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 activeCard.classList.remove('job-card-active');
             }
         });
-
-        // Toggle the clicked card
         if (isCurrentlyCollapsed) {
             details.style.display = 'block';
             summary.style.display = 'none';
@@ -162,22 +157,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const logJobView = (jobId) => {
         if (!jobId) return;
-
-        // Increment view count via API
         fetch('increment_job_view.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ job_id: jobId })
         }).catch(console.error);
 
-        // Store in cookie for recommendations
         if (getCookie(config.cookieConsentName) === 'accepted') {
             let viewedIds = [];
             try {
                 viewedIds = JSON.parse(getCookie(config.viewedJobsCookieName) || '[]');
                 if (!Array.isArray(viewedIds)) viewedIds = [];
             } catch (e) { viewedIds = []; }
-
             viewedIds = [jobId, ...viewedIds.filter(id => id !== jobId)].slice(0, 10);
             setCookie(config.viewedJobsCookieName, JSON.stringify(viewedIds), 30);
         }
@@ -193,7 +184,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // --- Sidebar Counts ---
     const updateSidebarCounts = () => {
         const counts = {
             All: allJobs.length,
@@ -205,14 +195,12 @@ document.addEventListener('DOMContentLoaded', () => {
             Internship: allJobs.filter(j => j.type === 'internship').length,
             Developer: allJobs.filter(j => j.type === 'developer').length,
         };
-
         const now = Date.now();
         const day = 24 * 60 * 60 * 1000;
         const validDateJobs = allJobs.filter(j => j.posted_on_unix_ts > 0);
         counts['1'] = validDateJobs.filter(j => now - (j.posted_on_unix_ts * 1000) <= day).length;
         counts['7'] = validDateJobs.filter(j => now - (j.posted_on_unix_ts * 1000) <= 7 * day).length;
         counts['30'] = validDateJobs.filter(j => now - (j.posted_on_unix_ts * 1000) <= 30 * day).length;
-
         for (const key in counts) {
             document.querySelectorAll(`[data-count-id="count${key}"]`).forEach(el => el.innerText = counts[key]);
         }
@@ -224,18 +212,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const currentType = params.get('type') || '';
         const currentFilter = params.get('filter') || 'all';
         const isRecommendations = params.has('recommendations');
-
         document.querySelectorAll('.sidebar a, .mobile-filters a').forEach(link => {
             const linkUrl = new URL(link.href);
             const linkParams = linkUrl.searchParams;
             let isActive = false;
-
             if (linkParams.has('recommendations')) {
                 isActive = isRecommendations;
             } else if (!isRecommendations) {
                 const linkType = linkParams.get('type') || '';
                 const linkFilter = linkParams.get('filter') || 'all';
-                // A link is active if its primary filter matches the URL's, and other filters are compatible
                 if (linkType === currentType && linkFilter === currentFilter) {
                     isActive = true;
                 }
@@ -244,25 +229,20 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    /**
-     * ------------------------------------------------------------------------
-     *  MODAL & POPUP LOGIC
-     * ------------------------------------------------------------------------
-     */
-
-    // --- Auth Modal ---
+    // ------------------------------------------------------------------------
+    // MODAL & POPUP LOGIC
+    // ------------------------------------------------------------------------
     const openAuthModal = (view = 'login') => {
         if (!elements.authModal) return;
         elements.loginForm.reset();
         elements.registerForm.reset();
         document.querySelectorAll('.feedback-message').forEach(el => el.style.display = 'none');
-
         lockBackground();
         elements.authModal.querySelector('#authLoginView').style.display = (view === 'login') ? 'block' : 'none';
         elements.authModal.querySelector('#authRegisterView').style.display = (view === 'register') ? 'block' : 'none';
         elements.authModal.style.display = 'flex';
     };
-    window.openAuthModal = openAuthModal; // Make it globally accessible for inline onclick
+    window.openAuthModal = openAuthModal;
 
     const closeAuthModal = () => {
         if (elements.authModal) elements.authModal.style.display = 'none';
@@ -270,42 +250,32 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     window.closeAuthModal = closeAuthModal;
 
-    const showLoginView = (e) => { e.preventDefault(); openAuthModal('login'); };
-    window.showLoginView = showLoginView;
+    window.showLoginView = (e) => { e.preventDefault(); openAuthModal('login'); };
+    window.showRegisterView = (e) => { e.preventDefault(); openAuthModal('register'); };
 
-    const showRegisterView = (e) => { e.preventDefault(); openAuthModal('register'); };
-    window.showRegisterView = showRegisterView;
-
-    // --- Mobile Menu ---
     const openMobileMenu = () => {
         document.body.classList.add('mobile-nav-open');
-        lockBackground(); // Re-use existing function to prevent scrolling
+        lockBackground();
     };
-
     const closeMobileMenu = () => {
         document.body.classList.remove('mobile-nav-open');
-        unlockBackground(); // Re-use existing function
+        unlockBackground();
     };
-    window.closeMobileMenu = closeMobileMenu; // Make global for inline onclick in PHP
+    window.closeMobileMenu = closeMobileMenu;
 
-
-    // --- Share Modal ---
     const openShareModal = (jobId, title, company) => {
         if (!elements.shareModal) return;
         const jobTitleEl = elements.shareModal.querySelector('.share-modal-job-title');
         jobTitleEl.textContent = `${title} at ${company}`;
-
         const baseUrl = `${window.location.origin}${window.location.pathname}`;
         const jobUrl = `${baseUrl}?job_id=${encodeURIComponent(jobId)}`;
         const shareText = `Check out this job: ${title} at ${company}`;
         const encodedUrl = encodeURIComponent(jobUrl);
         const encodedText = encodeURIComponent(shareText);
-
         elements.shareModal.querySelector('#copyJobLinkButton').dataset.url = jobUrl;
         elements.shareModal.querySelector('#shareViaWhatsApp').href = `https://wa.me/?text=${encodedText}%20${encodedUrl}`;
         elements.shareModal.querySelector('#shareViaLinkedIn').href = `https://www.linkedin.com/shareArticle?mini=true&url=${encodedUrl}&title=${encodedText}`;
         elements.shareModal.querySelector('#shareViaEmail').href = `mailto:?subject=${encodedText}&body=${encodedText}%0A%0A${encodedUrl}`;
-
         lockBackground();
         elements.shareModal.style.display = 'flex';
     };
@@ -313,14 +283,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeShareModal = () => {
         if (elements.shareModal) {
             elements.shareModal.style.display = 'none';
-            // Also reset the feedback text
             const feedbackEl = elements.shareModal.querySelector('#copyLinkFeedback');
             if (feedbackEl) feedbackEl.textContent = '';
         }
         unlockBackground();
     };
 
-    // --- Caution & Report Modal ---
     const resetReportForm = () => {
         if (elements.reportFormContainer) elements.reportFormContainer.style.display = 'none';
         if (elements.reportIssueBtn) {
@@ -331,7 +299,6 @@ document.addEventListener('DOMContentLoaded', () => {
             elements.cautionUnderstoodBtn.textContent = 'Understood';
         }
         if (elements.reportForm) elements.reportForm.reset();
-
         if (elements.reportStatusMessage) {
             elements.reportStatusMessage.textContent = '';
             elements.reportStatusMessage.style.display = 'none';
@@ -392,7 +359,6 @@ document.addEventListener('DOMContentLoaded', () => {
             elements.reportStatusMessage.style.display = 'block';
             return;
         }
-
         const reportData = {
             job_id: state.currentJobIdForReport,
             reporter_name: document.getElementById('reportName')?.value.trim(),
@@ -400,11 +366,9 @@ document.addEventListener('DOMContentLoaded', () => {
             reason: reason,
             'g-recaptcha-response': grecaptcha.getResponse(state.reportRecaptchaId)
         };
-
         elements.reportStatusMessage.textContent = 'Submitting...';
         elements.reportStatusMessage.style.color = 'blue';
         elements.reportStatusMessage.style.display = 'block';
-
         fetch('report_job.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -445,7 +409,6 @@ document.addEventListener('DOMContentLoaded', () => {
     window.closeJoinChannelsPopup = closeJoinChannelsPopup;
     window.handleJoinChannelsClick = closeJoinChannelsPopup;
 
-    // --- Generic Modals ---
     window.openWModal = () => {
         document.getElementById('modal').style.display = 'flex';
         lockBackground();
@@ -455,23 +418,12 @@ document.addEventListener('DOMContentLoaded', () => {
         unlockBackground();
     };
 
-    /**
-     * ------------------------------------------------------------------------
-     *  EVENT LISTENERS & BINDINGS
-     * ------------------------------------------------------------------------
-     */
-
-    // --- Mobile Menu Listeners ---
-    if (elements.menuToggle) {
-        elements.menuToggle.addEventListener('click', openMobileMenu);
-    }
-    if (elements.closeMenuBtn) {
-        elements.closeMenuBtn.addEventListener('click', closeMobileMenu);
-    }
-    if (elements.mobileNavOverlay) {
-        elements.mobileNavOverlay.addEventListener('click', closeMobileMenu);
-    }
-
+    // ------------------------------------------------------------------------
+    // EVENT LISTENERS & BINDINGS
+    // ------------------------------------------------------------------------
+    if (elements.menuToggle) elements.menuToggle.addEventListener('click', openMobileMenu);
+    if (elements.closeMenuBtn) elements.closeMenuBtn.addEventListener('click', closeMobileMenu);
+    if (elements.mobileNavOverlay) elements.mobileNavOverlay.addEventListener('click', closeMobileMenu);
 
     // --- Feedback Form Logic ---
     const showFeedbackExtras = () => {
@@ -487,30 +439,19 @@ document.addEventListener('DOMContentLoaded', () => {
         const feedbackTextarea = elements.feedbackForm?.querySelector('textarea[name="message"]');
         const ratingInput = document.getElementById('feedbackRatingInput');
         const stars = document.querySelectorAll('#feedbackStarRating span');
-
-        // Reset form fields (name, email, message)
         if (elements.feedbackForm) elements.feedbackForm.reset();
-
-        // Hide containers
         if (starsContainer) starsContainer.style.display = 'none';
         if (recaptchaContainer) recaptchaContainer.style.display = 'none';
-
-        // Reset star rating visual and input value
         if (ratingInput) ratingInput.value = '0';
         stars.forEach(s => s.classList.remove('selected', 'hover'));
-
-        // Reset reCAPTCHA widget
         if (state.feedbackRecaptchaId !== null) {
             grecaptcha.reset(state.feedbackRecaptchaId);
         }
-
-        // Re-attach the listener to show extras on the next input
         if (feedbackTextarea) {
             feedbackTextarea.addEventListener('input', showFeedbackExtras, { once: true });
         }
     };
 
-    // Initial setup for feedback form interactivity
     const feedbackTextarea = elements.feedbackForm?.querySelector('textarea[name="message"]');
     if (feedbackTextarea) {
         feedbackTextarea.addEventListener('input', showFeedbackExtras, { once: true });
@@ -527,7 +468,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             star.addEventListener('mouseout', () => {
                 stars.forEach(s => s.classList.remove('hover'));
-                // Re-apply selected class based on currentRating
                 stars.forEach((s, i) => s.classList.toggle('selected', i < currentRating));
             });
             star.addEventListener('click', () => {
@@ -546,7 +486,6 @@ document.addEventListener('DOMContentLoaded', () => {
         // --- Job Card Interactions ---
         const jobCard = e.target.closest('.job-card');
         if (jobCard) {
-            // If the card is an ad, do not trigger job card interactions
             if (jobCard.classList.contains('ad-card')) {
                 return;
             }
@@ -554,7 +493,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const shareBtn = e.target.closest('.share-button');
             const applyBtn = e.target.closest('.apply-button');
             const cautionBtn = e.target.closest('.job-caution-alert');
+            const contactInfoContainer = e.target.closest('.show-email-addresses, .show-phone-numbers');
 
+            // If any of these buttons were clicked, handle and return
             if (shareBtn) {
                 e.stopPropagation();
                 const title = jobCard.querySelector('h3').firstChild.textContent.trim();
@@ -562,25 +503,85 @@ document.addEventListener('DOMContentLoaded', () => {
                 openShareModal(jobCard.dataset.jobId, title, company);
                 return;
             }
-
             if (applyBtn) {
                 e.stopPropagation();
                 if (applyBtn.dataset.authAction) {
                     openAuthModal(applyBtn.dataset.authAction);
-                } else {
-                    // Handle direct application logic
                 }
                 return;
             }
-
             if (cautionBtn) {
                 e.stopPropagation();
                 showCautionAlert(jobCard);
                 return;
             }
+            if (contactInfoContainer) {
+                // --- FIX: Robustly find the info span for both phone and email ---
+                const type = contactInfoContainer.classList.contains('show-phone-numbers') ? 'phone' : 'email';
+                let infoSpan = null;
+                // Try both next and previous siblings for robustness
+                if (type === 'phone') {
+                    infoSpan = contactInfoContainer.previousElementSibling;
+                    if (!infoSpan || !infoSpan.classList.contains('phone-numbers')) {
+                        infoSpan = contactInfoContainer.nextElementSibling;
+                    }
+                } else {
+                    infoSpan = contactInfoContainer.nextElementSibling;
+                    if (!infoSpan || !infoSpan.classList.contains('email-addresses')) {
+                        infoSpan = contactInfoContainer.previousElementSibling;
+                    }
+                }
+                const infoClass = type === 'phone' ? 'phone-numbers' : 'email-addresses';
+                if (infoSpan && infoSpan.classList.contains(infoClass)) {
+                    // Use the correct job object and info
+                    const jobId = jobCard.dataset.jobId;
+                    const job = allJobs.find(j => j.id == jobId);
+                    const contactInfo = job ? (job[type + 's'] || job[type]) : null;
+                    if (contactInfo) {
+                        infoSpan.innerHTML = contactInfo;
+                        infoSpan.style.display = 'inline';
+                        contactInfoContainer.style.display = 'none';
+                    } else {
+                        contactInfoContainer.textContent = 'Not available';
+                        contactInfoContainer.style.color = 'red';
+                        setTimeout(() => {
+                            contactInfoContainer.textContent = `🔒 Show ${type === 'phone' ? 'Numbers' : 'Emails'}`;
+                            contactInfoContainer.style.color = '';
+                        }, 2000);
+                    }
+                }
+                return;
+            }
 
-            // If no button was clicked, toggle details
+            // --- Default Job Card Click (Toggle Details) ---
             toggleJobDetails(jobCard);
+            return;
+        }
+
+        // --- Share Modal Close Button ---
+        if (e.target.matches('.share-modal-close-button')) {
+            closeShareModal();
+            return;
+        }
+
+        // --- Caution Modal Buttons (works anywhere in DOM) ---
+        if (e.target.matches('#cautionUnderstoodBtn')) {
+            e.preventDefault();
+            if (e.target.textContent.trim().toLowerCase() === 'cancel') {
+                resetReportForm();
+            } else {
+                closeCautionAlert();
+            }
+            return;
+        }
+        if (e.target.matches('#reportIssueBtn')) {
+            e.preventDefault();
+            if (e.target.textContent.trim().toLowerCase() === 'submit report') {
+                submitReport();
+            } else {
+                toggleReportForm();
+            }
+            return;
         }
 
         // --- Filter & Pagination Links ---
@@ -588,17 +589,16 @@ document.addEventListener('DOMContentLoaded', () => {
         if (navLink) {
             e.preventDefault();
             handleAjaxNavigation(navLink.href);
+            return;
         }
-
-        // --- Modal Close Buttons ---
-        // The close button for caution modal is removed from HTML, so no need to handle its click here.
 
         // --- Close Modal on Overlay Click ---
         if (e.target.matches('.modal, .share-modal-overlay')) {
-            if (e.target.id !== 'jobCautionModal') { // Caution modal has its own close logic
+            if (e.target.id !== 'jobCautionModal') {
                 e.target.style.display = 'none';
                 unlockBackground();
             }
+            return;
         }
 
         // --- Copy Link Button ---
@@ -614,23 +614,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 feedbackEl.style.color = 'red';
                 console.error('Failed to copy link:', err);
             });
-        }
-
-        // --- Share Modal Close Button ---
-        if (e.target.matches('.share-modal-close-button')) {
-            closeShareModal();
-        }
-
-        // --- Caution Modal Buttons ---
-        if (e.target.matches('#cautionUnderstoodBtn')) {
-            if (e.target.textContent === 'Cancel') {
-                resetReportForm();
-            } else {
-                closeCautionAlert();
-            }
-        }
-        if (e.target.matches('#reportIssueBtn')) {
-            e.target.textContent === 'Submit Report' ? submitReport() : toggleReportForm();
+            return;
         }
     });
 
@@ -655,7 +639,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const formData = new FormData(form);
             formData.append('ajax', '1');
             errorMessageEl.style.display = 'none';
-
             fetch('auth.php', { method: 'POST', body: formData })
                 .then(res => res.json())
                 .then(data => {
@@ -690,7 +673,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
             formData.append('g-recaptcha-response', recaptchaResponse);
-
             const responseBox = document.getElementById('responseMsg');
             fetch('feedback.php', { method: 'POST', body: formData })
                 .then(res => res.json())
@@ -701,7 +683,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (data.success) {
                         resetFeedbackForm();
                     } else {
-                        // On failure, just reset the captcha so the user can try again
                         grecaptcha.reset(state.feedbackRecaptchaId);
                     }
                     setTimeout(() => responseBox.style.display = 'none', 5000);
@@ -724,88 +705,14 @@ document.addEventListener('DOMContentLoaded', () => {
         if (elements.cookieBanner) elements.cookieBanner.style.display = 'none';
     });
 
-    /**
-     * ------------------------------------------------------------------------
-     *  INITIALIZATION
-     * ------------------------------------------------------------------------
-     */
+    // ------------------------------------------------------------------------
+    // INITIALIZATION
+    // ------------------------------------------------------------------------
     const init = () => {
         updateSidebarCounts();
         updateActiveFilterLinks(window.location.href);
         expandJobFromUrl();
         initJoinChannelsPopup();
     };
-
     init();
-
-    /**
-     * ------------------------------------------------------------------------
-     *  GLOBAL FUNCTIONS (for external scripts like reCAPTCHA)
-     * ------------------------------------------------------------------------
-     */
-    window.onloadRecaptchaCallback = () => {
-        const feedbackContainer = document.getElementById('feedbackRecaptchaContainer');
-        if (feedbackContainer && config.recaptchaSiteKey) {
-            state.feedbackRecaptchaId = grecaptcha.render(feedbackContainer, {
-                'sitekey': config.recaptchaSiteKey
-            });
-        }
-        const reportContainer = document.getElementById('reportRecaptchaContainer');
-        if (reportContainer && config.recaptchaSiteKey) {
-            state.reportRecaptchaId = grecaptcha.render(reportContainer, {
-                'sitekey': config.recaptchaSiteKey
-            });
-        }
-    };
 });
-
-/*
- * The following Three.js animation code has been removed as per the request.
- * If you wish to re-enable it, uncomment this block and the corresponding
- * HTML div and script import in index.php, and the call in main.js's init function.
- */
-/*
-
-    const initThreeJS = () => {
-        const container = document.getElementById('title-card-3d-background');
-        if (!container || !window.THREE) return;
-
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, container.offsetWidth / container.offsetHeight, 0.1, 1000);
-        camera.position.z = 30;
-
-        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-        renderer.setSize(container.offsetWidth, container.offsetHeight);
-        renderer.setPixelRatio(window.devicePixelRatio);
-        container.appendChild(renderer.domElement);
-
-        const geometry = new THREE.IcosahedronGeometry(10, 0);
-        const material = new THREE.MeshBasicMaterial({
-            color: 0x60a5fa,
-            wireframe: true,
-            transparent: true,
-            opacity: 0.5
-        });
-
-        const icosahedronMesh = new THREE.Mesh(geometry, material);
-        scene.add(icosahedronMesh);
-
-        const animate = () => {
-            requestAnimationFrame(animate);
-            icosahedronMesh.rotation.x += 0.001;
-            icosahedronMesh.rotation.y += 0.0015;
-            renderer.render(scene, camera);
-        };
-
-        const onResize = () => {
-            if (container && camera && renderer) {
-                camera.aspect = container.offsetWidth / container.offsetHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(container.offsetWidth, container.offsetHeight);
-            }
-        };
-
-        window.addEventListener('resize', onResize, false);
-        animate();
-    };
-*/

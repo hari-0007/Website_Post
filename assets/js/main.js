@@ -487,7 +487,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const jobCard = e.target.closest('.job-card');
         if (jobCard) {
             if (jobCard.classList.contains('ad-card')) {
-                return;
+
+               return;
             }
 
             const shareBtn = e.target.closest('.share-button');
@@ -538,9 +539,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     const job = allJobs.find(j => j.id == jobId);
                     const contactInfo = job ? (job[type + 's'] || job[type]) : null;
                     if (contactInfo) {
-                        infoSpan.innerHTML = contactInfo;
-                        infoSpan.style.display = 'inline';
-                        contactInfoContainer.style.display = 'none';
+                        // --- Show Fullscreen Ad Before Displaying Info ---
+                        showFullscreenAd(() => {
+                            // This callback executes *after* the ad is shown
+
+                            infoSpan.innerHTML = contactInfo;
+                            infoSpan.style.display = 'inline';
+                            infoSpan.innerHTML = infoSpan.innerHTML.replace(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/g, '<a href="mailto:$1">$1</a>').replace(/((\+?\d{2}-?)|0)?(\d{7,8})/g, '<a href="tel:$1$3">$1$3</a>');
+                            contactInfoContainer.style.display = 'none';
+                        });
                     } else {
                         contactInfoContainer.textContent = 'Not available';
                         contactInfoContainer.style.color = 'red';
@@ -549,20 +556,43 @@ document.addEventListener('DOMContentLoaded', () => {
                             contactInfoContainer.style.color = '';
                         }, 2000);
                     }
+
+
+
+                        /*infoSpan.innerHTML = contactInfo;
+                        infoSpan.style.display = 'inline';
+                        infoSpan.innerHTML = infoSpan.innerHTML.replace(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/g,'<a href="mailto:$1">$1</a>').replace(/((\+?\d{2}-?)|0)?(\d{7,8})/g,'<a href="tel:$1$3">$1$3</a>');
+                        contactInfoContainer.style.display = 'none';
+                    } else {
+                        contactInfoContainer.textContent = 'Not available';
+                        contactInfoContainer.style.color = 'red';
+                        setTimeout(() => {
+                            contactInfoContainer.textContent = `🔒 Show ${type === 'phone' ? 'Numbers' : 'Emails'}`;
+                            contactInfoContainer.style.color = '';
+                        }, 2000);
+                    }*/
                 }
                 return;
             }
 
-            // --- Default Job Card Click (Toggle Details) ---
-            toggleJobDetails(jobCard);
-            return;
+           // --- Default Job Card Click (Toggle Details) ---
+           const isTitleClick = e.target.closest('h3');
+           const isCompanyLocationClick = e.target.closest('.job-card-company-location');
+           const isSummaryClick = e.target.closest('.job-summary');
+
+           if (isTitleClick || isCompanyLocationClick || isSummaryClick) {
+                toggleJobDetails(jobCard);
+                e.preventDefault(); // Prevent default action if needed
+                return;
+            }
         }
 
         // --- Share Modal Close Button ---
         if (e.target.matches('.share-modal-close-button')) {
             closeShareModal();
             return;
-        }
+         }
+
 
         // --- Caution Modal Buttons (works anywhere in DOM) ---
         if (e.target.matches('#cautionUnderstoodBtn')) {
@@ -716,3 +746,12 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     init();
 });
+
+// --- Placeholder for AdSense Function ---
+function showFullscreenAd(callback) {
+    // **IMPORTANT:** Replace this placeholder with your actual
+    // AdSense integration code.  Make sure the ad display
+    // and the callback execution adhere to AdSense policies.
+    console.log('Showing fullscreen ad...');
+    setTimeout(callback, 2000); // Simulate ad display for 2 seconds
+}

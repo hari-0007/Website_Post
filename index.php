@@ -159,7 +159,7 @@ function render_job_listings_and_pagination($pagedJobs, $singleJobView, $totalPa
         <?php if ($isExpired): ?>
             <span class="blurred-text">support@jobhunt.top</span>
         <?php elseif (!$isExpired): ?>
-            <span class="show-email-addresses" style="cursor: pointer;">🔒 Show Emails</span><span class="email-addresses" style="display: none;" data-email=""></span>
+            <span class="show-email-addresses" style="cursor: pointer;">🔒 Show Emails</span><span class="email-addresses" style="display: none;"></span>
         <?php endif; ?>
         </p>
 

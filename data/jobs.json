@@ -15,7 +15,7 @@
         "posted_on": "2025-07-13 23:40:52",
         "posted_on_unix_ts": 1752430252,
         "posted_by_user_id": "suthan@jobhunt.top",
-        "total_views_count": 2,
+        "total_views_count": 24,
         "total_shares_count": 0
     },
     {
@@ -34,7 +34,7 @@
         "posted_on": "2025-07-13 23:40:08",
         "posted_on_unix_ts": 1752430208,
         "posted_by_user_id": "suthan@jobhunt.top",
-        "total_views_count": 0,
+        "total_views_count": 7,
         "total_shares_count": 0
     },
     {
@@ -53,7 +53,7 @@
         "posted_on": "2025-07-13 23:39:15",
         "posted_on_unix_ts": 1752430155,
         "posted_by_user_id": "suthan@jobhunt.top",
-        "total_views_count": 1,
+        "total_views_count": 9,
         "total_shares_count": 0
     },
     {
@@ -72,7 +72,7 @@
         "posted_on": "2025-07-13 23:37:29",
         "posted_on_unix_ts": 1752430049,
         "posted_by_user_id": "suthan@jobhunt.top",
-        "total_views_count": 1,
+        "total_views_count": 7,
         "total_shares_count": 0
     },
     {
@@ -129,7 +129,7 @@
         "posted_on": "2025-07-13 22:49:03",
         "posted_on_unix_ts": 1752427143,
         "posted_by_user_id": "suthan@jobhunt.top",
-        "total_views_count": 3,
+        "total_views_count": 4,
         "total_shares_count": 0
     },
     {
@@ -1750,7 +1750,7 @@
         "emails": "talent@peopleconnectshj.ae",
         "posted_by_user_id": "india_user_1",
         "vacant_positions": 1,
-        "total_views_count": 27,
+        "total_views_count": 28,
         "total_shares_count": 0
     },
     {
@@ -1804,7 +1804,7 @@
         "emails": "hr@financeexperts.ae",
         "posted_by_user_id": "india_admin_user",
         "vacant_positions": 2,
-        "total_views_count": 0,
+        "total_views_count": 3,
         "total_shares_count": 0
     },
     {
@@ -1822,7 +1822,7 @@
         "emails": "jobs@supportpro.ae",
         "posted_by_user_id": "me_admin_user",
         "vacant_positions": 5,
-        "total_views_count": 7,
+        "total_views_count": 8,
         "total_shares_count": 0
     },
     {
@@ -1840,7 +1840,7 @@
         "emails": "leadwithus@growthaccel.com",
         "posted_by_user_id": "super_admin_user",
         "vacant_positions": 1,
-        "total_views_count": 11,
+        "total_views_count": 12,
         "total_shares_count": 0
     },
     {
@@ -1858,7 +1858,7 @@
         "emails": "write@wordsmith.ae",
         "posted_by_user_id": "india_user_1",
         "vacant_positions": 2,
-        "total_views_count": 11,
+        "total_views_count": 12,
         "total_shares_count": 0
     }
 ]

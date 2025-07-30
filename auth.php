@@ -36,6 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header('Content-Type: application/json');
     }
 
+
     $users = readUsers($usersFilePath);
     $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
@@ -55,6 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             // Check if email already exists
             $emailExists = false;
+            console.log('Users array:', $users);
             foreach ($users as $user) {
                 if (isset($user['email']) && $user['email'] === $email) {
                     $emailExists = true;
@@ -68,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $newUser = [
                     'id' => 'user_' . time() . '_' . rand(1000, 9999),
                     'username' => htmlspecialchars($username),
-                    'email' => $email,
+                'email' => trim($email),
                     'password' => password_hash($password, PASSWORD_DEFAULT),
                     'role' => $role,
                     'created_at' => date('Y-m-d H:i:s')
@@ -81,6 +83,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['user_name'] = $newUser['username'];
                 $_SESSION['user_role'] = $newUser['role'];
 
+                console.log('Registration successful. Session:', $_SESSION);
                 if ($isAjax) {
                     echo json_encode(['success' => true]);
                     exit;
@@ -98,16 +101,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($isAjax) { echo json_encode(['success' => false, 'message' => $error]); exit; }
         } else {
             $foundUser = null;
+            console.log('Attempting login with email:', $email);
             foreach ($users as $user) {
                 if (isset($user['email']) && $user['email'] === $email) {
                     $foundUser = $user;
                     break;
+
                 }
             }
-            if ($foundUser && isset($foundUser['password']) && password_verify($password, $foundUser['password'])) {
+           if ($foundUser && isset($foundUser['password']) && password_verify($password, trim($foundUser['password']))) {
                 $_SESSION['user_id'] = $foundUser['id'];
                 $_SESSION['user_name'] = $foundUser['username'];
                 $_SESSION['user_role'] = $foundUser['role'];
+                console.log('Login successful. Session:', $_SESSION);
                 if ($isAjax) {
                     echo json_encode(['success' => true]);
                     exit;
@@ -123,6 +129,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
+```
+```diff
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -160,7 +168,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
         <div class="form-group">
             <label for="password">Password</label>
-            <input type="password" id="password" name="password" required>
+            <input type="password" id="password" name="password" autocomplete="current-password" required>
         </div>
         <button type="submit">Login</button>
     </form>
@@ -177,7 +185,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
         <div class="form-group">
             <label for="password">Password</label>
-            <input type="password" id="password" name="password" required>
+            <input type="password" id="password" name="password" autocomplete="new-password" required>
         </div>
         <div class="form-group">
             <label for="role">I am a...</label>

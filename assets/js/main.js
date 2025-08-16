@@ -118,6 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 history.pushState({}, '', url);
                 elements.jobListingsContainer.innerHTML = html;
                 updateActiveFilterLinks(url);
+                updateSidebarCounts();
                 elements.jobListingsContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             })
             .catch(error => {
@@ -739,7 +740,7 @@ document.addEventListener('DOMContentLoaded', () => {
         updateActiveFilterLinks(window.location.href);
         expandJobFromUrl();
         initJoinChannelsPopup();
+       
     };
     init();
 });
-

@@ -56,7 +56,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             // Check if email already exists
             $emailExists = false;
-            console.log('Users array:', $users);
             foreach ($users as $user) {
                 if (isset($user['email']) && $user['email'] === $email) {
                     $emailExists = true;
@@ -82,8 +81,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['user_id'] = $newUser['id'];
                 $_SESSION['user_name'] = $newUser['username'];
                 $_SESSION['user_role'] = $newUser['role'];
-
-                console.log('Registration successful. Session:', $_SESSION);
                 if ($isAjax) {
                     echo json_encode(['success' => true]);
                     exit;
@@ -101,7 +98,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($isAjax) { echo json_encode(['success' => false, 'message' => $error]); exit; }
         } else {
             $foundUser = null;
-            console.log('Attempting login with email:', $email);
             foreach ($users as $user) {
                 if (isset($user['email']) && $user['email'] === $email) {
                     $foundUser = $user;
@@ -113,7 +109,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['user_id'] = $foundUser['id'];
                 $_SESSION['user_name'] = $foundUser['username'];
                 $_SESSION['user_role'] = $foundUser['role'];
-                console.log('Login successful. Session:', $_SESSION);
                 if ($isAjax) {
                     echo json_encode(['success' => true]);
                     exit;

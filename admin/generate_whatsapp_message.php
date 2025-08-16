@@ -49,14 +49,20 @@ echo "🎯 *Daily UAE Job Update* 🇦🇪\n\n"; // Added UAE flag emoji
 echo "Total jobs posted in the last 24 hours: " . count($jobsLast24Hours) . "\n\n";
 
 foreach ($jobsLast24Hours as $job) {
-    // echo "➡ " . htmlspecialchars(string: $job['title'] ?? 'N/A') . (isset($job['company']) && !empty($job['company']) ? " at " . htmlspecialchars($job['company']) : "") . "\n";
-$title = htmlspecialchars($job['title'] ?? 'N/A');
+    $title = htmlspecialchars($job['title'] ?? 'N/A');
     $companyPart = "";
     if (isset($job['company']) && !empty($job['company'])) {
         $company = htmlspecialchars($job['company']);
         $companyPart = " at *" . $company . "*";
     }
     echo "➡ *" . $title . "*" . $companyPart . "\n";
+    // Place job URL below the job title
+    if (!empty($job['url'])) {
+        echo htmlspecialchars($job['url']) . "\n";
+    } elseif (!empty($job['id'])) {
+        // Fallback: build URL from job ID if url is missing
+        echo "www.jobhunt.top/index.php?job_id=" . urlencode($job['id']) . "\n\n";
+    }
 }
 
 echo "\nExplore all jobs on our website!\n";

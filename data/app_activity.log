@@ -3772,3 +3772,204 @@
 [2025-07-13 23:40:52] [JOB_POST_SUCCESS] Job ID '1752430252_7512' (Title: 'Network Engineer I') posted successfully by 'suthan@jobhunt.top'.
 [2025-07-13 23:40:52] [AI_IMAGE_WARNING] GD library not available. Cannot create placeholder image for job ID '1752430252_7512'.
 [2025-07-13 23:40:52] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-17 02:47:25] [AUTH_SUCCESS] User 'suthan@jobhunt.top' logged in successfully. Role: 'super_admin'.
+[2025-08-17 02:47:25] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-08-17 02:47:58] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-08-17 02:48:00] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-17 02:48:17] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer Ih': API Key is placeholder or empty.
+[2025-08-17 02:48:19] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Network Engineer Ih'.
+[2025-08-17 02:48:19] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer Ih') ready for review.
+[2025-08-17 02:48:19] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-17 02:48:26] [JOB_POST_SUCCESS] Job ID '1755379106_7220' (Title: 'Network Engineer Ih') posted successfully by 'suthan@jobhunt.top'.
+[2025-08-17 02:48:26] [AI_IMAGE_WARNING] GD library not available. Cannot create placeholder image for job ID '1755379106_7220'.
+[2025-08-17 02:48:26] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-17 02:52:13] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-17 02:52:24] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer Ihf': API Key is placeholder or empty.
+[2025-08-17 02:52:27] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Network Engineer Ihf'.
+[2025-08-17 02:52:27] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer Ihf') ready for review.
+[2025-08-17 02:52:27] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-17 02:52:30] [JOB_POST_SUCCESS] Job ID '1755379350_1941' (Title: 'Network Engineer Ihf') posted successfully by 'suthan@jobhunt.top'.
+[2025-08-17 02:52:30] [AI_IMAGE_WARNING] GD library not available. Cannot create placeholder image for job ID '1755379350_1941'.
+[2025-08-17 02:52:30] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-17 03:09:11] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer Ihfs': API Key is placeholder or empty.
+[2025-08-17 03:09:14] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Network Engineer Ihfs'.
+[2025-08-17 03:09:14] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer Ihfs') ready for review.
+[2025-08-17 03:09:14] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-17 03:09:18] [JOB_POST_SUCCESS] Job ID '1755380358_3044' (Title: 'Network Engineer Ihfs') posted successfully by 'suthan@jobhunt.top'.
+[2025-08-17 03:09:18] [AI_IMAGE_WARNING] GD library not available. Cannot create placeholder image for job ID '1755380358_3044'.
+[2025-08-17 03:09:18] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-17 03:16:29] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer Ihfa': API Key is placeholder or empty.
+[2025-08-17 03:16:32] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Network Engineer Ihfa'.
+[2025-08-17 03:16:32] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer Ihfa') ready for review.
+[2025-08-17 03:16:32] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-17 03:16:35] [JOB_POST_SUCCESS] Job ID '1755380795_1518' (Title: 'Network Engineer Ihfa') posted successfully by 'suthan@jobhunt.top'.
+[2025-08-17 03:16:35] [AI_IMAGE_WARNING] GD library not available. Cannot create placeholder image for job ID '1755380795_1518'.
+[2025-08-17 03:16:35] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-17 03:22:37] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-17 03:22:46] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer Ihfaf': API Key is placeholder or empty.
+[2025-08-17 03:22:50] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Network Engineer Ihfaf'.
+[2025-08-17 03:22:50] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer Ihfaf') ready for review.
+[2025-08-17 03:22:50] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-17 03:22:56] [JOB_POST_SUCCESS] Job ID '1755381176_9661' (Title: 'Network Engineer Ihfaf') posted successfully by 'suthan@jobhunt.top'.
+[2025-08-17 03:22:56] [AI_IMAGE_WARNING] GD library not available. Cannot create placeholder image for job ID '1755381176_9661'.
+[2025-08-17 03:22:56] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-17 03:24:53] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-17 03:25:06] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer Ihfafj': API Key is placeholder or empty.
+[2025-08-17 03:25:09] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Network Engineer Ihfafj'.
+[2025-08-17 03:25:09] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer Ihfafj') ready for review.
+[2025-08-17 03:25:09] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-17 03:25:11] [JOB_POST_SUCCESS] Job ID '1755381311_9707' (Title: 'Network Engineer Ihfafj') posted successfully by 'suthan@jobhunt.top'.
+[2025-08-17 03:25:11] [AI_IMAGE_WARNING] GD library not available. Cannot create placeholder image for job ID '1755381311_9707'.
+[2025-08-17 03:25:11] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-17 03:27:32] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-17 03:27:45] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer h': API Key is placeholder or empty.
+[2025-08-17 03:27:47] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Network Engineer h'.
+[2025-08-17 03:27:47] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer h') ready for review.
+[2025-08-17 03:27:48] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-17 03:27:53] [JOB_POST_SUCCESS] Job ID '1755381473_3934' (Title: 'Network Engineer h') posted successfully by 'suthan@jobhunt.top'.
+[2025-08-17 03:27:53] [AI_IMAGE_WARNING] GD library not available. Cannot create placeholder image for job ID '1755381473_3934'.
+[2025-08-17 03:27:53] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-17 03:32:22] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-17 03:32:39] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer hs': API Key is placeholder or empty.
+[2025-08-17 03:32:42] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Network Engineer hs'.
+[2025-08-17 03:32:42] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer hs') ready for review.
+[2025-08-17 03:32:42] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-17 03:32:45] [JOB_POST_SUCCESS] Job ID '1755381765_4912' (Title: 'Network Engineer hs') posted successfully by 'suthan@jobhunt.top'.
+[2025-08-17 03:32:45] [AI_IMAGE_WARNING] GD library not available. Cannot create placeholder image for job ID '1755381765_4912'.
+[2025-08-17 03:32:45] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-17 03:36:08] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-17 03:36:18] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer hsa': API Key is placeholder or empty.
+[2025-08-17 03:36:21] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Network Engineer hsa'.
+[2025-08-17 03:36:21] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer hsa') ready for review.
+[2025-08-17 03:36:21] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-17 03:36:22] [JOB_POST_SUCCESS] Job ID '1755381982_2973' (Title: 'Network Engineer hsa') posted successfully by 'suthan@jobhunt.top'.
+[2025-08-17 03:36:22] [AI_IMAGE_WARNING] GD library not available. Cannot create placeholder image for job ID '1755381982_2973'.
+[2025-08-17 03:36:22] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-17 03:38:43] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-17 03:38:53] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer hsaf': API Key is placeholder or empty.
+[2025-08-17 03:38:55] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Network Engineer hsaf'.
+[2025-08-17 03:38:55] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer hsaf') ready for review.
+[2025-08-17 03:38:55] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-17 03:38:57] [JOB_POST_SUCCESS] Job ID '1755382137_3157' (Title: 'Network Engineer hsaf') posted successfully by 'suthan@jobhunt.top'.
+[2025-08-17 03:38:57] [AI_IMAGE_WARNING] GD library not available. Cannot create placeholder image for job ID '1755382137_3157'.
+[2025-08-17 03:38:57] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-17 03:42:26] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-17 03:42:44] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer 01': API Key is placeholder or empty.
+[2025-08-17 03:42:47] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Network Engineer 01'.
+[2025-08-17 03:42:47] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer 01') ready for review.
+[2025-08-17 03:42:47] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-17 03:42:49] [JOB_POST_SUCCESS] Job ID '1755382369_6545' (Title: 'Network Engineer 01') posted successfully by 'suthan@jobhunt.top'.
+[2025-08-17 03:42:49] [AI_IMAGE_WARNING] GD library not available. Cannot create placeholder image for job ID '1755382369_6545'.
+[2025-08-17 03:42:49] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-17 03:44:53] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-17 03:45:00] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer 02': API Key is placeholder or empty.
+[2025-08-17 03:45:04] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Network Engineer 02'.
+[2025-08-17 03:45:04] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer 02') ready for review.
+[2025-08-17 03:45:04] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-17 03:45:06] [JOB_POST_SUCCESS] Job ID '1755382506_1656' (Title: 'Network Engineer 02') posted successfully by 'suthan@jobhunt.top'.
+[2025-08-17 03:45:06] [AI_IMAGE_WARNING] GD library not available. Cannot create placeholder image for job ID '1755382506_1656'.
+[2025-08-17 03:45:07] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-17 03:49:39] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-17 03:50:04] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer 03': API Key is placeholder or empty.
+[2025-08-17 03:50:07] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Network Engineer 03'.
+[2025-08-17 03:50:07] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer 03') ready for review.
+[2025-08-17 03:50:07] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-17 03:50:09] [JOB_POST_SUCCESS] Job ID '1755382809_1450' (Title: 'Network Engineer 03') posted successfully by 'suthan@jobhunt.top'.
+[2025-08-17 03:50:09] [AI_IMAGE_WARNING] GD library not available. Cannot create placeholder image for job ID '1755382809_1450'.
+[2025-08-17 03:50:09] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-17 03:57:39] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-17 03:57:52] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer 04': API Key is placeholder or empty.
+[2025-08-17 03:57:55] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Network Engineer 04'.
+[2025-08-17 03:57:55] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer 04') ready for review.
+[2025-08-17 03:57:55] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-17 03:57:57] [JOB_POST_SUCCESS] Job ID '1755383277_4982' (Title: 'Network Engineer 04') posted successfully by 'suthan@jobhunt.top'.
+[2025-08-17 03:57:57] [AI_IMAGE_WARNING] GD library not available. Cannot create placeholder image for job ID '1755383277_4982'.
+[2025-08-17 03:57:57] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-17 04:03:28] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-17 04:03:42] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer 05': API Key is placeholder or empty.
+[2025-08-17 04:03:45] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Network Engineer 05'.
+[2025-08-17 04:03:45] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer 05') ready for review.
+[2025-08-17 04:03:45] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-17 04:03:48] [JOB_POST_SUCCESS] Job ID '1755383628_7766' (Title: 'Network Engineer 05') posted successfully by 'suthan@jobhunt.top'.
+[2025-08-17 04:03:48] [AI_IMAGE_WARNING] GD library not available. Cannot create placeholder image for job ID '1755383628_7766'.
+[2025-08-17 04:03:48] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-17 04:05:26] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-17 04:05:42] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer 07': API Key is placeholder or empty.
+[2025-08-17 04:05:46] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Network Engineer 07'.
+[2025-08-17 04:05:46] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer 07') ready for review.
+[2025-08-17 04:05:46] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-17 04:05:48] [JOB_POST_SUCCESS] Job ID '1755383748_7646' (Title: 'Network Engineer 07') posted successfully by 'suthan@jobhunt.top'.
+[2025-08-17 04:05:48] [AI_IMAGE_WARNING] GD library not available. Cannot create placeholder image for job ID '1755383748_7646'.
+[2025-08-17 04:05:48] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-17 04:17:42] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-17 04:17:50] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer 06': API Key is placeholder or empty.
+[2025-08-17 04:17:52] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Network Engineer 06'.
+[2025-08-17 04:17:52] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer 06') ready for review.
+[2025-08-17 04:17:53] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-17 04:17:54] [JOB_POST_SUCCESS] Job ID '1755384474_8166' (Title: 'Network Engineer 06') posted successfully by 'suthan@jobhunt.top'.
+[2025-08-17 04:17:54] [AI_IMAGE_WARNING] GD library not available. Cannot create placeholder image for job ID '1755384474_8166'.
+[2025-08-17 04:17:55] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-17 04:19:45] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-17 04:20:06] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer 08': API Key is placeholder or empty.
+[2025-08-17 04:20:09] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Network Engineer 08'.
+[2025-08-17 04:20:09] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer 08') ready for review.
+[2025-08-17 04:20:09] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-17 04:20:11] [JOB_POST_SUCCESS] Job ID '1755384611_1232' (Title: 'Network Engineer 08') posted successfully by 'suthan@jobhunt.top'.
+[2025-08-17 04:20:11] [AI_IMAGE_WARNING] GD library not available. Cannot create placeholder image for job ID '1755384611_1232'.
+[2025-08-17 04:20:11] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-17 04:22:02] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-17 04:22:13] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer 09': API Key is placeholder or empty.
+[2025-08-17 04:22:16] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Network Engineer 09'.
+[2025-08-17 04:22:16] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer 09') ready for review.
+[2025-08-17 04:22:16] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-17 04:22:17] [JOB_POST_SUCCESS] Job ID '1755384737_4684' (Title: 'Network Engineer 09') posted successfully by 'suthan@jobhunt.top'.
+[2025-08-17 04:22:17] [AI_IMAGE_WARNING] GD library not available. Cannot create placeholder image for job ID '1755384737_4684'.
+[2025-08-17 04:22:17] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-17 04:28:30] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-17 04:28:46] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer 10': API Key is placeholder or empty.
+[2025-08-17 04:28:49] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Network Engineer 10'.
+[2025-08-17 04:28:49] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer 10') ready for review.
+[2025-08-17 04:28:50] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-17 04:28:51] [JOB_POST_SUCCESS] Job ID '1755385131_9038' (Title: 'Network Engineer 10') posted successfully by 'suthan@jobhunt.top'.
+[2025-08-17 04:28:51] [AI_IMAGE_WARNING] GD library not available. Cannot create placeholder image for job ID '1755385131_9038'.
+[2025-08-17 04:28:51] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-17 04:30:12] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-17 04:30:31] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer 1': API Key is placeholder or empty.
+[2025-08-17 04:30:33] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Network Engineer 1'.
+[2025-08-17 04:30:33] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer 1') ready for review.
+[2025-08-17 04:30:33] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-17 04:30:35] [JOB_POST_SUCCESS] Job ID '1755385235_5708' (Title: 'Network Engineer 1') posted successfully by 'suthan@jobhunt.top'.
+[2025-08-17 04:30:35] [AI_IMAGE_WARNING] GD library not available. Cannot create placeholder image for job ID '1755385235_5708'.
+[2025-08-17 04:30:35] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-17 04:33:52] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer 11': API Key is placeholder or empty.
+[2025-08-17 04:33:55] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Network Engineer 11'.
+[2025-08-17 04:33:55] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer 11') ready for review.
+[2025-08-17 04:33:55] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-17 04:33:57] [JOB_POST_SUCCESS] Job ID '1755385437_4027' (Title: 'Network Engineer 11') posted successfully by 'suthan@jobhunt.top'.
+[2025-08-17 04:33:57] [AI_IMAGE_WARNING] GD library not available. Cannot create placeholder image for job ID '1755385437_4027'.
+[2025-08-17 04:33:57] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-17 04:38:41] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'generate_message'.
+[2025-08-17 04:38:41] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'generate_message' view. WhatsApp generated: Yes. Telegram generated: Yes.
+[2025-08-17 04:39:04] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'generate_message'.
+[2025-08-17 04:39:04] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'generate_message' view. WhatsApp generated: Yes. Telegram generated: Yes.
+[2025-08-17 04:39:07] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'generate_message'.
+[2025-08-17 04:39:07] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'generate_message' view. WhatsApp generated: Yes. Telegram generated: Yes.
+[2025-08-17 04:39:08] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'generate_message'.
+[2025-08-17 04:39:08] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'generate_message' view. WhatsApp generated: Yes. Telegram generated: Yes.
+[2025-08-17 04:39:25] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'generate_message'.
+[2025-08-17 04:39:25] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'generate_message' view. WhatsApp generated: Yes. Telegram generated: Yes.
+[2025-08-17 04:39:31] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'messages'.
+[2025-08-17 04:39:31] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'messages' view.
+[2025-08-17 04:39:36] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'messages'.
+[2025-08-17 04:39:36] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'messages' view.
+[2025-08-17 04:39:37] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-08-17 04:39:38] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'generate_message'.
+[2025-08-17 04:39:38] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'generate_message' view. WhatsApp generated: Yes. Telegram generated: Yes.
+[2025-08-17 04:40:23] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'generate_message'.
+[2025-08-17 04:40:23] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'generate_message' view. WhatsApp generated: Yes. Telegram generated: Yes.
+[2025-08-17 04:40:58] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'generate_message'.
+[2025-08-17 04:40:58] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'generate_message' view. WhatsApp generated: Yes. Telegram generated: Yes.
+[2025-08-17 04:42:35] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'generate_message'.
+[2025-08-17 04:42:35] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'generate_message' view. WhatsApp generated: Yes. Telegram generated: Yes.
+[2025-08-17 04:45:04] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'generate_message'.
+[2025-08-17 04:45:04] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'generate_message' view. WhatsApp generated: Yes. Telegram generated: Yes.

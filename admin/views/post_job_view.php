@@ -311,6 +311,7 @@ $formActionValue = $isReviewMode ? "final_post" : "initial_post";
                 <option value="Hybrid" <?= (($formData['type'] ?? '') === 'Hybrid') ? 'selected' : '' ?>>Hybrid</option>
                 <option value="Onsite" <?= (($formData['type'] ?? '') === 'Onsite') ? 'selected' : '' ?>>Onsite</option>
                 <option value="Developer" <?= (($formData['type'] ?? '') === 'Developer') ? 'selected' : '' ?>>Developer</option>
+                <option value="Rotation" <?= (($formData['type'] ?? '') === 'Rotation') ? 'selected' : '' ?>>Rotation</option>
             </select>
         </div>
         
@@ -363,7 +364,8 @@ $formActionValue = $isReviewMode ? "final_post" : "initial_post";
     </form>
 </div>
 
-<?php if ($showSharePopup): ?>
+<?php // This closing PHP tag was missing, causing the syntax error.
+if ($showSharePopup): ?>
 <!-- Share Modal -->
 <div id="shareModal" class="modal">
     <div class="modal-content">
@@ -380,66 +382,59 @@ $formActionValue = $isReviewMode ? "final_post" : "initial_post";
                 <p><strong>Company:</strong> <?= htmlspecialchars($shareData['company']) ?></p>
             <?php endif; ?>
 
-            <?php if (!empty($shareData['vacancies'])): ?>
-                <p><strong>Vacancies:</strong> <?= htmlspecialchars($shareData['vacancies']) ?></p>
+            <?php if (!empty($shareData['location'])): ?>
+                <p><strong>Location:</strong> <?= htmlspecialchars($shareData['location']) ?></p>
             <?php endif; ?>
 
-            <?php if (!empty($shareData['experience'])): ?>
-                <p><strong>Experience:</strong> <?= htmlspecialchars($shareData['experience']) ?></p>
+            <?php if (!empty($shareData['type'])): ?>
+                <p><strong>Type:</strong> <?= htmlspecialchars($shareData['type']) ?></p>
             <?php endif; ?>
 
             <?php if (!empty($shareData['salary'])): ?>
                 <p><strong>Salary:</strong> <?= htmlspecialchars($shareData['salary']) ?></p>
             <?php endif; ?>
 
+            <?php if (!empty($shareData['vacancies'])): ?>
+                <p><strong>Vacancies:</strong> <?= htmlspecialchars($shareData['vacancies']) ?></p>
+            <?php endif; ?>
+
+
+            
             <?php if (!empty($shareData['url'])): ?>
                 <p><strong>Link:</strong> <a href="<?= htmlspecialchars($shareData['url']) ?>" target="_blank"><?= htmlspecialchars($shareData['url']) ?></a></p>
             <?php endif; ?>
          </div>
 
+        <div class="share-buttons"  style="color: green">
+            <button id="copy-share-link-btn" class="share-btn copy-link">Whatsapp</button>
+        </div>
         <div class="share-buttons">
-            <button id="copy-share-link-btn" class="share-btn copy-link">Copy Job Details</button>
+            <button id="copy-job-details-btn" class="share-btn copy-link">Telegram</button>
+        </div>
     </div>
 </div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // This script block is only rendered when a job is successfully posted.
     const modal = document.getElementById('shareModal');
     const closeBtn = document.querySelector('.close-button');
     const copyBtn = document.getElementById('copy-share-link-btn');
-
-    // PHP data safely injected into JavaScript
+    const copyBtn1 = document.getElementById('copy-job-details-btn');
     const jobData = <?= json_encode($shareData) ?>;
 
-    // Function to show the modal
-    const showModal = () => {
-        if (modal) modal.style.display = 'block';
-    };
-
-    // Function to hide the modal
-    const hideModal = () => {
-        if (modal) modal.style.display = 'none';
-    };
-
-    // Event listeners to close the modal
+    const showModal = () => { if (modal) modal.style.display = 'block'; };
+    const hideModal = () => { if (modal) modal.style.display = 'none'; };
     closeBtn.onclick = hideModal;
-    window.onclick = (event) => {
-        if (event.target == modal) {
-            hideModal();
-        }
-    };
+    window.onclick = (event) => { if (event.target == modal) hideModal(); };
 
-    // --- Copy Link Logic with Fallback ---
     function showCopyFeedback(button) {
         const originalText = button.textContent;
         button.textContent = 'Copied!';
-        button.style.backgroundColor = '#28a745'; // Success green
+        button.style.backgroundColor = '#28a745';
         button.disabled = true;
-
         setTimeout(() => {
             button.textContent = originalText;
-            button.style.backgroundColor = ''; // Revert to stylesheet color
+            button.style.backgroundColor = '';
             button.disabled = false;
         }, 2000);
     }
@@ -455,66 +450,87 @@ document.addEventListener('DOMContentLoaded', function() {
             document.execCommand('copy');
             showCopyFeedback(button);
         } catch (err) {
-            console.error('Fallback: Unable to copy', err);
             alert('Failed to copy link.');
         }
         document.body.removeChild(textArea);
     }
 
-    if (copyBtn) {
-        copyBtn.addEventListener('click', function() {
-            if (this.disabled) return;
+if (copyBtn) {
+    copyBtn.addEventListener('click', function() {
+        if (this.disabled) return;
 
-            // Construct the full job content string, omitting empty fields.
-            let jobContentToCopy = `✨ Job Opportunity! 📢\n\n`;
-            jobContentToCopy += `Title: ${jobData.title || 'N/A'}\n`;
+        // Build the job details string with all available fields
+        let jobContentToCopy = `✨ *Oil & Gas Project Job Opportunity* 📢\n\n`;
 
-            if (jobData.company && jobData.company.trim()) {
-                jobContentToCopy += `Company: ${jobData.company.trim()}\n`;
-            }
+        if (jobData.title) jobContentToCopy += `✨ *Title:* *${jobData.title}*\n`;
+        if (jobData.company) jobContentToCopy += `🏢 *Company:* *${jobData.company}*\n`;
+        if (jobData.salary) jobContentToCopy += `💰 *Salary:* *${jobData.salary}*\n`;
+        if (jobData.type) jobContentToCopy += `👷 *Type:* *${jobData.type}*\n`;
+        if (jobData.experience) jobContentToCopy += `🗓️ *Experience:* *${jobData.experience}* *year*\n`;
+        if (jobData.vacancies) jobContentToCopy += `➡ *Vacancies:* *${jobData.vacancies}* *no's*\n`;
 
-            // Extract experience and format for sharing, handling "other" and custom values
-            let sharedExperience = '';
-            if (jobData.experience && jobData.experience !== '0') {
-                if (jobData.experience === 'other' && jobData.custom_experience && jobData.custom_experience.trim()) {
-                    sharedExperience = jobData.custom_experience.trim();
-                } else {
-                    sharedExperience = jobData.experience; // Use the selected value directly (or it might need display text map)
-                    // You might need to expand this with a map if experience values (e.g., '1') 
-                    // don't directly match display text (e.g., '1 year').
-                }
-            }
+        // Show only the block between the first and second blank lines in the description
+        if (jobData.description) {
+            let blocks = jobData.description.split(/\n\s*\n/); // Split by blank lines
+            let summaryBlock = blocks.length > 1 ? blocks[1] : blocks[0]; // Get the second block if exists, else first
+            summaryBlock = summaryBlock.replace(/\*/g, '').trim(); // Remove asterisks and trim
+            jobContentToCopy += `📃 *Description:*\n\n ${summaryBlock}\n\n`;
+        }
 
-            if (sharedExperience) {
-                jobContentToCopy += `Experience: ${sharedExperience}\n`;
-            }
+        if (jobData.url) {
+            jobContentToCopy += `*Apply Here & More Info:* ${jobData.url}\n`;
+        }
 
-            if (jobData.salary && jobData.salary.trim()) {
-                jobContentToCopy += `Salary: ${jobData.salary.trim()}\n`;
-                jobContentToCopy += ``;
-            }
-
-            // if (jobData.description && jobData.description.trim()) {
-            //     jobContentToCopy += `*Description:*\n${jobData.description.trim()}\n\n`;
-            // }
-
-            jobContentToCopy += `\nApply Here & More Info:\n${(jobData.url.replace('http://', 'www.').replace('job_detail.php', 'index.php')) || '#'}`;
-
-            if (!navigator.clipboard) {
-                fallbackCopyTextToClipboard(jobContentToCopy, this);
-                return;
-            }
-            
-            navigator.clipboard.writeText(jobContentToCopy).then(() => {
-                showCopyFeedback(this);
-            }).catch(err => {
-                console.error('Async copy failed, trying fallback: ', err);
-                fallbackCopyTextToClipboard(jobContentToCopy, this);
-            });
+        if (!navigator.clipboard) {
+            fallbackCopyTextToClipboard(jobContentToCopy, this);
+            return;
+        }
+        navigator.clipboard.writeText(jobContentToCopy).then(() => {
+            showCopyFeedback(this);
+        }).catch(() => {
+            fallbackCopyTextToClipboard(jobContentToCopy, this);
         });
-    }
+    });
+}
 
-    // Show the modal automatically
+if (copyBtn1) {
+    copyBtn1.addEventListener('click', function() {
+        if (this.disabled) return;
+
+        // Build the job details string with all available fields
+        let jobContentToCopy = `✨ Oil & Gas Project Job Opportunity 📢\n\n`;
+
+        if (jobData.title) jobContentToCopy += `✨ Title: ${jobData.title}\n`;
+        if (jobData.company) jobContentToCopy += `🏢 Company: ${jobData.company}\n`;
+        if (jobData.salary) jobContentToCopy += `💰 Salary: ${jobData.salary}\n`;
+        if (jobData.type) jobContentToCopy += `👷 Type: ${jobData.type}\n`;
+        if (jobData.experience) jobContentToCopy += `🗓️ Experience: ${jobData.experience} year\n`;
+        if (jobData.vacancies) jobContentToCopy += `➡ Vacancies: ${jobData.vacancies} no's\n`;
+
+        // Show only the block between the first and second blank lines in the description
+        if (jobData.description) {
+            let blocks = jobData.description.split(/\n\s*\n/); // Split by blank lines
+            let summaryBlock = blocks.length > 1 ? blocks[1] : blocks[0]; // Get the second block if exists, else first
+            summaryBlock = summaryBlock.replace(/\*/g, '').trim(); // Remove asterisks and trim
+            jobContentToCopy += `📃 Description: ${summaryBlock}\n\n`;
+        }
+
+        if (jobData.url) {
+            jobContentToCopy += `Apply Here & More Info: ${jobData.url}\n`;
+        }
+
+        if (!navigator.clipboard) {
+            fallbackCopyTextToClipboard(jobContentToCopy, this);
+            return;
+        }
+        navigator.clipboard.writeText(jobContentToCopy).then(() => {
+            showCopyFeedback(this);
+        }).catch(() => {
+            fallbackCopyTextToClipboard(jobContentToCopy, this);
+        });
+    });
+}
+
     showModal();
 });
 </script>

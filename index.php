@@ -861,6 +861,7 @@ if ($isAjaxRequest) {
     
     <!-- Styles -->
     <link rel="stylesheet" href="assets/css/style.css">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5503439974043365" crossorigin="anonymous"></script>
 </head>
 <body>
 

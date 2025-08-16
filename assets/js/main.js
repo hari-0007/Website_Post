@@ -539,15 +539,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     const job = allJobs.find(j => j.id == jobId);
                     const contactInfo = job ? (job[type + 's'] || job[type]) : null;
                     if (contactInfo) {
-                        // --- Show Fullscreen Ad Before Displaying Info ---
-                        showFullscreenAd(() => {
-                            // This callback executes *after* the ad is shown
 
                             infoSpan.innerHTML = contactInfo;
                             infoSpan.style.display = 'inline';
                             infoSpan.innerHTML = infoSpan.innerHTML.replace(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/g, '<a href="mailto:$1">$1</a>').replace(/((\+?\d{2}-?)|0)?(\d{7,8})/g, '<a href="tel:$1$3">$1$3</a>');
                             contactInfoContainer.style.display = 'none';
-                        });
                     } else {
                         contactInfoContainer.textContent = 'Not available';
                         contactInfoContainer.style.color = 'red';
@@ -747,11 +743,3 @@ document.addEventListener('DOMContentLoaded', () => {
     init();
 });
 
-// --- Placeholder for AdSense Function ---
-function showFullscreenAd(callback) {
-    // **IMPORTANT:** Replace this placeholder with your actual
-    // AdSense integration code.  Make sure the ad display
-    // and the callback execution adhere to AdSense policies.
-    console.log('Showing fullscreen ad...');
-    setTimeout(callback, 2000); // Simulate ad display for 2 seconds
-}

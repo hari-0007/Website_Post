@@ -129,8 +129,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
-```
-```diff
+
 <!DOCTYPE html>
 <html lang="en">
 <head>

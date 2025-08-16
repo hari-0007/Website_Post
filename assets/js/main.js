@@ -185,27 +185,31 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    const updateSidebarCounts = () => {
-        const counts = {
-            All: allJobs.length,
-            Remote: allJobs.filter(j => j.type === 'remote').length,
-            Onsite: allJobs.filter(j => j.type === 'onsite').length,
-            Hybrid: allJobs.filter(j => j.type === 'hybrid').length,
-            FullTime: allJobs.filter(j => j.type === 'full time').length,
-            PartTime: allJobs.filter(j => j.type === 'part time').length,
-            Internship: allJobs.filter(j => j.type === 'internship').length,
-            Developer: allJobs.filter(j => j.type === 'developer').length,
-        };
-        const now = Date.now();
-        const day = 24 * 60 * 60 * 1000;
-        const validDateJobs = allJobs.filter(j => j.posted_on_unix_ts > 0);
-        counts['1'] = validDateJobs.filter(j => now - (j.posted_on_unix_ts * 1000) <= day).length;
-        counts['7'] = validDateJobs.filter(j => now - (j.posted_on_unix_ts * 1000) <= 7 * day).length;
-        counts['30'] = validDateJobs.filter(j => now - (j.posted_on_unix_ts * 1000) <= 30 * day).length;
-        for (const key in counts) {
-            document.querySelectorAll(`[data-count-id="count${key}"]`).forEach(el => el.innerText = counts[key]);
-        }
+const updateSidebarCounts = () => {
+    const counts = {
+        All: allJobs.length,
+        Remote: allJobs.filter(j => (j.type || '').toLowerCase() === 'remote').length,
+        Onsite: allJobs.filter(j => (j.type || '').toLowerCase() === 'onsite').length,
+        Hybrid: allJobs.filter(j => (j.type || '').toLowerCase() === 'hybrid').length,
+        FullTime: allJobs.filter(j => (j.type || '').toLowerCase() === 'full time').length,
+        PartTime: allJobs.filter(j => (j.type || '').toLowerCase() === 'part time').length,
+        Internship: allJobs.filter(j => (j.type || '').toLowerCase() === 'internship').length,
+        Developer: allJobs.filter(j => (j.type || '').toLowerCase() === 'developer').length,
+        Rotation: allJobs.filter(j => (j.type || '').toLowerCase() === 'rotation').length,
+        Short_Term: allJobs.filter(j => (j.type || '').toLowerCase() === 'short term').length,
     };
+    const now = Date.now();
+    const day = 24 * 60 * 60 * 1000;
+    const validDateJobs = allJobs.filter(j => j.posted_on_unix_ts > 0);
+    counts['1'] = validDateJobs.filter(j => now - (j.posted_on_unix_ts * 1000) <= day).length;
+    counts['7'] = validDateJobs.filter(j => now - (j.posted_on_unix_ts * 1000) <= 7 * day).length;
+    counts['30'] = validDateJobs.filter(j => now - (j.posted_on_unix_ts * 1000) <= 30 * day).length;
+    for (const key in counts) {
+        document.querySelectorAll(`[data-count-id="count${key}"]`).forEach(el => el.innerText = counts[key]);
+    }
+};
+
+// Make sure updateSidebarCounts() is called after every AJAX navigation and on page load
 
     const updateActiveFilterLinks = (urlString) => {
         const url = new URL(urlString, window.location.origin);

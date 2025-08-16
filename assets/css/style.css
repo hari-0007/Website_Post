@@ -1191,6 +1191,28 @@ body.mobile-nav-open .mobile-nav-overlay { display: block; }
         font-size: 1rem;
     }
 }
+/* Add this near your responsive styles */
+.join-channels-btn-group {
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 18px;
+}
+
+@media (max-width: 600px) {
+    .join-channels-btn-group {
+        flex-direction: column !important;
+        gap: 12px !important;
+    }
+    .join-channels-btn-group .join-whatsapp,
+    .join-channels-btn-group .join-telegram {
+        width: 100% !important;
+        text-align: center !important;
+        margin-left: 0 !important;
+        margin-top: 0 !important;
+    }
+}
 
 @media (max-width: 600px) {
     .button {

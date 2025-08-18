@@ -3973,3 +3973,32 @@
 [2025-08-17 04:42:35] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'generate_message' view. WhatsApp generated: Yes. Telegram generated: Yes.
 [2025-08-17 04:45:04] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'generate_message'.
 [2025-08-17 04:45:04] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'generate_message' view. WhatsApp generated: Yes. Telegram generated: Yes.
+[2025-08-18 12:33:14] [AUTH_SUCCESS] User 'suthan@jobhunt.top' logged in successfully. Role: 'super_admin'.
+[2025-08-18 12:33:15] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-08-18 12:33:19] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-08-18 12:33:23] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-18 12:33:38] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer 12': API Key is placeholder or empty.
+[2025-08-18 12:33:41] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Network Engineer 12'.
+[2025-08-18 12:33:41] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer 12') ready for review.
+[2025-08-18 12:33:41] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-18 12:33:45] [JOB_POST_SUCCESS] Job ID '1755500625_7973' (Title: 'Network Engineer 12') posted successfully by 'suthan@jobhunt.top'.
+[2025-08-18 12:33:45] [AI_IMAGE_WARNING] GD library not available. Cannot create placeholder image for job ID '1755500625_7973'.
+[2025-08-18 12:33:45] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-18 12:39:58] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-18 12:40:05] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer 13': API Key is placeholder or empty.
+[2025-08-18 12:40:08] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Network Engineer 13'.
+[2025-08-18 12:40:08] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer 13') ready for review.
+[2025-08-18 12:40:08] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-18 12:40:12] [JOB_POST_SUCCESS] Job ID '1755501012_5428' (Title: 'Network Engineer 13') posted successfully by 'suthan@jobhunt.top'.
+[2025-08-18 12:40:12] [AI_IMAGE_WARNING] GD library not available. Cannot create placeholder image for job ID '1755501012_5428'.
+[2025-08-18 12:40:12] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-18 12:46:15] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-18 12:46:26] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer 14': API Key is placeholder or empty.
+[2025-08-18 12:46:30] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Network Engineer 14'.
+[2025-08-18 12:46:30] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer 14') ready for review.
+[2025-08-18 12:46:30] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-18 12:46:32] [JOB_POST_SUCCESS] Job ID '1755501392_3900' (Title: 'Network Engineer 14') posted successfully by 'suthan@jobhunt.top'.
+[2025-08-18 12:46:32] [AI_IMAGE_WARNING] GD library not available. Cannot create placeholder image for job ID '1755501392_3900'.
+[2025-08-18 12:46:32] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-18 12:47:55] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'generate_message'.
+[2025-08-18 12:47:55] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'generate_message' view. WhatsApp generated: Yes. Telegram generated: Yes.

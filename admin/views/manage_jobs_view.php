@@ -101,12 +101,24 @@ $pagedJobs = array_slice($filteredJobs, $startIndex, $jobsPerPage);
                                     $detailsToCopy[] = "📍 Location: " . trim($job['location']);
                                 }
 
-                                $copyText = "📢 Job Opportunity! 📢\n\n";
-                                if (!empty($detailsToCopy)) {
-                                    $copyText .= implode("\n", $detailsToCopy) . "\n\n";
-                                }
-                                $copyText .= "🔗 Apply Now & More Details: \n" . $jobUrl;
-                            ?>
+                                $copyText = "✨ Job Opportunity 📢\n\n";
+    if (!empty($job['title'])) $copyText .= "✨ Title: " . trim($job['title']) . "\n";
+    if (!empty($job['company'])) $copyText .= "🏢 Company: " . trim($job['company']) . "\n";
+    if (!empty($job['salary'])) $copyText .= "💰 Salary: " . trim($job['salary']) . "\n";
+    if (!empty($job['experience'])) $copyText .= "🗓️ Experience: " . trim($job['experience']) . " year\n";
+    if (!empty($job['type'])) $copyText .= "👷 Type: " . trim($job['type']) . "\n";
+    if (!empty($job['vacant_positions'])) $copyText .= "➡ Vacancies: " . trim($job['vacant_positions']) . " no's\n";
+    // Description: show only the first block (up to first blank line)
+if (!empty($job['ai_summary'])) {
+    // Show only the summary block (between first and second blank lines) from AI summary
+    $blocks = preg_split('/\n\s*\n/', $job['ai_summary']);
+    $summaryBlock = (count($blocks) > 1) ? $blocks[1] : $blocks[0];
+    $summaryBlock = str_replace('*', '', $summaryBlock);
+    $copyText .= "📃 Description: " . trim($summaryBlock) . "\n\n";
+}
+
+    $copyText .= "Apply Here & More Info: " . $jobUrl . "\n";
+?>
                             <button class="button button-small button-secondary copy-job-details-btn" data-copy-text="<?= htmlspecialchars($copyText) ?>" title="Copy Job Details">📋</button>
                             <a href="dashboard.php?view=edit_job&id=<?= urlencode($job['id']) ?>" class="button button-small button-edit">Edit</a>
                             <a href="job_actions.php?action=delete_job&id=<?= urlencode($job['id']) ?>" class="button button-small button-danger" onclick="return confirm('Are you sure you want to delete this job? This action cannot be undone.')">Delete</a>

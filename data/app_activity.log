@@ -4002,3 +4002,20 @@
 [2025-08-18 12:46:32] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
 [2025-08-18 12:47:55] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'generate_message'.
 [2025-08-18 12:47:55] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'generate_message' view. WhatsApp generated: Yes. Telegram generated: Yes.
+[2025-08-18 13:02:33] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-18 13:02:49] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer 15': API Key is placeholder or empty.
+[2025-08-18 13:02:52] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Network Engineer 15'.
+[2025-08-18 13:02:52] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer 15') ready for review.
+[2025-08-18 13:02:52] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-18 13:02:56] [JOB_POST_SUCCESS] Job ID '1755502376_4811' (Title: 'Network Engineer 15') posted successfully by 'suthan@jobhunt.top'.
+[2025-08-18 13:02:56] [AI_IMAGE_WARNING] GD library not available. Cannot create placeholder image for job ID '1755502376_4811'.
+[2025-08-18 13:02:56] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-18 13:04:41] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-08-18 13:11:01] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-08-18 13:11:01] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-08-18 13:11:23] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'edit_job'.
+[2025-08-18 13:11:37] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-08-18 13:13:55] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-08-18 13:16:42] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'edit_job'.
+[2025-08-18 13:16:47] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-08-18 13:18:51] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.

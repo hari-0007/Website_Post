@@ -290,7 +290,6 @@ $formActionValue = $isReviewMode ? "final_post" : "initial_post";
             <label for="experience">Experience Level:</label>
             <select id="experience" name="experience" onchange="toggleCustomExperience(this)">
                 <option value="0" <?= (($formData['experience'] ?? '0') == '0') ? 'selected' : '' ?>>No Experience / Fresher</option>
-                <option value="internship" <?= (($formData['experience'] ?? '') === 'internship') ? 'selected' : '' ?>>Internship</option>
                 <?php for ($i = 1; $i <= 20; $i++): // Extended to 20 years ?>
                     <option value="<?= $i ?>" <?= (isset($formData['experience']) && $formData['experience'] == $i) ? 'selected' : '' ?>><?= $i ?> year<?= $i > 1 ? 's' : '' ?></option>
                 <?php endfor; ?>
@@ -460,7 +459,7 @@ if (copyBtn) {
         if (this.disabled) return;
 
         // Build the job details string with all available fields
-        let jobContentToCopy = `✨ *Oil & Gas Project Job Opportunity* 📢\n\n`;
+        let jobContentToCopy = `✨ *Job Opportunity* 📢\n\n`;
 
         if (jobData.title) jobContentToCopy += `✨ *Title:* *${jobData.title}*\n`;
         if (jobData.company) jobContentToCopy += `🏢 *Company:* *${jobData.company}*\n`;
@@ -498,7 +497,7 @@ if (copyBtn1) {
         if (this.disabled) return;
 
         // Build the job details string with all available fields
-        let jobContentToCopy = `✨ Oil & Gas Project Job Opportunity 📢\n\n`;
+        let jobContentToCopy = `✨ Job Opportunity 📢\n\n`;
 
         if (jobData.title) jobContentToCopy += `✨ Title: ${jobData.title}\n`;
         if (jobData.company) jobContentToCopy += `🏢 Company: ${jobData.company}\n`;

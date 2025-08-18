@@ -43,6 +43,7 @@ if(empty($displayData['id']) && isset($jobId)) {
         <option value="Hybrid" <?= (isset($displayData['type']) && $displayData['type'] === 'Hybrid') ? 'selected' : '' ?>>Hybrid</option>
         <option value="Onsite" <?= (isset($displayData['type']) && $displayData['type'] === 'Onsite') ? 'selected' : '' ?>>Onsite</option>
         <option value="Developer" <?= (isset($displayData['type']) && $displayData['type'] === 'Developer') ? 'selected' : '' ?>>Developer</option>
+        <option value="Rotation" <?= (isset($displayData['type']) && $displayData['type'] === 'Rotation') ? 'selected' : '' ?>>Rotation</option>
     </select>
 
     <label for="experience">Experience:</label>

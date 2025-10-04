@@ -1230,3 +1230,50 @@ body.mobile-nav-open .mobile-nav-overlay { display: block; }
         font-size: 13px;
     }
 }
+
+#multipleJobForm {
+    /* Ensure the flex container fills available height */
+    height: 80vh;
+    min-height: 500px;
+}
+#multipleJobForm > form > div[style*="display: flex"] {
+    height: 100%;
+}
+#multipleJobForm .extracted-data-container {
+    flex: 1;
+    background: #f7f7f7;
+    border: 1px solid #eee;
+    border-radius: 6px;
+    padding: 16px;
+    min-width: 220px;
+    max-width: 320px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+#ocr_full_text {
+    flex: 1;
+    max-height: none;
+    min-height: 220px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+    background: #f7f7f7;
+    border: none;
+    font-size: 0.95em;
+    color: #333;
+    width: 100%;
+    box-sizing: border-box;
+    display: block;
+}
+#multipleJobForm .right-form-container {
+    flex: 2;
+    max-height: 100%;
+    overflow-y: auto;
+    border: 1px solid #eee;
+    border-radius: 6px;
+    padding: 16px;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+}

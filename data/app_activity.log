@@ -4019,3 +4019,358 @@
 [2025-08-18 13:16:42] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'edit_job'.
 [2025-08-18 13:16:47] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
 [2025-08-18 13:18:51] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-08-19 02:18:09] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-08-19 02:18:13] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-19 02:24:44] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-19 02:33:47] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-19 02:45:24] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-19 02:45:44] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-19 02:46:13] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-19 02:46:14] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-19 02:46:14] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-19 02:47:21] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-19 02:47:22] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-19 02:47:22] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-19 02:48:54] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-19 02:52:08] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-19 02:55:54] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-19 02:59:20] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-19 03:04:04] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-19 03:04:26] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-19 03:07:05] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-19 03:08:47] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-19 03:12:44] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-19 03:13:08] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-19 03:15:35] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-19 03:19:10] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-19 03:19:58] [AUTH_SUCCESS] User 'suthan@jobhunt.top' logged in successfully. Role: 'super_admin'.
+[2025-08-19 03:19:58] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-08-19 03:20:02] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-08-19 03:20:04] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-19 03:22:17] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-19 03:24:41] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-19 03:30:19] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-19 03:32:25] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-08-19 03:32:28] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-19 03:33:13] [AUTH_SUCCESS] User 'suthan@jobhunt.top' logged in successfully. Role: 'super_admin'.
+[2025-08-19 03:33:13] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-08-19 03:33:20] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_users'.
+[2025-08-19 03:33:20] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'manage_users' view.
+[2025-08-19 03:33:23] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-08-19 03:33:24] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-19 03:40:29] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-19 03:42:40] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-19 03:45:32] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-19 03:50:27] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-19 03:53:11] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-19 03:55:25] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-19 03:58:18] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-19 04:23:18] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-19 04:25:18] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer 16': API Key is placeholder or empty.
+[2025-08-19 04:25:22] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Network Engineer 16'.
+[2025-08-19 04:25:22] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer 16') ready for review.
+[2025-08-19 04:25:22] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-19 04:25:40] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-19 04:25:41] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-19 04:25:44] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-19 04:25:49] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-19 04:26:04] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-19 04:56:26] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-19 04:57:02] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-23 19:32:49] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-23 19:33:02] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Hari 41a': API Key is placeholder or empty.
+[2025-08-23 19:33:02] [AI_SUMMARY_ERROR] AI summary generation FAILED for job 'Hari 41a'. API HTTP Code: 429. Response: {  "error": {    "code": 429,    "message": "Quota exceeded for quota metric 'Generate Content API requests per minute' and limit 'GenerateContent request limit per minute for a region' of service 'generativelanguage.googleapis.com' for consumer 'project_number:1037494597970'.",    "status": "RESOURCE_EXHAUSTED",    "details": [      {        "@type": "type.googleapis.com/google.rpc.ErrorInfo",        "reason": "RATE_LIMIT_EXCEEDED",        "domain": "googleapis.com",        "metadata": {          "quota_metric": "generativelanguage.googleapis.com/generate_content_requests",          "quota_location": "europe-west1",          "consumer": "projects/1037494597970",          "quota_limit_value": "0",          "quota_limit": "GenerateContentRequestsPerMinutePerProjectPerRegion",          "quota_unit": "1/min/{project}/{region}",          "service": "generativelanguage.googleapis.com"        }      },      {        "@type": "type.googleapis.com/google.rpc.Help",        "links": [          {            "description": "Request a higher quota limit.",            "url": "https://cloud.google.com/docs/quotas/help/request_increase"          }        ]      }    ]  }}
+[2025-08-23 19:33:02] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Hari 41a') ready for review.
+[2025-08-23 19:33:02] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-23 19:33:10] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-23 19:36:30] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-23 19:36:31] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-23 19:36:33] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-23 19:36:34] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Hari 41a': API Key is placeholder or empty.
+[2025-08-23 19:36:37] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Hari 41a'.
+[2025-08-23 19:36:37] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Hari 41a') ready for review.
+[2025-08-23 19:36:37] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-08-23 19:45:48] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-08-23 19:45:48] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-08-23 19:54:07] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-08-23 19:54:07] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-08-23 19:55:49] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-08-23 19:55:49] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-08-23 19:55:54] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-08-23 19:55:54] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-08-23 19:59:21] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-08-23 19:59:21] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-08-23 19:59:22] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-08-23 19:59:22] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-08-23 20:00:05] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-08-23 20:00:05] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-08-23 20:00:36] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-08-23 20:00:36] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-08-23 20:02:58] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-08-23 20:02:58] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-08-23 20:03:07] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-08-23 20:03:07] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-08-23 20:07:23] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-08-23 20:07:23] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-08-23 20:07:24] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-08-23 20:07:24] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-08-23 20:07:34] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-08-23 20:07:34] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-08-23 20:07:53] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-08-23 20:07:53] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-08-23 20:08:02] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-08-23 20:08:02] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-08-23 20:08:21] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-08-23 20:08:21] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-08-23 20:14:10] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-08-23 20:14:10] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-08-23 20:14:18] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-08-23 20:14:18] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-08-23 20:14:48] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-08-23 20:14:48] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-08-23 20:14:59] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-08-23 20:14:59] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-08-23 20:18:29] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-08-23 20:18:29] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-08-23 20:18:38] [AUTH_INFO] User 'suthan@jobhunt.top' logged out.
+[2025-08-23 20:18:42] [AUTH_SUCCESS] User 'suthan@jobhunt.top' logged in successfully. Role: 'super_admin'.
+[2025-08-23 20:18:42] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'dashboard_overview'.
+[2025-08-23 20:18:46] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-08-23 20:18:46] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-08-23 20:20:01] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-08-23 20:20:01] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-08-23 20:20:12] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-08-23 20:20:12] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-08-23 20:26:35] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'server_management'.
+[2025-08-23 20:26:35] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'server_management' view.
+[2025-08-23 20:31:52] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'messages'.
+[2025-08-23 20:31:52] [ACCESS_GRANTED] User 'suthan@jobhunt.top' accessed 'messages' view.
+[2025-09-01 23:47:57] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 00:59:14] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 01:04:21] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 01:10:30] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 01:10:47] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 01:14:27] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 01:15:53] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 01:16:02] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 01:16:38] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 01:17:02] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 01:18:43] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 01:25:37] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 01:30:54] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 01:32:18] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 01:32:36] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 01:32:38] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 01:32:42] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 01:37:00] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 01:37:45] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 01:38:13] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 01:41:21] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 01:42:42] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 01:42:43] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 01:59:34] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 01:59:58] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 02:02:00] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 02:02:27] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 02:04:45] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 02:08:16] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 02:09:10] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 02:09:43] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'nd,msa': API Key is placeholder or empty.
+[2025-09-29 02:09:45] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'nd,msa'.
+[2025-09-29 02:09:45] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'nd,msa') ready for review.
+[2025-09-29 02:09:45] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 02:11:36] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 02:14:20] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 02:14:52] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 02:17:28] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 02:17:38] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'nd,msa': API Key is placeholder or empty.
+[2025-09-29 02:17:42] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'nd,msa'.
+[2025-09-29 02:17:42] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'nd,msa') ready for review.
+[2025-09-29 02:17:42] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 02:21:00] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 02:21:03] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 02:22:40] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 02:23:11] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'nd,msa': API Key is placeholder or empty.
+[2025-09-29 02:23:14] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'nd,msa'.
+[2025-09-29 02:23:14] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'nd,msa') ready for review.
+[2025-09-29 02:23:14] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 02:23:22] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 02:23:34] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'nd,msa': API Key is placeholder or empty.
+[2025-09-29 02:23:38] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'nd,msa'.
+[2025-09-29 02:23:38] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'nd,msa') ready for review.
+[2025-09-29 02:23:38] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 02:27:37] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 02:27:40] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 02:27:44] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'nd,msa': API Key is placeholder or empty.
+[2025-09-29 02:27:46] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'nd,msa'.
+[2025-09-29 02:27:46] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'nd,msa') ready for review.
+[2025-09-29 02:27:46] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 02:27:48] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 02:27:49] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 02:27:56] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'nd,msa': API Key is placeholder or empty.
+[2025-09-29 02:28:00] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'nd,msa'.
+[2025-09-29 02:28:00] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'nd,msa') ready for review.
+[2025-09-29 02:28:00] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 02:28:04] [JOB_POST_SUCCESS] Job ID '1759093084_4117' (Title: 'nd,msa') posted successfully by 'suthan@jobhunt.top'.
+[2025-09-29 02:28:04] [AI_IMAGE_WARNING] GD library not available. Cannot create placeholder image for job ID '1759093084_4117'.
+[2025-09-29 02:28:04] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 02:28:24] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 02:28:32] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'nd,msag': API Key is placeholder or empty.
+[2025-09-29 02:28:34] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'nd,msag'.
+[2025-09-29 02:28:34] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'nd,msag') ready for review.
+[2025-09-29 02:28:34] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 02:30:41] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 02:30:47] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 02:30:49] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 02:31:02] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 02:31:17] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer 10': API Key is placeholder or empty.
+[2025-09-29 02:31:19] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Network Engineer 10'.
+[2025-09-29 02:31:19] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer 10') ready for review.
+[2025-09-29 02:31:19] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 02:56:50] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 02:56:51] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 02:56:53] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 02:57:05] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer 10gss': API Key is placeholder or empty.
+[2025-09-29 02:57:09] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Network Engineer 10gss'.
+[2025-09-29 02:57:09] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer 10gss') ready for review.
+[2025-09-29 02:57:09] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 03:23:00] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 03:23:02] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 03:23:05] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 03:23:42] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer 10gss': API Key is placeholder or empty.
+[2025-09-29 03:23:44] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Network Engineer 10gss'.
+[2025-09-29 03:23:44] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer 10gss') ready for review.
+[2025-09-29 03:23:44] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 03:27:46] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 03:28:20] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 03:28:24] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 03:28:35] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 03:31:33] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 03:31:35] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 03:31:46] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer 10gss': API Key is placeholder or empty.
+[2025-09-29 03:31:49] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Network Engineer 10gss'.
+[2025-09-29 03:31:49] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer 10gss') ready for review.
+[2025-09-29 03:31:49] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 03:36:01] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 03:37:54] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 03:38:02] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer 10gss': API Key is placeholder or empty.
+[2025-09-29 03:38:07] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Network Engineer 10gss'.
+[2025-09-29 03:38:07] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer 10gss') ready for review.
+[2025-09-29 03:38:07] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 03:40:06] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 03:40:08] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 03:40:10] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 03:43:16] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 03:45:03] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 03:45:45] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 03:45:51] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 03:45:56] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer 10': API Key is placeholder or empty.
+[2025-09-29 03:46:00] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Network Engineer 10'.
+[2025-09-29 03:46:00] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer 10') ready for review.
+[2025-09-29 03:46:00] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 03:46:33] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 03:46:40] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 03:50:46] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 03:50:48] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 03:52:55] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 03:56:38] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer 10': API Key is placeholder or empty.
+[2025-09-29 03:56:42] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Network Engineer 10'.
+[2025-09-29 03:56:42] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer 10') ready for review.
+[2025-09-29 03:56:42] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 04:04:07] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 04:04:09] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 04:04:10] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 04:04:12] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 04:04:29] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 04:04:56] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 04:05:12] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 04:05:32] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer 10': API Key is placeholder or empty.
+[2025-09-29 04:05:37] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Network Engineer 10'.
+[2025-09-29 04:05:37] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer 10') ready for review.
+[2025-09-29 04:05:37] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 04:06:05] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 04:06:07] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 04:06:09] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 04:06:18] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer 10': API Key is placeholder or empty.
+[2025-09-29 04:06:22] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Network Engineer 10'.
+[2025-09-29 04:06:22] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer 10') ready for review.
+[2025-09-29 04:06:22] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 04:06:38] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 04:06:50] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 04:06:52] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 04:06:56] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer 10': API Key is placeholder or empty.
+[2025-09-29 04:06:59] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Network Engineer 10'.
+[2025-09-29 04:06:59] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer 10') ready for review.
+[2025-09-29 04:06:59] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 04:07:11] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 04:07:36] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 04:07:38] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 04:07:47] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer 10': API Key is placeholder or empty.
+[2025-09-29 04:07:50] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Network Engineer 10'.
+[2025-09-29 04:07:50] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer 10') ready for review.
+[2025-09-29 04:07:50] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 04:12:28] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 04:12:46] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 04:12:51] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 04:12:59] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer 10': API Key is placeholder or empty.
+[2025-09-29 04:13:03] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Network Engineer 10'.
+[2025-09-29 04:13:03] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer 10') ready for review.
+[2025-09-29 04:13:03] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 04:17:34] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 04:17:51] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 04:18:27] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 04:19:00] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 04:19:09] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 04:19:22] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 04:19:56] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer 10': API Key is placeholder or empty.
+[2025-09-29 04:20:00] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Network Engineer 10'.
+[2025-09-29 04:20:00] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer 10') ready for review.
+[2025-09-29 04:20:00] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 04:20:06] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 04:20:08] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer 10': API Key is placeholder or empty.
+[2025-09-29 04:20:12] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Network Engineer 10'.
+[2025-09-29 04:20:12] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer 10') ready for review.
+[2025-09-29 04:20:12] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 04:20:27] [JOB_POST_SUCCESS] Job ID '1759099827_4753' (Title: 'Network Engineer 10') posted successfully by 'suthan@jobhunt.top'.
+[2025-09-29 04:20:27] [AI_IMAGE_WARNING] GD library not available. Cannot create placeholder image for job ID '1759099827_4753'.
+[2025-09-29 04:20:27] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 04:20:42] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-09-29 04:20:45] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 04:20:54] [JOB_POST_DUPLICATE] Duplicate job post attempt by 'suthan@jobhunt.top'. Title: 'Network Engineer 10'. Contacts: P-9789765026 E-s.ariharasuthan@gmail.com.
+[2025-09-29 04:20:54] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 04:20:57] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 04:21:00] [JOB_POST_DUPLICATE] Duplicate job post attempt by 'suthan@jobhunt.top'. Title: 'Network Engineer 10'. Contacts: P-9789765026 E-s.ariharasuthan@gmail.com.
+[2025-09-29 04:21:00] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 04:21:10] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer 10n': API Key is placeholder or empty.
+[2025-09-29 04:21:14] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Network Engineer 10n'.
+[2025-09-29 04:21:14] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer 10n') ready for review.
+[2025-09-29 04:21:14] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 04:21:21] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 04:21:25] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 04:21:31] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 04:21:32] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 04:21:32] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 04:21:33] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 04:21:34] [JOB_POST_SUCCESS] Job ID '1759099894_5922' (Title: 'Network Engineer 10n') posted successfully by 'suthan@jobhunt.top'.
+[2025-09-29 04:21:34] [AI_IMAGE_WARNING] GD library not available. Cannot create placeholder image for job ID '1759099894_5922'.
+[2025-09-29 04:21:34] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 04:22:26] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 04:22:34] [JOB_POST_DUPLICATE] Duplicate job post attempt by 'suthan@jobhunt.top'. Title: 'Network Engineer 10'. Contacts: P-97897650266 E-s.ariharasuthan@gmail.com.
+[2025-09-29 04:22:34] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 04:22:46] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer 10': API Key is placeholder or empty.
+[2025-09-29 04:22:49] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Network Engineer 10'.
+[2025-09-29 04:22:49] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer 10') ready for review.
+[2025-09-29 04:22:49] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 04:22:55] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 04:23:14] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 04:23:17] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 04:23:26] [AI_SUMMARY_SKIP] AI Summary generation skipped for job 'Network Engineer 10j': API Key is placeholder or empty.
+[2025-09-29 04:23:29] [AI_SUMMARY_SUCCESS] AI summary generated successfully for job 'Network Engineer 10j'.
+[2025-09-29 04:23:29] [JOB_POST_REVIEW_READY] Job post by 'suthan@jobhunt.top' (Title: 'Network Engineer 10j') ready for review.
+[2025-09-29 04:23:29] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 04:23:36] [JOB_POST_SUCCESS] Job ID '1759100016_1396' (Title: 'Network Engineer 10j') posted successfully by 'suthan@jobhunt.top'.
+[2025-09-29 04:23:36] [AI_IMAGE_WARNING] GD library not available. Cannot create placeholder image for job ID '1759100016_1396'.
+[2025-09-29 04:23:36] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 04:23:45] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'manage_jobs'.
+[2025-09-29 04:23:47] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.
+[2025-09-29 04:24:50] [ACCESS_ATTEMPT] User 'suthan@jobhunt.top' (Role: 'super_admin') attempting to access view: 'post_job'.

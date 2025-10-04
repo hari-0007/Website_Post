@@ -106,10 +106,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         error_log("[AI_SUMMARY_DEBUG] Attempting to generate AI summary. Description length: " . strlen($description) . ". Title: " . $title); // Log attempt
             try {
                 // IMPORTANT: Replace with your actual valid API key
-                $apiKey = 'AIzaSyCWoj7th8DArYw7PGf83JAVcYsXBJHFjAk'; // <<<<----- REPLACE THIS WITH YOUR REAL API KEY
+                $apiKey = 'AIzaSyA-HYjXGQbvwJBlkFFgsyE6nQTVCxQfK70'; // <<<<----- REPLACE THIS WITH YOUR REAL API KEY
                 
                 // Check if the API key is still the placeholder or the old example one
-                if ($apiKey === 'AIzaSyCWoj7th8DArYw7PGf83JAVcYsXBJHFjAk' || 
+                if ($apiKey === 'AIzaSyA-HYjXGQbvwJBlkFFgsyE6nQTVCxQfK70' || 
                     $apiKey === 'AIzaSyCWoj7th8DArYw7PGf83JAVcYsXBJHFjAk' || // Old placeholder check
                     empty($apiKey)) {
                     log_app_activity("AI Summary generation skipped for job '$title': API Key is placeholder or empty.", "AI_SUMMARY_SKIP");

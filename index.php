@@ -889,9 +889,9 @@ if ($isAjaxRequest) {
             <a href="https://whatsapp.com/channel/0029VbBMdgCI7BeBLRm1Au1I" target="_blank" class="social-link whatsapp">
                 <span class="social-icon">📱</span> WhatsApp
             </a>
-            <a href="https://t.me/uaejobprofessionals" target="_blank" class="social-link telegram">
+            <!-- <a href="https://t.me/uaejobprofessionals" target="_blank" class="social-link telegram">
                 <span class="social-icon">📢</span> Telegram
-            </a>
+            </a> -->
             <!-- You can add an Instagram link here if available -->
             <!-- <a href="#" target="_blank" class="social-link instagram"><span class="social-icon">📷</span> Instagram</a> -->
         </div>
@@ -1013,7 +1013,7 @@ if ($isAjaxRequest) {
             </div>
             <div class="footer-column">
                 <h4>Follow Channels</h4>
-                <a href="https://t.me/uaejobprofessionals" target="_blank">📢 Telegram</a>
+                <!-- <a href="https://t.me/uaejobprofessionals" target="_blank">📢 Telegram</a> -->
                 <a href="https://whatsapp.com/channel/0029VbBMdgCI7BeBLRm1Au1I" target="_blank">📱 WhatsApp</a>
             </div>
             <div class="footer-column">
@@ -1075,7 +1075,7 @@ if ($isAjaxRequest) {
         <p>Don't miss out on the latest job opportunities. Join our channels for daily updates:</p>
         <div class="join-channels-btn-group">
             <a href="https://whatsapp.com/channel/0029VbBMdgCI7BeBLRm1Au1I" target="_blank" class="join-now button join-whatsapp" onclick="handleJoinChannelsClick()">Join WhatsApp</a>
-            <a href="https://t.me/uaejobprofessionals" target="_blank" class="join-telegram button" onclick="handleJoinChannelsClick()">Join Telegram</a>
+            <!-- <a href="https://t.me/uaejobprofessionals" target="_blank" class="join-telegram button" onclick="handleJoinChannelsClick()">Join Telegram</a> -->
         </div>
     </div>
 </div>

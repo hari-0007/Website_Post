@@ -46,14 +46,36 @@ $formActionValue = $isReviewMode ? "final_post" : "initial_post";
         text-align: center; /* Center the main title for forms */
     }
     .post-job-container {
-        max-width: 700px; /* Wider for more content */
+        width: 100%; /* Expand to full width */
         margin: 20px auto;
         padding: 20px 25px;
+    
         background-color: var(--card-bg); /* Use theme variable */
         border-radius: var(--border-radius); /* Use theme variable */
         box-shadow: var(--box-shadow); /* Use theme variable for a more prominent shadow for forms */
     }
 
+       /* Styles for review mode popup */
+    .review-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0,0,0,0.6);
+    }
+
+    .review-modal-content {
+        background-color: #fefefe;
+        margin: 15% auto; /* Adjust as needed */
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%; /* Adjust as needed */
+        max-width: 600px; /* Adjust as needed */
+        border-radius: var(--border-radius);
+    }
     /* .post-job-container h3 is replaced by .view-main-title */
 
     .post-job-container p.form-description { /* This class is commented out in HTML, but styling it just in case */
@@ -124,6 +146,16 @@ $formActionValue = $isReviewMode ? "final_post" : "initial_post";
         border-radius: var(--border-radius); /* Use theme variable */
         background-color: var(--info-bg); /* Use theme info background for a subtle highlight */
     }
+
+    .form-group ai-summary-review-section {
+            margin-left: 10px;
+    }
+
+    .form-group1 {
+
+        display: flex;
+    }
+    
     .ai-summary-review-section label {
         color: var(--info-text); /* Use theme info text color */
         font-size: 1rem;
@@ -250,117 +282,335 @@ $formActionValue = $isReviewMode ? "final_post" : "initial_post";
         background-color: var(--primary-color);
         width: 100%; /* Make it a prominent, single button */
     }
+
+    /* New styles for multiple job form layout */
+    #multipleJobForm {
+        display: none;
+    }
+    .extracted-data-container {
+        flex: 1;
+        background: #f7f7f7;
+        border: 1px solid #eee;
+        border-radius: 6px;
+        padding: 16px;
+        min-width: 220px;
+        max-width: 320px;
+        overflow-y: auto;
+        height: 80vh;
+    }
+    .right-form-container {
+        flex: 2;
+        max-height: 80vh;
+        overflow-y: auto;
+        border: 1px solid #eee;
+        border-radius: 6px;
+        padding: 16px;
+        background: #fff;
+    }
 </style>
 
 <div class="post-job-container">
     <h2 class="view-main-title post-job-title"><?= htmlspecialchars($pageTitle) ?></h2>
-    <!-- <p class="form-description">
-        <?php if ($isReviewMode): ?>
-            Please review all details below, edit the AI-generated summary if needed, and then click "Confirm and Post Job".
-        <?php else: ?>
-            Fill in the details below. An AI summary will be generated for your review in the next step. Fields marked with <span class="required">*</span> are mandatory.
-        <?php endif; ?>
-    </p> -->
 
-    <form action="post_job.php" method="POST" id="postJobForm" class="styled-form">
-        <input type="hidden" name="action" value="<?= htmlspecialchars($formActionValue) ?>">
-        
-        <?php if (!$isReviewMode): // Only show these fields in initial entry mode ?>
-        <div class="form-group">
-            <label for="title">Job Title: <span class="required">*</span></label>
-            <input type="text" id="title" name="title" required value="<?= htmlspecialchars($formData['title'] ?? '') ?>">
-        </div>
-        
-        <div class="form-group">
-            <label for="company">Company Name:</label>
-            <input type="text" id="company" name="company" value="<?= htmlspecialchars($formData['company'] ?? '') ?>" placeholder="Optional">
-        </div>
-        
-        <div class="form-group">
-            <label for="location">Location:</label>
-            <input type="text" id="location" name="location" value="<?= htmlspecialchars($formData['location'] ?? '') ?>">
-        </div>
-        
-        <div class="form-group">
-            <label for="vacant_positions">Number of Vacant Positions:</label>
-            <input type="number" id="vacant_positions" name="vacant_positions" min="1" value="<?= htmlspecialchars($formData['vacant_positions'] ?? 1) ?>">
-        </div>
-        
-        <div class="form-group">
-            <label for="experience">Experience Level:</label>
-            <select id="experience" name="experience" onchange="toggleCustomExperience(this)">
-                <option value="0" <?= (($formData['experience'] ?? '0') == '0') ? 'selected' : '' ?>>No Experience / Fresher</option>
-                <?php for ($i = 1; $i <= 20; $i++): // Extended to 20 years ?>
-                    <option value="<?= $i ?>" <?= (isset($formData['experience']) && $formData['experience'] == $i) ? 'selected' : '' ?>><?= $i ?> year<?= $i > 1 ? 's' : '' ?></option>
-                <?php endfor; ?>
-                <option value="20+" <?= (isset($formData['experience']) && $formData['experience'] == '20+') ? 'selected' : '' ?>>20+ years</option>
-                <option value="other" <?= (isset($formData['experience']) && $formData['experience'] === 'other') ? 'selected' : '' ?>>Other (Specify)</option>
-            </select>
-            <input type="text" id="custom_experience" name="custom_experience" placeholder="Specify experience (e.g., 2-3 years, Project Management)" style="display:none; margin-top:10px;" value="<?= htmlspecialchars($formData['custom_experience'] ?? '') ?>">
-        </div>
-        
-        <div class="form-group">
-            <label for="type">Job Type:</label>
-            <select id="type" name="type">
-                <option value="Full Time" <?= (($formData['type'] ?? 'Full Time') === 'Full Time') ? 'selected' : '' ?>>Full Time</option>
-                <option value="Part Time" <?= (($formData['type'] ?? '') === 'Part Time') ? 'selected' : '' ?>>Part Time</option>
-                <option value="Contract" <?= (($formData['type'] ?? '') === 'Contract') ? 'selected' : '' ?>>Contract</option>
-                <option value="Internship" <?= (($formData['type'] ?? '') === 'Internship') ? 'selected' : '' ?>>Internship</option>
-                <option value="Remote" <?= (($formData['type'] ?? '') === 'Remote') ? 'selected' : '' ?>>Remote</option>
-                <option value="Hybrid" <?= (($formData['type'] ?? '') === 'Hybrid') ? 'selected' : '' ?>>Hybrid</option>
-                <option value="Onsite" <?= (($formData['type'] ?? '') === 'Onsite') ? 'selected' : '' ?>>Onsite</option>
-                <option value="Developer" <?= (($formData['type'] ?? '') === 'Developer') ? 'selected' : '' ?>>Developer</option>
-                <option value="Rotation" <?= (($formData['type'] ?? '') === 'Rotation') ? 'selected' : '' ?>>Rotation</option>
-            </select>
-        </div>
-        
-        <div class="form-group">
-            <label for="salary">Salary:</label>
-            <input type="text" id="salary" name="salary" value="<?= htmlspecialchars($formData['salary'] ?? '') ?>" placeholder="e.g., AED 5000 - 7000, or Negotiable">
-        </div>
-        
-        <div class="form-group">
-            <label for="phones">Contact Phone(s) (comma-separated): <span class="required">*</span></label>
-            <input type="text" id="phones" name="phones" value="<?= htmlspecialchars($formData['phones'] ?? '') ?>">
-        </div>
-        
-        <div class="form-group">
-            <label for="emails">Contact Email(s) (comma-separated): <span class="required">*</span></label>
-            <input type="text" id="emails" name="emails" value="<?= htmlspecialchars($formData['emails'] ?? '') ?>">
-        </div>       
-        <div class="form-group">
-            <label for="description">Key Responsibilities/Details: <span class="required">*</span></label>
-            <textarea id="description" name="description" rows="8" <?= $isReviewMode ? 'readonly' : '' ?>><?= htmlspecialchars($formData['description'] ?? '') ?></textarea>
-            <!-- <?php if ($isReviewMode): ?>
-                <small>Original description is locked during review. Edit the AI summary below.</small>
-            <?php endif; ?> -->
-        </div>
-        <?php else: // In Review Mode, we need to pass these values as hidden fields so they are submitted ?>
-            <input type="hidden" name="title" value="<?= htmlspecialchars($formData['title'] ?? '') ?>">
-            <input type="hidden" name="company" value="<?= htmlspecialchars($formData['company'] ?? '') ?>">
-            <input type="hidden" name="location" value="<?= htmlspecialchars($formData['location'] ?? '') ?>">
-            <input type="hidden" name="vacant_positions" value="<?= htmlspecialchars($formData['vacant_positions'] ?? 1) ?>">
-            <input type="hidden" name="experience" value="<?= htmlspecialchars($formData['experience'] ?? '0') ?>">
-            <?php if (isset($formData['experience']) && $formData['experience'] === 'other' && isset($formData['custom_experience'])): ?>
-                <input type="hidden" name="custom_experience" value="<?= htmlspecialchars($formData['custom_experience']) ?>">
-            <?php endif; ?>
-            <input type="hidden" name="type" value="<?= htmlspecialchars($formData['type'] ?? 'Full Time') ?>">
-            <input type="hidden" name="salary" value="<?= htmlspecialchars($formData['salary'] ?? '') ?>">
-            <input type="hidden" name="phones" value="<?= htmlspecialchars($formData['phones'] ?? '') ?>">
-            <input type="hidden" name="emails" value="<?= htmlspecialchars($formData['emails'] ?? '') ?>">
-            <input type="hidden" name="description" value="<?= htmlspecialchars($formData['description'] ?? '') ?>">
-        <?php endif; ?>
+    <!-- Job Type Selection Dropdown -->
+    <div class="form-group">
+        <label for="job_post_mode">Choose Posting Mode:</label>
+        <select id="job_post_mode" name="job_post_mode" onchange="toggleJobPostMode()">
+            <option value="single" selected>Single Job Title</option>
+            <option value="multiple">Multiple Job Title (Picture)</option>
+            <option value="multi_set">Multi-Set Job Title</option>
+        </select>
+    </div>
 
+    <!-- Single Job Title Form (default, existing form) -->
+    <div id="singleJobForm">
+        <form action="post_job.php" method="POST" id="postJobForm" class="styled-form">
+            <input type="hidden" name="action" value="<?= htmlspecialchars($formActionValue) ?>">
+            <div style="display: flex; gap: 24px; height: 80vh;">
+            
+            <?php if (!$isReviewMode): // Only show these fields in initial entry mode ?>
+             <!-- Left: Extracted Data -->
+             <div class="extracted-data-container">
+                    <h4 style="margin-top:0;">Extracted Data (from Image)</h4>
+                    <pre id="ocr_full_text"></pre>
+             </div>
+              <div  class="right-form-container">
+            <div class="form-group">
+                <label for="picture_upload">Upload Picture:</label>
+                <input type="file" id="picture_upload" name="picture_upload" accept="image/*">
+                <button type="button" class="button" id="extractOcrBtn">Extract & Preview</button>
 
-        <?php if ($isReviewMode): ?>
-            <div class="form-group ai-summary-review-section">
-                <label for="ai_summary">AI Generated Summary (Editable): <span class="required">*</span></label>
-                <textarea id="ai_summary" name="ai_summary" rows="10" required><?= htmlspecialchars($formData['ai_summary'] ?? '') ?></textarea>
             </div>
-        <?php endif; ?>
+            <div class="form-group">
+                <label for="title">Job Title: <span class="required">*</span></label>
+                <input type="text" id="title" name="title" required value="<?= htmlspecialchars($formData['title'] ?? '') ?>">
+            </div>
+            
+            <div class="form-group">
+                <label for="company">Company Name:</label>
+                <input type="text" id="company" name="company" value="<?= htmlspecialchars($formData['company'] ?? '') ?>" placeholder="Optional">
+            </div>
+            
+            <div class="form-group">
+                <label for="location">Location:</label>
+                <input type="text" id="location" name="location" value="<?= htmlspecialchars($formData['location'] ?? '') ?>">
+            </div>
+            
+            <div class="form-group">
+                <label for="vacant_positions">Number of Vacant Positions:</label>
+                <input type="number" id="vacant_positions" name="vacant_positions" min="1" value="<?= htmlspecialchars($formData['vacant_positions'] ?? 1) ?>">
+            </div>
+            
+            <div class="form-group">
+                <label for="experience">Experience Level:</label>
+                <select id="experience" name="experience" onchange="toggleCustomExperience(this)">
+                    <option value="0" <?= (($formData['experience'] ?? '0') == '0') ? 'selected' : '' ?>>No Experience / Fresher</option>
+                    <?php for ($i = 1; $i <= 20; $i++): // Extended to 20 years ?>
+                        <option value="<?= $i ?>" <?= (isset($formData['experience']) && $formData['experience'] == $i) ? 'selected' : '' ?>><?= $i ?> year<?= $i > 1 ? 's' : '' ?></option>
+                    <?php endfor; ?>
+                    <option value="20+" <?= (isset($formData['experience']) && $formData['experience'] == '20+') ? 'selected' : '' ?>>20+ years</option>
+                    <option value="other" <?= (isset($formData['experience']) && $formData['experience'] === 'other') ? 'selected' : '' ?>>Other (Specify)</option>
+                </select>
+                <input type="text" id="custom_experience" name="custom_experience" placeholder="Specify experience (e.g., 2-3 years, Project Management)" style="display:none; margin-top:10px;" value="<?= htmlspecialchars($formData['custom_experience'] ?? '') ?>">
+            </div>
+            
+            <div class="form-group">
+                <label for="type">Job Type:</label>
+                <select id="type" name="type">
+                    <option value="Full Time" <?= (($formData['type'] ?? 'Full Time') === 'Full Time') ? 'selected' : '' ?>>Full Time</option>
+                    <option value="Part Time" <?= (($formData['type'] ?? '') === 'Part Time') ? 'selected' : '' ?>>Part Time</option>
+                    <option value="Contract" <?= (($formData['type'] ?? '') === 'Contract') ? 'selected' : '' ?>>Contract</option>
+                    <option value="Internship" <?= (($formData['type'] ?? '') === 'Internship') ? 'selected' : '' ?>>Internship</option>
+                    <option value="Remote" <?= (($formData['type'] ?? '') === 'Remote') ? 'selected' : '' ?>>Remote</option>
+                    <option value="Hybrid" <?= (($formData['type'] ?? '') === 'Hybrid') ? 'selected' : '' ?>>Hybrid</option>
+                    <option value="Onsite" <?= (($formData['type'] ?? '') === 'Onsite') ? 'selected' : '' ?>>Onsite</option>
+                    <option value="Developer" <?= (($formData['type'] ?? '') === 'Developer') ? 'selected' : '' ?>>Developer</option>
+                    <option value="Rotation" <?= (($formData['type'] ?? '') === 'Rotation') ? 'selected' : '' ?>>Rotation</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="salary">Salary:</label>
+                <input type="text" id="salary" name="salary" value="<?= htmlspecialchars($formData['salary'] ?? '') ?>" placeholder="e.g., AED 5000 - 7000, or Negotiable">
+            </div>
+            
+            <div class="form-group">
+                <label for="phones">Contact Phone(s) (comma-separated): <span class="required">*</span></label>
+                <input type="text" id="phones" name="phones" value="<?= htmlspecialchars($formData['phones'] ?? '') ?>">
+            </div>
+            
+            <div class="form-group">
+                <label for="emails">Contact Email(s) (comma-separated): <span class="required">*</span></label>
+                <input type="text" id="emails" name="emails" value="<?= htmlspecialchars($formData['emails'] ?? '') ?>">
+            </div>       
+            <div class="form-group">
+                <label for="description">Key Responsibilities/Details: <span class="required">*</span></label>
+                <textarea id="description" name="description" rows="8" <?= $isReviewMode ? 'readonly' : '' ?>><?= htmlspecialchars($formData['description'] ?? '') ?></textarea>
+                <!-- <?php if ($isReviewMode): ?>
+                    <small>Original description is locked during review. Edit the AI summary below.</small>
+                <?php endif; ?> -->
+            </div>
+            <?php else: // In Review Mode, we need to pass these values as hidden fields so they are submitted ?>
+                <input type="hidden" name="title" value="<?= htmlspecialchars($formData['title'] ?? '') ?>">
+                <input type="hidden" name="company" value="<?= htmlspecialchars($formData['company'] ?? '') ?>">
+               <input type="hidden" name="location" value="<?= htmlspecialchars($formData['location'] ?? '') ?>">
+               <input type="hidden" name="vacant_positions" value="<?= htmlspecialchars($formData['vacant_positions'] ?? 1) ?>">
+               <input type="hidden" name="experience" value="<?= htmlspecialchars($formData['experience'] ?? '0') ?>">
+               <?php if (isset($formData['experience']) && $formData['experience'] === 'other' && isset($formData['custom_experience'])): ?>
+                    <input type="hidden" name="custom_experience" value="<?= htmlspecialchars($formData['custom_experience']) ?>">
+                <?php endif; ?>
+                <input type="hidden" name="type" value="<?= htmlspecialchars($formData['type'] ?? 'Full Time') ?>">
+                <input type="hidden" name="salary" value="<?= htmlspecialchars($formData['salary'] ?? '') ?>">
+                <input type="hidden" name="phones" value="<?= htmlspecialchars($formData['phones'] ?? '') ?>">
+                <input type="hidden" name="emails" value="<?= htmlspecialchars($formData['emails'] ?? '') ?>">
+                <input type="hidden" name="description" value="<?= htmlspecialchars($formData['description'] ?? '') ?>">
+            <?php endif; ?>
+
+
+            <?php if ($isReviewMode): ?>
+               <!-- <div class="form-group ai-summary-review-section"> -->
+                    <label for="ai_summary">AI Generated Summary (Editable): <span class="required">*</span></label>
+                    <textarea id="ai_summary" name="ai_summary" rows="10" required><?= htmlspecialchars($formData['ai_summary'] ?? '') ?></textarea>
+               </div>
+            <?php endif; ?>
         <?php if ($isReviewMode): ?><button type="button" id="regenerate-ai-summary-btn" class="button" style="margin-left: 10px;">Regenerate AI Summary</button><?php endif; ?>
         <button type="submit" class="button"><?= htmlspecialchars($submitButtonText) ?></button>
-    </form>
+        </form>
+    </div>
+
+    <!-- Multiple Job Title (Picture) Form (hidden by default) -->
+    <div id="multipleJobForm" style="display:none;">
+        <form action="post_job.php" method="POST" id="postMultipleJobForm" class="styled-form" enctype="multipart/form-data" onsubmit="return false;">
+            <div style="display: flex; gap: 24px; height: 80vh;">
+                <!-- Left: Extracted Data -->
+                <div class="extracted-data-container">
+                    <h4 style="margin-top:0;">Extracted Data (from Image)</h4>
+                    <pre id="ocr_full_text"></pre>
+                </div>
+                <!-- Right: Form -->
+                <div class="right-form-container">
+                    <div class="form-group">
+                        <label for="picture_upload">Upload Picture (required):</label>
+                        <input type="file" id="picture_upload" name="picture_upload" accept="image/*" required>
+                    </div>
+                    <div class="form-group">
+                        <button type="button" class="button" id="extractOcrBtn">Extract & Preview</button>
+                    </div>
+                    <!-- Company, Location, Project Type -->
+                    <div class="form-group">
+                        <label for="company_name">Company Name:</label>
+                        <input type="text" id="company_name" name="company_name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="job_location">Job Location:</label>
+                        <input type="text" id="job_location" name="job_location" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="project_type">Project Type:</label>
+                        <select id="project_type" name="project_type" required>
+                            <option value="Full Time">Full Time</option>
+                            <option value="Rotational">Rotational</option>
+                            <option value="Remote">Remote</option>
+                            <option value="Hybrid">Hybrid</option>
+                            <option value="Part Time">Part Time</option>
+                        </select>
+                    </div>
+                    <!-- Dynamic job sets -->
+                    <!-- REMOVE THIS BLOCK FROM THE RIGHT FORM CONTAINER -->
+                    <!--
+                    <div id="jobSetsContainerMultiple">
+                        <div class="job-set">
+                            <hr>
+                            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                                <div class="form-group" style="flex: 1;">
+                                    <label>Job Title:</label>
+                                    <input type="text" name="job_titles[]" required>
+                                </div>
+                                <div class="form-group" style="flex: 1;">
+                                    <label>Salary:</label>
+                                    <input type="text" name="salaries[]" required>
+                                </div>
+                                <div class="form-group" style="flex: 1;">
+                                    <label>Experience:</label>
+                                    <input type="text" name="experiences[]" required>
+                                </div>
+                                <div class="form-group" style="flex: 1;">
+                                    <label>Vacancy No's:</label>
+                                    <input type="number" name="vacancies[]" min="1" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Description:</label>
+                                <textarea name="descriptions[]" rows="4" required></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="button" id="addJobSetBtnMultiple" style="margin-bottom:15px;">➕ Add Another Job Set</button>
+                    -->
+                    <!-- Last set: Address, Phone, Email, Description -->
+                    <hr>
+                    <div class="form-group">
+                        <label for="address">Address:</label>
+                        <input type="text" id="address" name="address">
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone:</label>
+                        <input type="text" id="phone" name="phone">
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <input type="text" id="email" name="email">
+                    </div>
+                    <div class="form-group">
+                        <label for="final_description">Additional Description:</label>
+                        <textarea id="final_description" name="final_description" rows="4"></textarea>
+                    </div>
+                    <button type="button" class="button" id="generateSummaryBtnMultiple">Generate Summary</button>
+                    <div id="aiSummarySection" style="display:none;">
+                        <div class="form-group">
+                            <label for="ai_summary">AI Generated Summary (Editable):</label>
+                            <textarea id="ai_summary" name="ai_summary" rows="10"></textarea>
+                        </div>
+                        <button type="submit" class="button">Post Jobs</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Multi-Set Job Title Form (hidden by default) -->
+    <div id="multiSetJobForm" style="display:none;">
+        <form action="post_job.php" method="POST" id="multiSetJobPostForm" class="styled-form" enctype="multipart/form-data" onsubmit="return false;">
+            <input type="hidden" name="action" value="multi_set_post">
+            <!-- First set: Company, Location, Project Type -->
+            <div class="form-group">
+                <label for="company_name">Company Name:</label>
+                <input type="text" id="company_name" name="company_name" required>
+            </div>
+            <div class="form-group">
+                <label for="job_location">Job Location:</label>
+                <input type="text" id="job_location" name="job_location" required>
+            </div>
+            <div class="form-group">
+                <label for="project_type">Project Type:</label>
+                <select id="project_type" name="project_type" required>
+                    <option value="Full Time">Full Time</option>
+                    <option value="Rotational">Rotational</option>
+                    <option value="Remote">Remote</option>
+                    <option value="Hybrid">Hybrid</option>
+                    <option value="Part Time">Part Time</option>
+                </select>
+            </div>
+
+            <!-- Dynamic job sets -->
+            <div id="jobSetsContainer">
+                <div class="job-set">
+                    <hr>
+                    <div class="form-group">
+                        <label>Job Title:</label>
+                        <input type="text" name="job_titles[]" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Salary:</label>
+                        <input type="text" name="salaries[]" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Experience:</label>
+                        <input type="text" name="experiences[]" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Vacancy No's:</label>
+                        <input type="number" name="vacancies[]" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Description:</label>
+                        <textarea name="descriptions[]" rows="4" required></textarea>
+                    </div>
+                </div>
+            </div>
+            <button type="button" class="button" id="addJobSetBtn" style="margin-bottom:15px;">➕ Add Another Job Set</button>
+
+            <!-- Last set: Address, Phone, Email, Description -->
+            <hr>
+            <div class="form-group">
+                <label for="address">Address:</label>
+                <input type="text" id="address" name="address">
+            </div>
+            <div class="form-group">
+                <label for="phone">Phone:</label>
+                <input type="text" id="phone" name="phone">
+            </div>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="text" id="email" name="email">
+            </div>
+            <div class="form-group">
+                <label for="final_description">Additional Description:</label>
+                <textarea id="final_description" name="final_description" rows="4"></textarea>
+            </div>
+            <button type="button" class="button" id="generateSummaryBtn">Generate Summary</button>
+        </form>
+    </div>
 </div>
 
 <?php // This closing PHP tag was missing, causing the syntax error.
@@ -407,9 +657,9 @@ if ($showSharePopup): ?>
         <div class="share-buttons"  style="color: green">
             <button id="copy-share-link-btn" class="share-btn copy-link">Whatsapp</button>
         </div>
-        <div class="share-buttons">
+        <!-- <div class="share-buttons">
             <button id="copy-job-details-btn" class="share-btn copy-link">Telegram</button>
-        </div>
+        </div> -->
     </div>
 </div>
 
@@ -591,4 +841,298 @@ if (copyBtn1) {
             }
         });
     }
+
+    // Job posting mode toggle script
+    function toggleJobPostMode() {
+        var mode = document.getElementById('job_post_mode').value;
+        document.getElementById('singleJobForm').style.display = (mode === 'single') ? 'block' : 'none';
+        document.getElementById('multipleJobForm').style.display = (mode === 'multiple') ? 'block' : 'none';
+        document.getElementById('multiSetJobForm').style.display = (mode === 'multi_set') ? 'block' : 'none';
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        toggleJobPostMode();
+    });
+</script>
+
+
+
+<script>
+// filepath: c:\Users\Public\Job_Post\admin\views\post_job_view.php
+document.addEventListener('DOMContentLoaded', function() {
+    const extractOcrBtn = document.getElementById('extractOcrBtn');
+    if (extractOcrBtn) {
+        extractOcrBtn.onclick = async function() {
+            const fileInput = document.getElementById('picture_upload');
+            if (!fileInput.files.length) {
+                alert('Please upload an image file.');
+                return;
+            }
+            const file = fileInput.files[0];
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('apikey', '4ba7d84c7f88957'); // Replace with your OCR.Space API key
+
+            // OCR.Space API endpoint
+            const ocrUrl = 'https://api.ocr.space/parse/image';
+
+            this.disabled = true;
+            this.textContent = 'Extracting...';
+
+            try {
+                const response = await fetch(ocrUrl, {
+                    method: 'POST',
+                    body: formData
+                });
+                const result = await response.json();
+
+                // Check for OCR API errors
+                if (result.IsErroredOnProcessing) {
+                    alert('OCR API Error: ' + (result.ErrorMessage || 'Unknown error'));
+                    this.disabled = false;
+                    this.textContent = 'Extract & Preview';
+                    return;
+                }
+
+                let extractedText = '';
+                if (result.ParsedResults && result.ParsedResults.length > 0) {
+                    extractedText = result.ParsedResults[0].ParsedText;
+                }
+                if (!extractedText) {
+                    alert('No text found in image.');
+                    this.disabled = false;
+                    this.textContent = 'Extract & Preview';
+                    return;
+                }
+                document.getElementById('ocr_full_text').textContent = extractedText;
+                // Add extracted data to Additional Description field
+                document.getElementById('final_description').value = extractedText;
+            } catch (err) {
+                alert('OCR extraction failed: ' + err.message);
+            }
+            this.disabled = false;
+            this.textContent = 'Extract & Preview';
+        };
+    }
+
+    const confirmOcrBtn = document.getElementById('confirmOcrBtn');
+    if (confirmOcrBtn) {
+        confirmOcrBtn.onclick = async function() {
+            // Here you would call your AI summary generator API/backend
+            // For demo, just copy description to AI summary
+            const description = document.getElementById('ocr_description').value;
+            document.getElementById('ai_summary').value = description; // Replace with actual AI summary if available
+            document.getElementById('aiSummarySection').style.display = 'block';
+        };
+    }
+
+    const postMultipleJobForm = document.getElementById('postMultipleJobForm');
+    if (postMultipleJobForm) {
+        postMultipleJobForm.onsubmit = function() {
+            // Only allow submit after confirmation
+            if (document.getElementById('aiSummarySection').style.display !== 'block') {
+                alert('Please confirm and generate AI summary before posting.');
+                return false;
+            }
+            return true;
+        };
+    }
+});
+</script>
+
+<script>
+// filepath: c:\Users\Public\Job_Post\admin\views\post_job_view.php
+document.addEventListener('DOMContentLoaded', function() {
+    const extractOcrBtn = document.getElementById('extractOcrBtn');
+    if (extractOcrBtn) {
+        extractOcrBtn.onclick = async function() {
+            const fileInput = document.getElementById('picture_upload');
+            if (!fileInput.files.length) {
+                alert('Please upload an image file.');
+                return;
+            }
+            const file = fileInput.files[0];
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('apikey', '4ba7d84c7f88957'); // Replace with your OCR.Space API key
+
+            // OCR.Space API endpoint
+            const ocrUrl = 'https://api.ocr.space/parse/image';
+
+            this.disabled = true;
+            this.textContent = 'Extracting...';
+
+            try {
+                const response = await fetch(ocrUrl, {
+                    method: 'POST',
+                    body: formData
+                });
+                const result = await response.json();
+
+                // Check for OCR API errors
+                if (result.IsErroredOnProcessing) {
+                    alert('OCR API Error: ' + (result.ErrorMessage || 'Unknown error'));
+                    this.disabled = false;
+                    this.textContent = 'Extract & Preview';
+                    return;
+                }
+
+                let extractedText = '';
+                if (result.ParsedResults && result.ParsedResults.length > 0) {
+                    extractedText = result.ParsedResults[0].ParsedText;
+                }
+                if (!extractedText) {
+                    alert('No text found in image.');
+                    this.disabled = false;
+                    this.textContent = 'Extract & Preview';
+                    return;
+                }
+                document.getElementById('ocr_full_text').textContent = extractedText;
+                // Add extracted data to Additional Description field
+                document.getElementById('final_description').value = extractedText;
+            } catch (err) {
+                alert('OCR extraction failed: ' + err.message);
+            }
+            this.disabled = false;
+            this.textContent = 'Extract & Preview';
+        };
+    }
+
+    const confirmOcrBtn = document.getElementById('confirmOcrBtn');
+    if (confirmOcrBtn) {
+        confirmOcrBtn.onclick = async function() {
+            // Here you would call your AI summary generator API/backend
+            // For demo, just copy description to AI summary
+            const description = document.getElementById('ocr_description').value;
+            document.getElementById('ai_summary').value = description; // Replace with actual AI summary if available
+            document.getElementById('aiSummarySection').style.display = 'block';
+        };
+    }
+
+    const postMultipleJobForm = document.getElementById('postMultipleJobForm');
+    if (postMultipleJobForm) {
+        postMultipleJobForm.onsubmit = function() {
+            // Only allow submit after confirmation
+            if (document.getElementById('aiSummarySection').style.display !== 'block') {
+                alert('Please confirm and generate AI summary before posting.');
+                return false;
+            }
+            return true;
+        };
+    }
+});
+</script>
+
+<script>
+// filepath: c:\Users\Public\Job_Post\admin\views\post_job_view.php
+document.addEventListener('DOMContentLoaded', function() {
+    const extractOcrBtn = document.getElementById('extractOcrBtn');
+    if (extractOcrBtn) {
+        extractOcrBtn.onclick = async function() {
+            const fileInput = document.getElementById('picture_upload');
+            if (!fileInput.files.length) {
+                alert('Please upload an image file.');
+                return;
+            }
+            const file = fileInput.files[0];
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('apikey', '4ba7d84c7f88957'); // Replace with your OCR.Space API key
+
+            // OCR.Space API endpoint
+            const ocrUrl = 'https://api.ocr.space/parse/image';
+
+            this.disabled = true;
+            this.textContent = 'Extracting...';
+
+            try {
+                const response = await fetch(ocrUrl, {
+                    method: 'POST',
+                    body: formData
+                });
+                const result = await response.json();
+
+                // Check for OCR API errors
+                if (result.IsErroredOnProcessing) {
+                    alert('OCR API Error: ' + (result.ErrorMessage || 'Unknown error'));
+                    this.disabled = false;
+                    this.textContent = 'Extract & Preview';
+                    return;
+                }
+
+                let extractedText = '';
+                if (result.ParsedResults && result.ParsedResults.length > 0) {
+                    extractedText = result.ParsedResults[0].ParsedText;
+                }
+                if (!extractedText) {
+                    alert('No text found in image.');
+                    this.disabled = false;
+                    this.textContent = 'Extract & Preview';
+                    return;
+                }
+                document.getElementById('ocr_full_text').textContent = extractedText;
+                // Add extracted data to Additional Description field
+                document.getElementById('final_description').value = extractedText;
+            } catch (err) {
+                alert('OCR extraction failed: ' + err.message);
+            }
+            this.disabled = false;
+            this.textContent = 'Extract & Preview';
+        };
+    }
+
+    const confirmOcrBtn = document.getElementById('confirmOcrBtn');
+    if (confirmOcrBtn) {
+        confirmOcrBtn.onclick = async function() {
+            // Here you would call your AI summary generator API/backend
+            // For demo, just copy description to AI summary
+            const description = document.getElementById('ocr_description').value;
+            document.getElementById('ai_summary').value = description; // Replace with actual AI summary if available
+            document.getElementById('aiSummarySection').style.display = 'block';
+        };
+    }
+
+    const postMultipleJobForm = document.getElementById('postMultipleJobForm');
+    if (postMultipleJobForm) {
+        postMultipleJobForm.onsubmit = function() {
+            // Only allow submit after confirmation
+            if (document.getElementById('aiSummarySection').style.display !== 'block') {
+                alert('Please confirm and generate AI summary before posting.');
+                return false;
+            }
+            return true;
+        };
+    }
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const generateSummaryBtnMultiple = document.getElementById('generateSummaryBtnMultiple');
+    if (generateSummaryBtnMultiple) {
+        generateSummaryBtnMultiple.addEventListener('click', function() {
+            // Collect all input values
+            const company = document.getElementById('company_name') ? document.getElementById('company_name').value : '';
+            const location = document.getElementById('job_location') ? document.getElementById('job_location').value : '';
+            const projectType = document.getElementById('project_type') ? document.getElementById('project_type').value : '';
+            const address = document.getElementById('address') ? document.getElementById('address').value : '';
+            const phone = document.getElementById('phone') ? document.getElementById('phone').value : '';
+            const email = document.getElementById('email') ? document.getElementById('email').value : '';
+            const additionalDesc = document.getElementById('final_description') ? document.getElementById('final_description').value : '';
+
+            // Build summary text
+            let summary = `Company: ${company}\nLocation: ${location}\nProject Type: ${projectType}\nAddress: ${address}\nPhone: ${phone}\nEmail: ${email}\nAdditional Description: ${additionalDesc}`;
+
+            // Show summary in AI summary textarea and section
+            const aiSummary = document.getElementById('ai_summary');
+            const aiSummarySection = document.getElementById('aiSummarySection');
+            if (aiSummary && aiSummarySection) {
+                aiSummary.value = summary;
+                aiSummarySection.style.display = 'block';
+            }
+        });
+    }
+});
+
+
 </script>

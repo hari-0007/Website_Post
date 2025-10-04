@@ -134,7 +134,76 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
     </div>
 
+    <div class="dashboard-section">
+        <h4 class="section-title">API Management</h4>
+        <p>Add and manage multiple APIs.</p>
+
+        <div id="apiList">
+            <!-- API entries will be dynamically added here -->
+        </div>
+
+        <button type="button" class="button primary" id="addApiButton">Add API</button>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const addApiButton = document.getElementById('addApiButton');
+                const apiList = document.getElementById('apiList');
+
+                if (addApiButton && apiList) {
+                    addApiButton.addEventListener('click', function() {
+                        const apiEntry = document.createElement('div');
+                        apiEntry.classList.add('api-entry');
+                        apiEntry.innerHTML = `
+                            <div class="form-group">
+                                <label>API Name:</label>
+                                <input type="text" name="api_name[]" required>
+                            </div>
+                            <div class="form-group">
+                                <label>API URL:</label>
+                                <input type="url" name="api_url[]" required>
+                            </div>
+                            <div class="form-group">
+                                <label>API Key:</label>
+                                <input type="text" name="api_key[]">
+                            </div>
+                            <button type="button" class="button button-danger removeApiButton">Remove</button>
+                            <hr>
+                        `;
+
+                        apiList.appendChild(apiEntry);
+
+                        // Add event listener to the remove button
+                        const removeButton = apiEntry.querySelector('.removeApiButton');
+                        removeButton.addEventListener('click', function() {
+                            apiEntry.remove();
+                        });
+                    });
+
+                    // Load existing APIs from server_conf.json (if any) - Placeholder
+                    // This is where you'd add the code to fetch and display existing APIs
+                    // For example:
+                    // fetch('server_actions.php?action=get_api_configs')
+                    //     .then(response => response.json())
+                    //     .then(data => {
+                    //         data.forEach(api => { /* code to create and populate apiEntry */ });
+                    //     });
+
+                    // Implement save functionality on a separate button or on form submission
+                    // Collect all the API data from the DOM and send it to server_actions.php
+                }
+            });
+        </script>
+
+        <form action="server_actions.php" method="POST">
+            <input type="hidden" name="action" value="save_api_configs">
+            <button type="submit" class="button primary">Save API Configurations</button>
+        </form>
+    </div>
+
 </div> <!-- This closes div.dashboard-content.server-management-content -->
+
+
+
 <style>
     .view-main-title { /* Consistent main title for views */
         margin-top: 0;
@@ -210,4 +279,5 @@ document.addEventListener('DOMContentLoaded', function() {
         /* Inherits global button styles */
         margin-top: 10px; /* Add some space if it's the last element in a form group */
     }
+</style>
 </style>

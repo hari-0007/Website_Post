@@ -1,6 +1,7 @@
 <?php
 // admin/server_actions.php - Handles Server Management Actions
 
+
 session_start();
 
 require_once __DIR__ . '/includes/config.php'; // For log_app_activity and file paths
@@ -12,17 +13,62 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
     exit;
 }
 
+$action = $_POST['action'] ?? $_GET['action'] ?? null;
 $loggedInUserRole = $_SESSION['admin_role'] ?? 'user';
 $loggedInUsername = $_SESSION['admin_username'] ?? 'UnknownUser';
 
-if (!($loggedInUserRole === 'super_admin' || in_array($loggedInUserRole, $allRegionalAdminRoles ?? []))) {
+if (!($loggedInUserRole === 'super_admin' || ($loggedInUserRole === 'regional_admin'))) {
     log_app_activity("User '$loggedInUsername' (Role: '$loggedInUserRole') attempted unauthorized server action.", "SECURITY_WARNING");
-    $_SESSION['admin_status'] = ['message' => 'You do not have permission to perform this action.', 'type' => 'error'];
     header('Location: dashboard.php?view=dashboard_overview');
     exit;
 }
 
-$action = $_POST['action'] ?? $_GET['action'] ?? null;
+   if ($action === 'save_api_configs') {
+        $apiConfigs = $_POST['api_name'] ?? [];
+        $apiUrls = $_POST['api_url'] ?? [];
+        $apiKeys = $_POST['api_key'] ?? [];
+    
+        $numApis = count($apiConfigs);
+        $apis = [];
+    
+        for ($i = 0; $i < $numApis; $i++) {
+            $apis[] = [
+                'id' => uniqid(), // Generate a unique ID for each API config
+                'name' => $apiConfigs[$i] ?? '',
+                'url' => $apiUrls[$i] ?? '',
+                'key' => $apiKeys[$i] ?? ''
+            ];
+        }
+    
+        $configFile = __DIR__ . '/../data/server_conf.json';
+        error_log("API Management: Config file path: " . $configFile);
+        if (file_exists($configFile)) {
+            error_log("API Management: Config file exists, attempting to decode.");
+           $existingData = json_decode(file_get_contents($configFile), true);
+           $existingData['apis'] = $apis;
+        } else {
+           $existingData = ['apis' => $apis];
+        }
+    
+        file_put_contents($configFile, json_encode($existingData, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+        error_log("API Management: Data saved to config file: " . json_encode($existingData));
+        
+        $_SESSION['admin_status'] = ['message' => 'API configurations saved successfully.', 'type' => 'success'];
+        header('Location: dashboard.php?view=server_management');
+        exit();
+    }
+
+    if ($action === 'get_api_configs') {
+        $configFile = __DIR__ . '/../data/server_conf.json';
+        $apiConfigs = file_exists($configFile) ? json_decode(file_get_contents($configFile), true) : [];
+    
+        header('Content-Type: application/json');
+        echo json_encode($apiConfigs);
+        exit();
+    }
+
+
+
 $gitConfigFile = __DIR__ . '/../data/git_config.php';
 
 if ($action === 'save_git_config' && $_SERVER['REQUEST_METHOD'] === 'POST') {

@@ -1,6 +1,7 @@
 <?php
 ob_start();
 session_start();
+require __DIR__ . '/config/db.php';
 
 // =============================================================================
 // 1. CONFIGURATION & INITIALIZATION
@@ -845,6 +846,16 @@ if ($isAjaxRequest) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Top Job Hunt</title>
     
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-17733727562"></script>
+    <script>
+     window.dataLayer = window.dataLayer || [];
+     function gtag(){dataLayer.push(arguments);}
+     gtag('js', new Date());
+
+     gtag('config', 'AW-17733727562');
+    </script>
+
     <!-- SEO -->
     <script src="https://www.google.com/recaptcha/api.js?onload=onloadRecaptchaCallback&render=explicit" async defer></script>
     <link rel="icon" type="image/png" href="/data/images/logo.png">
@@ -878,7 +889,7 @@ if ($isAjaxRequest) {
                     <a href="profile.php?action=post_job_form" class="button">Post Job</a>
                 <?php endif; ?>
                 <a href="profile.php" class="auth-link">My Profile</a>
-                <a href="auth.php?action=logout" class="auth-link">Logout</a>
+                <a href="register.php?action=logout" class="auth-link">Logout</a>
             <?php else: ?>
                 <a href="#" class="auth-link button mobile-login-button" onclick="openAuthModal('login'); closeMobileMenu(); return false;">Login</a>
                 <a href="#" class="auth-link button" onclick="openAuthModal('register'); closeMobileMenu(); return false;">Register</a>
@@ -914,7 +925,7 @@ if ($isAjaxRequest) {
                         <a href="profile.php?action=post_job_form" class="button" style="padding: 8px 12px; font-size: 0.9em; background-color: #e67e22; text-transform: uppercase;">Post Job</a>
                     <?php endif; ?>
                     <a href="profile.php" class="auth-link">My Profile</a>
-                    <a href="auth.php?action=logout" class="auth-link">Logout</a>
+                    <a href="register.php?action=logout" class="auth-link">Logout</a>
                 <?php else: ?>
                     <button onclick="openAuthModal('login')">Login</button>
                     <button onclick="openAuthModal('register')" class="button" style="padding: 8px 12px; font-size: 0.9em;">Register</button>
@@ -1096,26 +1107,32 @@ if ($isAjaxRequest) {
             
             <div id="authLoginView">
                 <h4>Login to Your Account</h4>
-                <form id="loginForm">
-                    <input type="email" name="email" placeholder="Email" required>
-                    <input type="password" name="password" placeholder="Password" required>
-                    <div id="loginErrorMessage" class="feedback-message error" style="display: none;"></div>
-                    <button type="submit" class="button">Login</button>
-                </form>
-                <p>Don't have an account? <a href="#" onclick="showRegisterView(event)">Register here</a></p>
+                <!-- Login Modal -->
+<form id="loginForm" method="POST" action="register.php?action=login">
+    <input type="email" name="email" placeholder="Email" autocomplete="email" required>
+    <input type="password" name="password" placeholder="Password" autocomplete="current-password" required>
+    <div id="loginErrorMessage" class="feedback-message error" style="display: none;"></div>
+    <button type="submit" class="button">Login</button>
+</form>
+
             </div>
 
             <div id="authRegisterView" style="display:none;">
                 <h4>Create a New Account</h4>
-                <form id="registerForm">
-                    <input type="text" name="username" placeholder="Username" required>
-                    <input type="email" name="email" placeholder="Email" required>
-                    <input type="password" name="password" placeholder="Password" required>
-                    <select name="role" required><option value="" disabled selected>I am a...</option><option value="jobseeker">Job Seeker</option><option value="recruiter">Recruiter</option></select>
-                    <div id="registerErrorMessage" class="feedback-message error" style="display: none;"></div>
-                    <button type="submit" class="button">Register</button>
-                </form>
-                <p>Already have an account? <a href="#" onclick="showLoginView(event)">Login here</a></p>
+                <!-- Register Modal -->
+<form id="registerForm" method="POST" action="register.php?action=register">
+    <input type="text" name="username" placeholder="Full Name" autocomplete="name" required>
+    <input type="email" name="email" placeholder="Email" autocomplete="email" required>
+    <input type="text" name="mobile" placeholder="Mobile" autocomplete="tel" required>
+    <input type="password" name="password" placeholder="Password" autocomplete="new-password" required>
+    <select name="role" required>
+        <option value="" disabled selected>I am a...</option>
+        <option value="jobseeker">Job Seeker</option>
+        <option value="recruiter">Recruiter</option>
+    </select>
+    <div id="registerErrorMessage" class="feedback-message error" style="display: none;"></div>
+    <button type="submit" class="button">Register</button>
+</form>
             </div>
         </div>
     </div>

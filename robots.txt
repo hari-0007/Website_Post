@@ -5,4 +5,4 @@ Disallow: /admin/
 # Disallow: /some-other-restricted-path/
 
 # Allow your sitemap if you have one for your public site
-# Sitemap: https://www.yourwebsite.com/sitemap.xml
+Sitemap: https://www.jobhunt.top/index.php

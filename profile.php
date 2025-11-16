@@ -8,7 +8,7 @@ require_once __DIR__ . '/admin/includes/config.php';
 
 // Redirect to login page if the user is not logged in.
 if (!isset($_SESSION['user_id'])) {
-    header('Location: auth.php?action=login');
+    // header('Location: auth.php?action=login');
     exit;
 }
 
@@ -565,7 +565,7 @@ if ($userRole === 'jobseeker') {
     <a href="index.php" class="logo">Job Hunt</a>
     <div class="nav-links">
         <a href="index.php">Back to Listings</a>
-        <a href="auth.php?action=logout">Logout</a>
+        <!-- <a href="auth.php?action=logout">Logout</a> -->
     </div>
 </header>
 

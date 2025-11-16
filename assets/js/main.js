@@ -397,18 +397,27 @@ const updateSidebarCounts = () => {
 
     // --- Join Channels Popup ---
     const initJoinChannelsPopup = () => {
-        if (elements.joinChannelsPopup && !getCookie(config.joinPopupCookieName)) {
+        // Check if popup was already shown in this session
+        const popupShown = getCookie(config.joinPopupCookieName);
+        
+        if (elements.joinChannelsPopup && !popupShown) {
+            // Show popup after 1.5 seconds
             setTimeout(() => {
                 lockBackground();
                 elements.joinChannelsPopup.style.display = 'flex';
+                console.log('WhatsApp popup shown'); // Debug log
             }, 1500);
+        } else if (!elements.joinChannelsPopup) {
+            console.warn('joinChannelsPopup element not found in DOM');
         }
     };
+
     const closeJoinChannelsPopup = () => {
         if (elements.joinChannelsPopup) {
             elements.joinChannelsPopup.style.display = 'none';
             unlockBackground();
         }
+        // Set cookie so popup doesn't show again for 1 day
         setCookie(config.joinPopupCookieName, 'true', 1);
     };
     window.closeJoinChannelsPopup = closeJoinChannelsPopup;
@@ -592,7 +601,7 @@ const updateSidebarCounts = () => {
         if (e.target.matches('.share-modal-close-button')) {
             closeShareModal();
             return;
-         }
+        }
 
 
         // --- Caution Modal Buttons (works anywhere in DOM) ---
@@ -668,22 +677,38 @@ const updateSidebarCounts = () => {
         form.addEventListener('submit', (e) => {
             e.preventDefault();
             const formData = new FormData(form);
-            formData.append('ajax', '1');
+            
+            // Get action from form's action attribute (e.g., "register.php?action=register")
+            const action = new URL(form.action, window.location.origin).searchParams.get('action');
+            formData.append('action', action);
+            
             errorMessageEl.style.display = 'none';
-            fetch('auth.php', { method: 'POST', body: formData })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
-                        window.location.reload();
-                    } else {
-                        errorMessageEl.textContent = data.message || 'An unknown error occurred.';
-                        errorMessageEl.style.display = 'block';
-                    }
-                })
-                .catch(() => {
-                    errorMessageEl.textContent = 'A network error occurred.';
+            
+            fetch('register.php?action=' + action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'Accept': 'application/json'
+                }
+            })
+            .then(res => {
+                if (!res.ok) throw new Error('Network error: ' + res.status);
+                return res.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    alert(action === 'login' ? 'Login successful!' : 'Registration successful!');
+                    window.location.href = 'profile.php';
+                } else {
+                    errorMessageEl.textContent = data.message || 'An error occurred.';
                     errorMessageEl.style.display = 'block';
-                });
+                }
+            })
+            .catch(error => {
+                console.error('Auth error:', error);
+                errorMessageEl.textContent = 'A network error occurred. Please try again.';
+                errorMessageEl.style.display = 'block';
+            });
         });
     };
 
